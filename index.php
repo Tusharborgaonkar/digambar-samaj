@@ -1,4 +1,7 @@
-<?php include 'includes/header.php'; ?>
+<?php 
+require_once 'includes/db.php';
+include 'includes/header.php'; 
+?>
 
 <!-- Preloader -->
 <div id="preloader" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white transition-opacity duration-500">
@@ -168,7 +171,7 @@
 </section>
 
 <!-- Latest Profiles Section -->
-<section class="py-16 bg-light">
+<section id="latest" class="py-16 bg-light">
     <div class="container mx-auto px-4">
         <div class="text-center mb-10" data-aos="fade-up">
             <h2 class="text-3xl md:text-4xl font-bold text-dark mb-3 relative inline-block">Latest Profiles
@@ -177,48 +180,90 @@
             <p class="text-gray-600 mt-4">Find your life partner from our newly registered members</p>
         </div>
         
+        <?php
+        $latest_gender = $_GET['latest_gender'] ?? 'Bride';
+        if (!in_array($latest_gender, ['Bride', 'Groom'])) {
+            $latest_gender = 'Bride';
+        }
+        ?>
         <div class="flex flex-wrap justify-center mb-8" data-aos="fade-up" data-aos-delay="100">
-            <button class="bg-primary text-white px-8 py-2.5 rounded-l-full font-bold focus:outline-none hover:bg-opacity-90 shadow-md">Latest Brides</button>
-            <button class="bg-white text-dark px-8 py-2.5 rounded-r-full font-bold focus:outline-none hover:bg-gray-100 border border-l-0 shadow-md">Latest Grooms</button>
+            <a href="?latest_gender=Bride#latest" class="<?= $latest_gender === 'Bride' ? 'bg-primary text-white' : 'bg-white text-dark hover:bg-gray-100 border border-r-0' ?> px-8 py-2.5 rounded-l-full font-bold focus:outline-none transition shadow-md">Latest Brides</a>
+            <a href="?latest_gender=Groom#latest" class="<?= $latest_gender === 'Groom' ? 'bg-primary text-white' : 'bg-white text-dark hover:bg-gray-100 border border-l-0' ?> px-8 py-2.5 rounded-r-full font-bold focus:outline-none transition shadow-md">Latest Grooms</a>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             <?php
-            $is_logged_in = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
-            $index_profiles = [
-                ['name' => 'Priya Jain', 'age' => 26, 'height' => "5'4\"", 'edu' => 'MBA (Finance)', 'job' => 'Manager at MNC', 'loc' => 'Mumbai, Maharashtra', 'img' => 'https://images.unsplash.com/photo-1554151228-14d9def656e4?w=400', 'gender' => 'Bride', 'delay' => 0, 'new' => true],
-                ['name' => 'Neha Shah', 'age' => 24, 'height' => "5'2\"", 'edu' => 'BDS', 'job' => 'Dentist', 'loc' => 'Delhi', 'img' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400', 'gender' => 'Bride', 'delay' => 100, 'new' => false],
-                ['name' => 'Rahul Jain', 'age' => 29, 'height' => "5'11\"", 'edu' => 'B.Tech (CS)', 'job' => 'Software Engineer', 'loc' => 'Bangalore, Karnataka', 'img' => 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400', 'gender' => 'Groom', 'delay' => 200, 'new' => false],
-                ['name' => 'Amit Desai', 'age' => 31, 'height' => "5'10\"", 'edu' => 'M.Com, CA', 'job' => 'Chartered Accountant', 'loc' => 'Ahmedabad, Gujarat', 'img' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400', 'gender' => 'Groom', 'delay' => 300, 'new' => false],
-            ];
+            // Check if user or admin is logged in (to allow photo viewing)
+            $is_logged_in = false;
+            $is_approved = false;
+
+            if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) {
+                $is_logged_in = true;
+                $stmt = $pdo->prepare("SELECT status FROM users WHERE id = ?");
+                $stmt->execute([$_SESSION['user_id']]);
+                $user_status = $stmt->fetchColumn();
+                if ($user_status === 'approved') {
+                    $is_approved = true;
+                }
+            } else if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+                $is_logged_in = true;
+                $is_approved = true;
+            }
+
+            // Fetch 4 latest approved profiles based on selected gender
+            // Map UI labels to actual DB enum values: Bride->Female, Groom->Male
+            $gender_db = ($latest_gender === 'Bride') ? 'Female' : 'Male';
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE status = 'approved' AND gender = ? ORDER BY id DESC LIMIT 4");
+            $stmt->execute([$gender_db]);
+            $index_profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Add delay mapping for animation
+            $delay = 0;
+            foreach ($index_profiles as &$p) {
+                $p['delay'] = $delay;
+                $delay += 100;
+                
+                // Calculate age
+                $age = 'N/A';
+                if (!empty($p['birth_date'])) {
+                    $bday = new DateTime($p['birth_date']);
+                    $today = new DateTime('today');
+                    $age = $bday->diff($today)->y;
+                }
+                $p['computed_age'] = $age;
+                
+                // Fallback image
+                $p['computed_img'] = !empty($p['profile_photo']) ? $p['profile_photo'] : 'https://ui-avatars.com/api/?name='.urlencode($p['full_name']).'&background=random';
+            }
+            unset($p); // break reference
+            
 
             foreach ($index_profiles as $p):
-                $link = $is_logged_in ? "profile-details.php" : "login.php";
+                $link = $is_logged_in ? "profile-details.php?id=" . $p['id'] : "login.php";
             ?>
             <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 group border border-gray-100" data-aos="fade-up" data-aos-delay="<?= $p['delay'] ?>">
                 <div class="relative overflow-hidden h-64">
-                    <?php if ($is_logged_in): ?>
-                        <img src="<?= $p['img'] ?>" alt="<?= $p['gender'] ?>" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                    <?php if ($is_approved): ?>
+                        <img src="<?= htmlspecialchars($p['computed_img']) ?>" alt="Profile Photo" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                     <?php else: ?>
-                        <div class="w-full h-full object-cover group-hover:scale-110 transition duration-500" style="background-image: url('<?= $p['img'] ?>'); background-size: cover; background-position: center; filter: blur(10px);"></div>
+                        <div class="w-full h-full object-cover group-hover:scale-110 transition duration-500" style="background-image: url('<?= htmlspecialchars($p['computed_img']) ?>'); background-size: cover; background-position: center; filter: blur(10px);"></div>
                         <div class="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40 text-white p-4 text-center z-10">
                             <i class="fas fa-lock text-3xl mb-2"></i>
-                            <span class="text-sm font-bold">Login to view photo</span>
                         </div>
                     <?php endif; ?>
                     <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-black/70 to-transparent p-4 z-20">
-                        <a href="<?= $link ?>" class="text-white font-bold text-lg hover:underline"><?= $p['name'] ?></a>
-                        <p class="text-gray-200 text-sm font-medium"><?= $p['age'] ?> Yrs, <?= $p['height'] ?></p>
+                        <a href="<?= $link ?>" class="text-white font-bold text-lg hover:underline"><?= htmlspecialchars($p['full_name']) ?></a>
+                        <p class="text-gray-200 text-sm font-medium"><?= $p['computed_age'] ?> Yrs, <?= htmlspecialchars($p['height'] ?? 'N/A') ?></p>
                     </div>
-                    <?php if ($p['new']): ?>
+                    <?php if (isset($p['created_at']) && strtotime($p['created_at']) > strtotime('-7 days')): ?>
                     <div class="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded shadow z-20">New</div>
                     <?php endif; ?>
                 </div>
                 <div class="p-5">
                     <div class="space-y-2 mb-4">
-                        <p class="text-sm text-gray-600 flex items-center"><i class="fas fa-graduation-cap w-6 text-primary"></i> <?= $p['edu'] ?></p>
-                        <p class="text-sm text-gray-600 flex items-center"><i class="fas fa-briefcase w-6 text-primary"></i> <?= $p['job'] ?></p>
-                        <p class="text-sm text-gray-600 flex items-center"><i class="fas fa-map-marker-alt w-6 text-primary"></i> <?= $p['loc'] ?></p>
+                        <p class="text-sm text-gray-600 flex items-center"><i class="fas fa-graduation-cap w-6 text-primary mr-2"></i> <?= htmlspecialchars($p['higher_education'] ?? 'N/A') ?></p>
+                        <p class="text-sm text-gray-600 flex items-center"><i class="fas fa-briefcase w-6 text-primary mr-2"></i> <?= htmlspecialchars($p['occupation'] ?? 'N/A') ?></p>
+                        <p class="text-sm text-gray-600 flex items-center"><i class="fas fa-map-marker-alt w-6 text-primary mr-2"></i> <?= htmlspecialchars($p['native_place'] ?? 'N/A') ?></p>
                     </div>
                     <a href="<?= $link ?>" class="block text-center bg-gray-50 border border-primary text-primary hover:bg-primary hover:text-white py-2 rounded-md transition font-semibold">View Profile</a>
                 </div>

@@ -1,13 +1,82 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_logged_in']) || $_SESSION['user_logged_in'] !== true) {
+require_once 'includes/db.php';
+
+$is_user_logged_in = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
+$is_admin_logged_in = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
+
+if (!$is_user_logged_in && !$is_admin_logged_in) {
     header('Location: login.php');
     exit;
 }
+
+// Check user status
+$is_approved = false;
+if ($is_admin_logged_in) {
+    $is_approved = true;
+} else if ($is_user_logged_in) {
+    $stmt = $pdo->prepare("SELECT status FROM users WHERE id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $user_status = $stmt->fetchColumn();
+    if ($user_status === 'approved') {
+        $is_approved = true;
+    }
+}
+
+if (!$is_approved) {
+    include 'includes/header.php';
+    echo '<div class="bg-gray-50 py-8 min-h-screen"><div class="container mx-auto px-4">';
+    echo '<div class="max-w-2xl mx-auto bg-white rounded-xl shadow-sm border border-red-200 p-8 text-center mt-10">';
+    echo '<div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">';
+    echo '<i class="fas fa-lock text-3xl text-red-500"></i></div>';
+    echo '<h2 class="text-2xl font-bold text-gray-800 mb-4">Access Restricted</h2>';
+    echo '<p class="text-gray-600 mb-6">Your profile is currently under review by the administrator. Once your profile is approved, you will be able to view other profiles and their photos.</p>';
+    echo '</div></div></div>';
+    include 'includes/footer.php';
+    exit;
+}
+
+$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+if ($id <= 0) {
+    include 'includes/header.php';
+    echo "<div class='container mx-auto p-10 text-center'><h2 class='text-2xl text-red-500 font-bold'>Invalid Profile ID</h2></div>";
+    include 'includes/footer.php';
+    exit;
+}
+
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+$stmt->execute([$id]);
+$member = $stmt->fetch();
+
+if (!$member) {
+    include 'includes/header.php';
+    echo "<div class='container mx-auto p-10 text-center'><h2 class='text-2xl text-red-500 font-bold'>Profile not found</h2></div>";
+    include 'includes/footer.php';
+    exit;
+}
+
+$fullName = htmlspecialchars($member['full_name'] ?? '');
+$memberId = htmlspecialchars($member['profile_id'] ?? '');
+$photo = !empty($member['profile_photo']) ? htmlspecialchars($member['profile_photo']) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name'] ?? 'User');
+
+$age = 'N/A';
+if (!empty($member['birth_date'])) {
+    $dob = new DateTime($member['birth_date']);
+    $now = new DateTime();
+    $age = $now->diff($dob)->y . ' Years';
+}
+
+$heightDisplay = htmlspecialchars($member['height'] ?? 'N/A');
+$maritalStatus = htmlspecialchars($member['marital_status'] ?? 'N/A');
+$location = htmlspecialchars($member['native_place'] ?? 'N/A');
+$education = htmlspecialchars($member['higher_education'] ?? 'N/A');
+$occupation = htmlspecialchars($member['occupation'] ?? 'N/A');
+$language = htmlspecialchars($member['languages'] ?? 'N/A');
+
 include 'includes/header.php';
 ?>
 
-<div class="bg-gray-50 py-10">
+<div class="bg-gray-50 py-10 min-h-screen">
     <div class="container mx-auto px-4 max-w-5xl">
         
         <!-- Breadcrumb -->
@@ -16,32 +85,31 @@ include 'includes/header.php';
             <i class="fas fa-chevron-right text-xs"></i>
             <a href="profiles.php" class="hover:text-primary transition">Search Profiles</a>
             <i class="fas fa-chevron-right text-xs"></i>
-            <span class="text-dark font-medium">Pooja Ajay Dagli [MID: 23815]</span>
+            <span class="text-dark font-medium"><?= $fullName ?> [MID: <?= $memberId ?>]</span>
         </nav>
 
         <div class="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden mb-8">
             <!-- Profile Header -->
             <div class="flex flex-col md:flex-row">
-                <div class="w-full md:w-1/3 relative h-96 md:h-auto">
-                    <img src="https://images.unsplash.com/photo-1594751543129-6701ad444259?w=800" alt="Profile Image" class="w-full h-full object-cover">
-                    <div class="absolute top-4 left-4 bg-primary text-white text-xs font-bold px-3 py-1 rounded-full shadow">Verified Profile</div>
+                <div class="w-full md:w-1/3 relative h-96 md:h-auto bg-gray-100 flex items-center justify-center overflow-hidden">
+                    <img src="<?= $photo ?>" alt="Profile Image" class="w-full h-full object-cover">
                 </div>
                 
                 <div class="w-full md:w-2/3 p-6 md:p-10 flex flex-col justify-center">
                     <div class="flex justify-between items-start mb-2">
-                        <h1 class="text-3xl font-bold text-dark mb-2">Pooja Ajay Dagli <span class="text-lg text-primary font-medium ml-2">[MID: 23815]</span></h1>
+                        <h1 class="text-3xl font-bold text-dark mb-2"><?= $fullName ?> <span class="text-lg text-primary font-medium ml-2">[MID: <?= $memberId ?>]</span></h1>
                         <button class="text-gray-400 hover:text-red-500 transition tooltip" title="Shortlist"><i class="far fa-heart text-2xl"></i></button>
                     </div>
                     
-                    <p class="text-gray-600 mb-6 text-lg"><i class="fas fa-map-marker-alt text-primary mr-2"></i> Mumbai, Maharashtra, India</p>
+                    <p class="text-gray-600 mb-6 text-lg"><i class="fas fa-map-marker-alt text-primary mr-2"></i> <?= $location ?></p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-700 font-medium mb-8 bg-gray-50 p-4 rounded-lg border border-gray-100">
-                        <div class="flex items-center gap-3"><i class="far fa-calendar-alt text-primary w-5 text-center"></i> 37 Years, 5' 3" (160cm)</div>
-                        <div class="flex items-center gap-3"><i class="fas fa-graduation-cap text-primary w-5 text-center"></i> MBA, MCA</div>
-                        <div class="flex items-center gap-3"><i class="fas fa-briefcase text-primary w-5 text-center"></i> Corporate Manager</div>
-                        <div class="flex items-center gap-3"><i class="fas fa-om text-primary w-5 text-center"></i> Sthanakwas (Swetamber)</div>
-                        <div class="flex items-center gap-3"><i class="fas fa-language text-primary w-5 text-center"></i> Gujrathi</div>
-                        <div class="flex items-center gap-3"><i class="fas fa-ring text-primary w-5 text-center"></i> Never Married</div>
+                        <div class="flex items-center gap-3"><i class="far fa-calendar-alt text-primary w-5 text-center"></i> <?= $age ?>, <?= $heightDisplay ?></div>
+                        <div class="flex items-center gap-3"><i class="fas fa-graduation-cap text-primary w-5 text-center"></i> <?= $education ?></div>
+                        <div class="flex items-center gap-3"><i class="fas fa-briefcase text-primary w-5 text-center"></i> <?= $occupation ?></div>
+                        <div class="flex items-center gap-3"><i class="fas fa-om text-primary w-5 text-center"></i> Digambar Jain</div>
+                        <div class="flex items-center gap-3"><i class="fas fa-language text-primary w-5 text-center"></i> <?= $language ?></div>
+                        <div class="flex items-center gap-3"><i class="fas fa-ring text-primary w-5 text-center"></i> <?= $maritalStatus ?></div>
                     </div>
 
                     <div class="flex flex-wrap gap-4 mt-auto">
@@ -58,12 +126,12 @@ include 'includes/header.php';
                 
                 <!-- About Section -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
-                    <h3 class="text-xl font-bold text-dark border-b-2 border-gray-100 pb-3 mb-5 flex items-center"><i class="far fa-user-circle text-primary mr-3 text-2xl"></i> About Pooja</h3>
+                    <h3 class="text-xl font-bold text-dark border-b-2 border-gray-100 pb-3 mb-5 flex items-center"><i class="far fa-user-circle text-primary mr-3 text-2xl"></i> About <?= explode(' ', $fullName)[0] ?></h3>
                     <p class="text-gray-700 leading-relaxed mb-4">
-                        Hello, I am Pooja. I come from a traditional yet open-minded Jain family based in Mumbai. I have completed my MBA and MCA and am currently working as a Manager in a reputed MNC. I am a fun-loving, independent, and caring person who values family bonds deeply.
+                        <strong>Hobbies & Interests:</strong> <?= nl2br(htmlspecialchars($member['hobbies'] ?? 'Not specified')) ?>
                     </p>
                     <p class="text-gray-700 leading-relaxed">
-                        I enjoy reading, traveling to new places, and exploring different cuisines. Looking for a partner who is well-educated, settled, understanding, and shares similar values. Let's connect if you find my profile suitable.
+                        <strong>Physical Challenges/Disabilities:</strong> <?= htmlspecialchars($member['handicapped'] ?? 'None') ?>
                     </p>
                 </div>
 
@@ -73,35 +141,35 @@ include 'includes/header.php';
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8">
                         <div>
                             <span class="block text-sm text-gray-500 mb-1">Name</span>
-                            <span class="text-dark font-semibold">Pooja Ajay Dagli</span>
+                            <span class="text-dark font-semibold"><?= $fullName ?></span>
                         </div>
                         <div>
                             <span class="block text-sm text-gray-500 mb-1">Date of Birth</span>
-                            <span class="text-dark font-semibold">15 Aug 1989</span>
+                            <span class="text-dark font-semibold"><?= !empty($member['birth_date']) ? date('d M Y', strtotime($member['birth_date'])) : 'N/A' ?></span>
                         </div>
                         <div>
                             <span class="block text-sm text-gray-500 mb-1">Marital Status</span>
-                            <span class="text-dark font-semibold">Never Married</span>
+                            <span class="text-dark font-semibold"><?= $maritalStatus ?></span>
                         </div>
                         <div>
                             <span class="block text-sm text-gray-500 mb-1">Height</span>
-                            <span class="text-dark font-semibold">5' 3" (160cm)</span>
+                            <span class="text-dark font-semibold"><?= $heightDisplay ?></span>
                         </div>
                         <div>
                             <span class="block text-sm text-gray-500 mb-1">Weight</span>
-                            <span class="text-dark font-semibold">55 kg</span>
+                            <span class="text-dark font-semibold"><?= !empty($member['weight']) ? htmlspecialchars($member['weight']) . ' kg' : 'N/A' ?></span>
                         </div>
                         <div>
-                            <span class="block text-sm text-gray-500 mb-1">Diet</span>
-                            <span class="text-dark font-semibold">Strictly Vegetarian (Jain Diet)</span>
+                            <span class="block text-sm text-gray-500 mb-1">Gender</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['gender'] ?? 'N/A') ?></span>
                         </div>
                         <div>
-                            <span class="block text-sm text-gray-500 mb-1">Blood Group</span>
-                            <span class="text-dark font-semibold">O+</span>
+                            <span class="block text-sm text-gray-500 mb-1">Native Place</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['native_place'] ?? 'N/A') ?></span>
                         </div>
                         <div>
-                            <span class="block text-sm text-gray-500 mb-1">Complexion</span>
-                            <span class="text-dark font-semibold">Fair</span>
+                            <span class="block text-sm text-gray-500 mb-1">Birth Place</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['birth_place'] ?? 'N/A') ?></span>
                         </div>
                     </div>
                 </div>
@@ -112,31 +180,23 @@ include 'includes/header.php';
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8">
                         <div>
                             <span class="block text-sm text-gray-500 mb-1">Religion</span>
-                            <span class="text-dark font-semibold">Jain</span>
-                        </div>
-                        <div>
-                            <span class="block text-sm text-gray-500 mb-1">Community / Sect</span>
-                            <span class="text-dark font-semibold">Sthanakwas (Swetamber)</span>
-                        </div>
-                        <div>
-                            <span class="block text-sm text-gray-500 mb-1">Mother Tongue</span>
-                            <span class="text-dark font-semibold">Gujrathi</span>
+                            <span class="text-dark font-semibold">Jain Digambar</span>
                         </div>
                         <div>
                             <span class="block text-sm text-gray-500 mb-1">Gotra</span>
-                            <span class="text-dark font-semibold">Garg</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['gotra'] ?? 'N/A') ?></span>
+                        </div>
+                        <div>
+                            <span class="block text-sm text-gray-500 mb-1">Mama Gotra</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['mama_gotra'] ?? 'N/A') ?></span>
                         </div>
                         <div>
                             <span class="block text-sm text-gray-500 mb-1">Manglik Status</span>
-                            <span class="text-dark font-semibold text-green-600">Non-Manglik</span>
+                            <span class="text-dark font-semibold <?= (strtolower($member['manglik'] ?? '') === 'no') ? 'text-green-600' : 'text-red-600' ?>"><?= ucfirst(htmlspecialchars($member['manglik'] ?? 'N/A')) ?></span>
                         </div>
                         <div>
                             <span class="block text-sm text-gray-500 mb-1">Time of Birth</span>
-                            <span class="text-dark font-semibold">10:45 AM</span>
-                        </div>
-                        <div>
-                            <span class="block text-sm text-gray-500 mb-1">Place of Birth</span>
-                            <span class="text-dark font-semibold">Mumbai</span>
+                            <span class="text-dark font-semibold"><?= !empty($member['birth_time']) ? date('h:i A', strtotime($member['birth_time'])) : 'N/A' ?></span>
                         </div>
                     </div>
                 </div>
@@ -147,94 +207,23 @@ include 'includes/header.php';
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8">
                         <div>
                             <span class="block text-sm text-gray-500 mb-1">Highest Education</span>
-                            <span class="text-dark font-semibold">MBA, MCA</span>
+                            <span class="text-dark font-semibold"><?= $education ?></span>
                         </div>
                         <div>
-                            <span class="block text-sm text-gray-500 mb-1">Employed In</span>
-                            <span class="text-dark font-semibold">Private Sector</span>
+                            <span class="block text-sm text-gray-500 mb-1">Company Name</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['company_name'] ?? 'N/A') ?></span>
                         </div>
                         <div>
                             <span class="block text-sm text-gray-500 mb-1">Occupation</span>
-                            <span class="text-dark font-semibold">Corporate Manager</span>
+                            <span class="text-dark font-semibold"><?= $occupation ?></span>
                         </div>
                         <div>
-                            <span class="block text-sm text-gray-500 mb-1">Annual Income</span>
-                            <span class="text-dark font-semibold">Rs. 10,00,001 - above</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Family Details -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
-                    <h3 class="text-xl font-bold text-dark border-b-2 border-gray-100 pb-3 mb-5 flex items-center"><i class="fas fa-users text-primary mr-3 text-2xl"></i> Family Details</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8">
-                        <div>
-                            <span class="block text-sm text-gray-500 mb-1">Family Status</span>
-                            <span class="text-dark font-semibold">Upper Middle Class</span>
+                            <span class="block text-sm text-gray-500 mb-1">Designation</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['designation'] ?? 'N/A') ?></span>
                         </div>
                         <div>
-                            <span class="block text-sm text-gray-500 mb-1">Family Type</span>
-                            <span class="text-dark font-semibold">Nuclear Family</span>
-                        </div>
-                        <div>
-                            <span class="block text-sm text-gray-500 mb-1">Family Values</span>
-                            <span class="text-dark font-semibold">Moderate</span>
-                        </div>
-                        <div>
-                            <span class="block text-sm text-gray-500 mb-1">Father's Occupation</span>
-                            <span class="text-dark font-semibold">Business</span>
-                        </div>
-                        <div>
-                            <span class="block text-sm text-gray-500 mb-1">Mother's Occupation</span>
-                            <span class="text-dark font-semibold">Homemaker</span>
-                        </div>
-                        <div>
-                            <span class="block text-sm text-gray-500 mb-1">Siblings</span>
-                            <span class="text-dark font-semibold">1 Brother, 1 Sister</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mandir Verification & References -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
-                    <div class="flex justify-between items-center border-b-2 border-gray-100 pb-3 mb-5">
-                        <h3 class="text-xl font-bold text-dark flex items-center">
-                            <i class="fas fa-gopuram text-primary mr-3 text-2xl"></i> Mandir Verification Details
-                        </h3>
-                        <span class="bg-green-50 text-green-700 border border-green-200 text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1">
-                            <i class="fas fa-shield-alt"></i> Samaj Verified
-                        </span>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8 mb-6">
-                        <div>
-                            <span class="block text-sm text-gray-500 mb-1">Subcast (उपजाति)</span>
-                            <span class="text-dark font-semibold">Parwar (परवार)</span>
-                        </div>
-                        <div>
-                            <span class="block text-sm text-gray-500 mb-1">Registered Mandir (मंदिर)</span>
-                            <span class="text-dark font-semibold text-sm">Shri Digambar Jain Lal Mandir, Chandni Chowk, Delhi</span>
-                        </div>
-                    </div>
-
-                    <h4 class="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Community Reference Persons</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <!-- Ref 1 -->
-                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                            <p class="text-xs font-bold text-primary uppercase mb-2">Reference Person 1</p>
-                            <div class="space-y-1 text-sm text-gray-700">
-                                <p><span class="text-gray-500">Name:</span> <span class="font-semibold text-dark">Pandit Suresh Shastri</span></p>
-                                <p><span class="text-gray-500">Mobile:</span> <span class="font-semibold text-dark">+91 ******3221</span> <span class="text-[10px] text-gray-400 font-normal">(Masked for privacy)</span></p>
-                                <p><span class="text-gray-500">Relation:</span> <span class="font-semibold text-dark">Panditji / Temple Priest</span></p>
-                            </div>
-                        </div>
-                        <!-- Ref 2 -->
-                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                            <p class="text-xs font-bold text-primary uppercase mb-2">Reference Person 2</p>
-                            <div class="space-y-1 text-sm text-gray-700">
-                                <p><span class="text-gray-500">Name:</span> <span class="font-semibold text-dark">Manoj Kumar Jain</span></p>
-                                <p><span class="text-gray-500">Mobile:</span> <span class="font-semibold text-dark">+91 ******3222</span> <span class="text-[10px] text-gray-400 font-normal">(Masked for privacy)</span></p>
-                                <p><span class="text-gray-500">Relation:</span> <span class="font-semibold text-dark">Mandir Trustee</span></p>
-                            </div>
+                            <span class="block text-sm text-gray-500 mb-1">Monthly Income</span>
+                            <span class="text-dark font-semibold">₹ <?= number_format((float)($member['monthly_income'] ?? 0)) ?></span>
                         </div>
                     </div>
                 </div>
@@ -247,50 +236,9 @@ include 'includes/header.php';
                 <div class="bg-light rounded-xl shadow-sm border border-primary/20 p-6 sticky top-24">
                     <h3 class="text-lg font-bold text-primary border-b border-primary/20 pb-3 mb-4"><i class="fas fa-heart mr-2"></i> Partner Preferences</h3>
                     
-                    <ul class="space-y-4">
-                        <li class="flex items-start">
-                            <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
-                            <div>
-                                <span class="block text-xs text-gray-500 font-semibold uppercase tracking-wider">Age</span>
-                                <span class="text-dark font-medium text-sm">37 to 42 Years</span>
-                            </div>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
-                            <div>
-                                <span class="block text-xs text-gray-500 font-semibold uppercase tracking-wider">Height</span>
-                                <span class="text-dark font-medium text-sm">5' 5" to 6' 0"</span>
-                            </div>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
-                            <div>
-                                <span class="block text-xs text-gray-500 font-semibold uppercase tracking-wider">Marital Status</span>
-                                <span class="text-dark font-medium text-sm">Never Married</span>
-                            </div>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
-                            <div>
-                                <span class="block text-xs text-gray-500 font-semibold uppercase tracking-wider">Education</span>
-                                <span class="text-dark font-medium text-sm">Bachelors / Masters</span>
-                            </div>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
-                            <div>
-                                <span class="block text-xs text-gray-500 font-semibold uppercase tracking-wider">Religion / Sect</span>
-                                <span class="text-dark font-medium text-sm">Jain (Any Sect)</span>
-                            </div>
-                        </li>
-                        <li class="flex items-start">
-                            <i class="fas fa-check text-green-500 mt-1 mr-3"></i>
-                            <div>
-                                <span class="block text-xs text-gray-500 font-semibold uppercase tracking-wider">Location</span>
-                                <span class="text-dark font-medium text-sm">Mumbai, Pune, Gujarat, NRI</span>
-                            </div>
-                        </li>
-                    </ul>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        <?= nl2br(htmlspecialchars($member['partner_preference'] ?? 'Not specified by the member.')) ?>
+                    </p>
                 </div>
             </div>
         </div>

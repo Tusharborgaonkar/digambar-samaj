@@ -9,9 +9,16 @@ CREATE TABLE admins (
     role ENUM('super_admin', 'admin', 'moderator') DEFAULT 'admin',
     status BOOLEAN DEFAULT TRUE,
     last_login DATETIME NULL,
+    last_login_ip VARCHAR(45) NULL,
+    password_updated_at DATETIME NULL,
+    two_factor_enabled BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_admins_status ON admins(status);
+CREATE INDEX idx_admins_role ON admins(role);
+CREATE INDEX idx_admins_last_login ON admins(last_login);
 
 -- 2. users
 CREATE TABLE users (
@@ -256,56 +263,62 @@ CREATE TABLE import_history (
 -- 15. members (Import Table)
 CREATE TABLE members (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    timestamp TEXT,
-    are_you_digambar_jain TEXT,
-    candidate_full_name_first_name_last_name_surname TEXT,
-    country_code TEXT,
-    mobile_number_whatsapp TEXT,
-    birth_date TEXT,
-    birth_time TEXT,
-    birth_place TEXT,
-    native TEXT,
-    gotra TEXT,
-    mama_gotra TEXT,
-    manglik TEXT,
-    height TEXT,
-    weight TEXT,
-    gender TEXT,
-    permanent_full_address TEXT,
-    pin_code_of_permanent_address TEXT,
-    candidate_current_address_if_your_permanent_address_is_the_same_you_may_write_same_as_above_not_applicable TEXT,
-    email TEXT,
+    -- Personal
+    full_name VARCHAR(255) NOT NULL,
+    gender ENUM('Male', 'Female', 'Other'),
+    birth_date DATE,
+    birth_time TIME,
+    birth_place VARCHAR(255),
+    native VARCHAR(100),
+    gotra VARCHAR(100),
+    mama_gotra VARCHAR(100),
+    manglik ENUM('yes', 'no'),
+    height_cm SMALLINT UNSIGNED,
+    weight_kg DECIMAL(5,2),
+    
+    -- Contact
+    country_code VARCHAR(5),
+    mobile_number VARCHAR(20),
+    email VARCHAR(255) UNIQUE,
+    permanent_address TEXT,
+    permanent_pin_code CHAR(6),
+    current_address TEXT,
+    
+    -- Professional & Education
     higher_education TEXT,
+    occupation VARCHAR(100),
+    company_name VARCHAR(255),
+    designation VARCHAR(100),
+    monthly_income DECIMAL(12,2),
+    
+    -- Family
+    father_name VARCHAR(255),
+    father_mobile VARCHAR(20),
+    father_occupation VARCHAR(100),
+    father_monthly_income DECIMAL(12,2),
+    mother_name VARCHAR(255),
+    mother_mobile VARCHAR(20),
+    mother_occupation VARCHAR(100),
+    brothers_total TINYINT UNSIGNED,
+    brothers_married TINYINT UNSIGNED,
+    brothers_unmarried TINYINT UNSIGNED,
+    sisters_total TINYINT UNSIGNED,
+    sisters_married TINYINT UNSIGNED,
+    sisters_unmarried TINYINT UNSIGNED,
+    
+    -- Preferences & Other
+    partner_preferences TEXT,
+    languages_known TEXT,
     hobbies TEXT,
-    your_specific_preference_for_the_partner TEXT,
-    candidate_monthly_income_only_amount_in_number_ex_100000 TEXT,
-    widow_divorce TEXT,
+    widow_divorce ENUM('widow', 'divorcee', 'none'),
     handicapped_physical_deficiency TEXT,
-    language_known TEXT,
-    candidate_occupation TEXT,
-    candidate_occupation_company_business_firm_name TEXT,
-    candidate_occupation_designation TEXT,
-    father_name TEXT,
-    father_mobile_number TEXT,
-    father_monthly_income_only_amount_in_number_ex_100000 TEXT,
-    father_occupation TEXT,
-    mother_name TEXT,
-    mother_mobile_number TEXT,
-    mother_occupation TEXT,
-    brothers TEXT,
-    brothers_married_count_only_number TEXT,
-    brothers_unmarried_count_only_number TEXT,
-    sisters TEXT,
-    sisters_married_count_only_number TEXT,
-    sisters_unmarried_count_only_number TEXT,
-    candidate_photo_pl_do_not_upload_selfie_10_mb TEXT,
-    payment_qr_code_pay_rs_1000_candidate_2_persons_allowed_kindly_mention_mobile_no_in_payment_remarks TEXT,
-    payment_screen_shot_attach_a_photo_displaying_the_transaction_id TEXT,
-    email_address TEXT,
-    pin_code_of_permanent_address_1 TEXT,
-    profile_photo_path TEXT,
-    payment_proof_path TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    
+    -- Media
+    profile_photo_path VARCHAR(500),
+    
+    -- Metadata
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- 16. import_images
