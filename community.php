@@ -1,7 +1,6 @@
 <?php include 'includes/header.php'; ?>
 
-<section class="relative h-96 md:h-[500px] bg-cover bg-top"
-    style="background-image: url('assets/images/slider img1.png');">
+<section class="relative h-72 md:h-[500px] bg-cover bg-[center_20%]" style="background-image: url('assets/images/herobanner.png');">
     <div class="absolute inset-0 bg-black bg-opacity-40"></div>
     <div class="relative h-full flex items-center justify-center text-center">
         <h1 class="text-4xl md:text-5xl font-bold text-white drop-shadow-md" data-aos="fade-up">Digambar Jain Community

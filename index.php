@@ -22,17 +22,6 @@ include 'includes/header.php';
 </div>
 
 <style>
-@keyframes crossfade {
-    0% { opacity: 1; }
-    45% { opacity: 1; }
-    55% { opacity: 0; }
-    90% { opacity: 0; }
-    100% { opacity: 1; }
-}
-.hero-slider-top {
-    animation: crossfade 10s ease-in-out infinite;
-}
-
 @keyframes spin-reverse {
     0% { transform: rotate(360deg); }
     100% { transform: rotate(0deg); }
@@ -57,9 +46,8 @@ include 'includes/header.php';
 
 <!-- Hero Section -->
 <section class="relative min-h-screen flex flex-col justify-center items-center overflow-hidden">
-    <!-- Slider Backgrounds -->
-    <div class="absolute inset-0 w-full h-full bg-cover bg-center" style="background-image: url('assets/images/slider img2.png'); z-index: 0;"></div>
-    <div class="absolute inset-0 w-full h-full bg-cover bg-center hero-slider-top" style="background-image: url('assets/images/slider img1.png'); z-index: 1;"></div>
+    <!-- Static Hero Banner -->
+    <div class="absolute inset-0 w-full h-full bg-cover bg-center" style="background-image: url('assets/images/abtus-hero.png'); z-index: 0;"></div>
     
     <!-- Overlay -->
     <div class="absolute inset-0 bg-black bg-opacity-60 z-10"></div>
@@ -68,11 +56,8 @@ include 'includes/header.php';
         
         <!-- Hero Title & Buttons -->
         <div class="text-center mb-10" data-aos="fade-up">
-            <!-- <p class="text-lg md:text-xl text-primary font-semibold mb-2 bg-white inline-block px-4 py-1 rounded-full uppercase tracking-wider">India's & World's No.1</p> -->
             <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">Digambar Jain Matrimony</h1>
             <p class="text-xl md:text-2xl text-gray-200 mb-8 hero-subtitle">Find Your Special Someone Who Completes You</p>
-            
-            
         </div>
     </div>
 </section>
@@ -233,7 +218,7 @@ include 'includes/header.php';
                 $p['computed_age'] = $age;
                 
                 // Fallback image
-                $p['computed_img'] = !empty($p['profile_photo']) ? $p['profile_photo'] : 'https://ui-avatars.com/api/?name='.urlencode($p['full_name']).'&background=random';
+                $p['computed_img'] = (!empty($p['profile_photo']) && file_exists($p['profile_photo'])) ? $p['profile_photo'] : 'https://ui-avatars.com/api/?name='.urlencode($p['full_name']).'&background=random';
             }
             unset($p); // break reference
             
@@ -242,11 +227,11 @@ include 'includes/header.php';
                 $link = $is_logged_in ? "profile-details.php?id=" . $p['id'] : "login.php";
             ?>
             <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 group border border-gray-100" data-aos="fade-up" data-aos-delay="<?= $p['delay'] ?>">
-                <div class="relative overflow-hidden h-64">
+                <div class="relative overflow-hidden" style="height: 320px;">
                     <?php if ($is_approved): ?>
-                        <img src="<?= htmlspecialchars($p['computed_img']) ?>" alt="Profile Photo" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        <img src="<?= htmlspecialchars($p['computed_img']) ?>" alt="Profile Photo" class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-500">
                     <?php else: ?>
-                        <div class="w-full h-full object-cover group-hover:scale-110 transition duration-500" style="background-image: url('<?= htmlspecialchars($p['computed_img']) ?>'); background-size: cover; background-position: center; filter: blur(10px);"></div>
+                        <div class="w-full h-full group-hover:scale-110 transition duration-500" style="background-image: url('<?= htmlspecialchars($p['computed_img']) ?>'); background-size: cover; background-position: top center; filter: blur(10px);"></div>
                         <div class="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40 text-white p-4 text-center z-10">
                             <i class="fas fa-lock text-3xl mb-2"></i>
                         </div>

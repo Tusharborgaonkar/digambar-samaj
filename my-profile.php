@@ -25,7 +25,7 @@ if (!empty($user['birth_date'])) {
     $age = $bday->diff($today)->y;
 }
 
-$profile_img = !empty($user['profile_photo']) ? $user['profile_photo'] : 'https://ui-avatars.com/api/?name='.urlencode($user['full_name']).'&background=random';
+$profile_img = (!empty($user['profile_photo']) && file_exists($user['profile_photo'])) ? $user['profile_photo'] : 'https://ui-avatars.com/api/?name='.urlencode($user['full_name']).'&background=random';
 ?>
 
 <section class="py-12 md:py-16 bg-light">

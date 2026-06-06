@@ -1,8 +1,6 @@
 <?php
 require_once '../includes/db.php';
 $current_page = 'members.php';
-include 'includes/header.php'; 
-include 'includes/sidebar.php'; 
 
 // Handle status updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['user_id'])) {
@@ -15,6 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['use
     } elseif ($action === 'reject') {
         $stmt = $pdo->prepare("UPDATE users SET status = 'rejected' WHERE id = ?");
         $stmt->execute([$userId]);
+    } elseif ($action === 'block') {
+        $stmt = $pdo->prepare("UPDATE users SET status = 'blocked' WHERE id = ?");
+        $stmt->execute([$userId]);
+    } elseif ($action === 'hold') {
+        $stmt = $pdo->prepare("UPDATE users SET status = 'pending' WHERE id = ?");
+        $stmt->execute([$userId]);
     } elseif ($action === 'delete') {
         $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
         $stmt->execute([$userId]);
@@ -23,6 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['use
     header("Location: members.php?page=" . (isset($_GET['page']) ? $_GET['page'] : 1));
     exit;
 }
+
+include 'includes/header.php'; 
+include 'includes/sidebar.php'; 
 
 // Pagination settings
 $limit = 10; // Number of records per page
@@ -155,7 +162,8 @@ function buildQueryString($page_num) {
                     <td class="py-4 px-6">
                         <div class="flex items-center">
                             <?php
-                            $photo = !empty($member['profile_photo']) ? '../' . htmlspecialchars($member['profile_photo']) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name']);
+                            $photo_path = !empty($member['profile_photo']) ? '../' . $member['profile_photo'] : '';
+                            $photo = ($photo_path && file_exists($photo_path)) ? htmlspecialchars($photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name']);
                             ?>
                             <img src="<?= $photo ?>" class="w-10 h-10 rounded-full object-cover mr-3 border border-gray-200" alt="Profile Photo">
                             <div>
@@ -176,7 +184,9 @@ function buildQueryString($page_num) {
                         <?php if($member['status'] === 'approved'): ?>
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Approved</span>
                         <?php elseif($member['status'] === 'rejected'): ?>
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Rejected</span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Denied</span>
+                        <?php elseif($member['status'] === 'blocked'): ?>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">Blocked</span>
                         <?php else: ?>
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Pending</span>
                         <?php endif; ?>
@@ -189,8 +199,14 @@ function buildQueryString($page_num) {
                             <?php if($member['status'] !== 'approved'): ?>
                                 <button type="submit" name="action" value="approve" class="text-green-600 hover:text-green-900 mx-1 p-1 tooltip" title="Approve"><i class="fas fa-check-circle"></i></button>
                             <?php endif; ?>
+                            <?php if($member['status'] === 'approved' || $member['status'] === 'rejected' || $member['status'] === 'blocked'): ?>
+                                <button type="submit" name="action" value="hold" class="text-yellow-600 hover:text-yellow-900 mx-1 p-1 tooltip" title="Hold Profile"><i class="fas fa-pause-circle"></i></button>
+                            <?php endif; ?>
                             <?php if($member['status'] !== 'rejected'): ?>
-                                <button type="submit" name="action" value="reject" class="text-orange-500 hover:text-orange-700 mx-1 p-1 tooltip" title="Reject"><i class="fas fa-times-circle"></i></button>
+                                <button type="submit" name="action" value="reject" class="text-orange-500 hover:text-orange-700 mx-1 p-1 tooltip" title="Deny"><i class="fas fa-times-circle"></i></button>
+                            <?php endif; ?>
+                            <?php if($member['status'] !== 'blocked'): ?>
+                                <button type="submit" name="action" value="block" class="text-gray-600 hover:text-gray-900 mx-1 p-1 tooltip" title="Block User"><i class="fas fa-ban"></i></button>
                             <?php endif; ?>
                             <button type="submit" name="action" value="delete" class="text-red-600 hover:text-red-900 mx-1 p-1 tooltip" title="Delete" onclick="return confirm('Are you sure you want to delete this profile?');"><i class="fas fa-trash"></i></button>
                         </form>

@@ -39,7 +39,54 @@ if (!empty($_GET['education']) && $_GET['education'] !== 'Education All') {
     $params[] = "%" . $_GET['education'] . "%";
 }
 
+// Manglik filter
+if (!empty($_GET['manglik'])) {
+    $manglikVal = strtolower($_GET['manglik']);
+    if ($manglikVal === 'yes') {
+        $where[] = "manglik = 'Yes'";
+    } elseif ($manglikVal === 'no') {
+        $where[] = "manglik = 'No'";
+    }
+}
+
+// Marital status filter
+if (!empty($_GET['marital']) && $_GET['marital'] !== 'All') {
+    $where[] = "marital_status = ?";
+    $params[] = $_GET['marital'];
+}
+
+// Occupation filter
+if (!empty($_GET['occupation']) && $_GET['occupation'] !== 'Occupation All') {
+    $where[] = "occupation LIKE ?";
+    $params[] = "%" . $_GET['occupation'] . "%";
+}
+
+// Age range filter
+if (!empty($_GET['age_from']) && is_numeric($_GET['age_from'])) {
+    $maxBirthDate = date('Y-m-d', strtotime('-' . (int)$_GET['age_from'] . ' years'));
+    $where[] = "birth_date <= ?";
+    $params[] = $maxBirthDate;
+}
+if (!empty($_GET['age_to']) && is_numeric($_GET['age_to'])) {
+    $minBirthDate = date('Y-m-d', strtotime('-' . ((int)$_GET['age_to'] + 1) . ' years +1 day'));
+    $where[] = "birth_date >= ?";
+    $params[] = $minBirthDate;
+}
+
 $whereClause = implode(" AND ", $where);
+
+// Build query string for pagination (preserve all filters)
+$filterParams = [];
+foreach (['gender', 'city', 'education', 'manglik', 'marital', 'occupation', 'age_from', 'age_to'] as $key) {
+    if (!empty($_GET[$key])) {
+        $filterParams[$key] = $_GET[$key];
+    }
+}
+// Always include gender
+if (empty($filterParams['gender'])) {
+    $filterParams['gender'] = $genderFilter;
+}
+$filterQueryString = http_build_query($filterParams);
 
 // Pagination
 $limit = 10;
@@ -107,32 +154,68 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </label>
                         </div>
                         
-                        <!-- Country -->
-                        <select name="country" class="w-full border border-gray-300 rounded-md p-2.5 mb-4 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-white">
-                            <option selected>India</option>
-                        </select>
-                        
                         <!-- City -->
-                        <input type="text" name="city" placeholder="Enter City Name" value="<?= htmlspecialchars($_GET['city'] ?? '') ?>" class="w-full border border-gray-300 rounded-md p-2.5 mb-4 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                        <input type="text" name="city" placeholder="Enter City / Native Place" value="<?= htmlspecialchars($_GET['city'] ?? '') ?>" class="w-full border border-gray-300 rounded-md p-2.5 mb-4 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
                         
                         <!-- Education -->
+                        <?php
+                        $educationOptions = ['Education All', 'Bachelors', 'Masters', 'Doctorate', 'Diploma', 'Engineer', 'MBA', 'MCA', 'LLB', 'LLM', 'CA', 'CS', 'ICWAI'];
+                        $selectedEdu = $_GET['education'] ?? 'Education All';
+                        ?>
                         <select name="education" class="w-full border border-gray-300 rounded-md p-2.5 mb-4 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-white">
-                            <option>Education All</option>
-                            <option <?= ($_GET['education'] ?? '') === 'Bachelors' ? 'selected' : '' ?>>Bachelors</option>
-                            <option <?= ($_GET['education'] ?? '') === 'Masters' ? 'selected' : '' ?>>Masters</option>
-                            <option <?= ($_GET['education'] ?? '') === 'Doctorate' ? 'selected' : '' ?>>Doctorate</option>
-                            <option <?= ($_GET['education'] ?? '') === 'Diploma' ? 'selected' : '' ?>>Diploma</option>
+                            <?php foreach ($educationOptions as $edu): ?>
+                                <option <?= $selectedEdu === $edu ? 'selected' : '' ?>><?= $edu ?></option>
+                            <?php endforeach; ?>
                         </select>
 
-                        <!-- Sampraday -->
-                        <select name="sampraday" class="w-full border border-gray-300 rounded-md p-2.5 mb-5 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-white">
-                            <option>Sampraday All</option>
+                        <!-- Marital Status -->
+                        <?php $selectedMarital = $_GET['marital'] ?? 'All'; ?>
+                        <select name="marital" class="w-full border border-gray-300 rounded-md p-2.5 mb-4 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-white">
+                            <option value="All" <?= $selectedMarital === 'All' ? 'selected' : '' ?>>Marital Status All</option>
+                            <option value="Never Married" <?= $selectedMarital === 'Never Married' ? 'selected' : '' ?>>Never Married</option>
+                            <option value="Widow" <?= $selectedMarital === 'Widow' ? 'selected' : '' ?>>Widow</option>
+                            <option value="Widower" <?= $selectedMarital === 'Widower' ? 'selected' : '' ?>>Widower</option>
+                            <option value="Divorce" <?= $selectedMarital === 'Divorce' ? 'selected' : '' ?>>Divorcee</option>
                         </select>
+
+                        <!-- Occupation -->
+                        <?php $selectedOcc = $_GET['occupation'] ?? 'Occupation All'; ?>
+                        <select name="occupation" class="w-full border border-gray-300 rounded-md p-2.5 mb-4 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-white">
+                            <option value="Occupation All" <?= $selectedOcc === 'Occupation All' ? 'selected' : '' ?>>Occupation All</option>
+                            <option value="Service" <?= $selectedOcc === 'Service' ? 'selected' : '' ?>>Service / Job</option>
+                            <option value="Business" <?= $selectedOcc === 'Business' ? 'selected' : '' ?>>Business</option>
+                            <option value="Profession" <?= $selectedOcc === 'Profession' ? 'selected' : '' ?>>Profession</option>
+                            <option value="Doctor" <?= $selectedOcc === 'Doctor' ? 'selected' : '' ?>>Doctor</option>
+                            <option value="Engineer" <?= $selectedOcc === 'Engineer' ? 'selected' : '' ?>>Engineer</option>
+                            <option value="Teacher" <?= $selectedOcc === 'Teacher' ? 'selected' : '' ?>>Teacher</option>
+                        </select>
+
+                        <!-- Manglik -->
+                        <?php $selectedManglik = $_GET['manglik'] ?? ''; ?>
+                        <select name="manglik" class="w-full border border-gray-300 rounded-md p-2.5 mb-4 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-white">
+                            <option value="" <?= $selectedManglik === '' ? 'selected' : '' ?>>Manglik All</option>
+                            <option value="yes" <?= $selectedManglik === 'yes' ? 'selected' : '' ?>>Manglik</option>
+                            <option value="no" <?= $selectedManglik === 'no' ? 'selected' : '' ?>>Non-Manglik</option>
+                        </select>
+
+                        <!-- Age Range -->
+                        <div class="flex items-center gap-2 mb-5">
+                            <input type="number" name="age_from" placeholder="Age From" min="18" max="80" value="<?= htmlspecialchars($_GET['age_from'] ?? '') ?>" class="w-1/2 border border-gray-300 rounded-md p-2.5 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                            <span class="text-gray-400 text-sm">to</span>
+                            <input type="number" name="age_to" placeholder="Age To" min="18" max="80" value="<?= htmlspecialchars($_GET['age_to'] ?? '') ?>" class="w-1/2 border border-gray-300 rounded-md p-2.5 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                        </div>
                         
                         <!-- Search Button -->
                         <button type="submit" class="w-full bg-primary text-white font-semibold py-2.5 rounded-md hover:bg-opacity-90 transition shadow-sm">
                             Search
                         </button>
+                        
+                        <!-- Reset Link -->
+                        <?php if (!empty($_GET['city']) || !empty($_GET['education']) || !empty($_GET['manglik']) || !empty($_GET['marital']) || !empty($_GET['occupation']) || !empty($_GET['age_from']) || !empty($_GET['age_to'])): ?>
+                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>" class="block text-center text-sm text-gray-500 hover:text-primary mt-3 transition">
+                            <i class="fas fa-times-circle mr-1"></i> Clear All Filters
+                        </a>
+                        <?php endif; ?>
                     </div>
                 </form>
 
@@ -144,18 +227,17 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <div class="p-5 space-y-3 text-sm font-medium">
                         <a href="profiles.php?gender=Bride" class="block text-gray-600 hover:text-primary hover:underline transition">All Bride</a>
                         <a href="profiles.php?gender=Groom" class="block text-gray-600 hover:text-primary hover:underline transition">All Groom</a>
-                        <a href="profiles.php?education=Doctorate" class="block text-gray-600 hover:text-primary hover:underline transition">All Doctors</a>
-                        <a href="profiles.php?education=LLB" class="block text-gray-600 hover:text-primary hover:underline transition">All LLB, LLM</a>
-                        <a href="profiles.php?education=Engineer" class="block text-gray-600 hover:text-primary hover:underline transition">All Engineers</a>
-                        <a href="profiles.php?education=MBA" class="block text-gray-600 hover:text-primary hover:underline transition">All MBA, MCA</a>
-                        <a href="profiles.php?education=CA" class="block text-gray-600 hover:text-primary hover:underline transition">All CA, CS, ICWAI, CFS</a>
-                        <a href="profiles.php?manglik=yes" class="block text-gray-600 hover:text-primary hover:underline transition">All Manglik</a>
-                        <a href="profiles.php?nri=yes" class="block text-gray-600 hover:text-primary hover:underline transition">All NRI</a>
-                        <a href="profiles.php?occupation=Service" class="block text-gray-600 hover:text-primary hover:underline transition">All Service</a>
-                        <a href="profiles.php?occupation=Business" class="block text-gray-600 hover:text-primary hover:underline transition">All Business</a>
-                        <a href="profiles.php?occupation=Profession" class="block text-gray-600 hover:text-primary hover:underline transition">All Profession</a>
-                        <a href="profiles.php?marital=Widow" class="block text-gray-600 hover:text-primary hover:underline transition">All Widow</a>
-                        <a href="profiles.php?marital=Divorcee" class="block text-gray-600 hover:text-primary hover:underline transition">All Divorcee</a>
+                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=Doctorate" class="block text-gray-600 hover:text-primary hover:underline transition">All Doctors</a>
+                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=LLB" class="block text-gray-600 hover:text-primary hover:underline transition">All LLB, LLM</a>
+                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=Engineer" class="block text-gray-600 hover:text-primary hover:underline transition">All Engineers</a>
+                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=MBA" class="block text-gray-600 hover:text-primary hover:underline transition">All MBA, MCA</a>
+                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=CA" class="block text-gray-600 hover:text-primary hover:underline transition">All CA, CS, ICWAI</a>
+                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&manglik=yes" class="block text-gray-600 hover:text-primary hover:underline transition">All Manglik</a>
+                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&occupation=Service" class="block text-gray-600 hover:text-primary hover:underline transition">All Service</a>
+                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&occupation=Business" class="block text-gray-600 hover:text-primary hover:underline transition">All Business</a>
+                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&occupation=Profession" class="block text-gray-600 hover:text-primary hover:underline transition">All Profession</a>
+                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&marital=Widow" class="block text-gray-600 hover:text-primary hover:underline transition">All Widow</a>
+                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&marital=Divorce" class="block text-gray-600 hover:text-primary hover:underline transition">All Divorcee</a>
                     </div>
                 </div>
             </div>
@@ -176,16 +258,16 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 $today = new DateTime('today');
                                 $age = $bday->diff($today)->y;
                             }
-                            $img = !empty($p['profile_photo']) ? $p['profile_photo'] : 'https://ui-avatars.com/api/?name='.urlencode($p['full_name']).'&background=random';
+                            $img = (!empty($p['profile_photo']) && file_exists($p['profile_photo'])) ? $p['profile_photo'] : 'https://ui-avatars.com/api/?name='.urlencode($p['full_name']).'&background=random';
                         ?>
                         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col sm:flex-row">
-                            <div class="w-full sm:w-1/4 md:w-48 h-64 sm:h-auto relative bg-gray-100 flex items-center justify-center overflow-hidden">
+                            <div class="w-full sm:w-1/4 md:w-56 relative bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0" style="min-height: 280px;">
                                 <?php if ($is_approved): ?>
-                                    <img src="<?= htmlspecialchars($img) ?>" alt="Profile" class="w-full h-full object-cover">
+                                    <img src="<?= htmlspecialchars($img) ?>" alt="Profile" class="w-full h-full object-cover object-top absolute inset-0">
                                 <?php else: ?>
                                     <!-- Blurred photo with lock overlay for guests / pending users -->
-                                    <img src="<?= htmlspecialchars($img) ?>" alt="Profile" class="w-full h-full object-cover blur-lg opacity-30 select-none pointer-events-none">
-                                    <div class="absolute inset-0 flex flex-col items-center justify-center text-gray-500 p-4 text-center">
+                                    <img src="<?= htmlspecialchars($img) ?>" alt="Profile" class="w-full h-full object-cover object-top absolute inset-0 blur-lg opacity-30 select-none pointer-events-none">
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center text-gray-500 p-4 text-center z-10">
                                         <div class="w-14 h-14 bg-white/80 rounded-full flex items-center justify-center mb-2 shadow">
                                             <i class="fas fa-lock text-xl text-gray-400"></i>
                                         </div>
@@ -230,15 +312,15 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="mt-10 flex justify-center">
                     <nav class="flex items-center gap-1">
                         <?php if ($page > 1): ?>
-                            <a href="?page=<?= $page - 1 ?>&gender=<?= urlencode($genderFilter) ?>&city=<?= urlencode($_GET['city'] ?? '') ?>&education=<?= urlencode($_GET['education'] ?? '') ?>" class="px-4 py-2 bg-white border border-gray-200 text-gray-500 rounded hover:bg-gray-50 transition"><i class="fas fa-chevron-left text-xs"></i></a>
+                            <a href="?page=<?= $page - 1 ?>&<?= $filterQueryString ?>" class="px-4 py-2 bg-white border border-gray-200 text-gray-500 rounded hover:bg-gray-50 transition"><i class="fas fa-chevron-left text-xs"></i></a>
                         <?php endif; ?>
 
                         <?php for ($i = 1; $i <= $total_pages; $i++): ?>
-                            <a href="?page=<?= $i ?>&gender=<?= urlencode($genderFilter) ?>&city=<?= urlencode($_GET['city'] ?? '') ?>&education=<?= urlencode($_GET['education'] ?? '') ?>" class="px-4 py-2 <?= $i === $page ? 'bg-primary text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50' ?> rounded font-medium transition"><?= $i ?></a>
+                            <a href="?page=<?= $i ?>&<?= $filterQueryString ?>" class="px-4 py-2 <?= $i === $page ? 'bg-primary text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50' ?> rounded font-medium transition"><?= $i ?></a>
                         <?php endfor; ?>
 
                         <?php if ($page < $total_pages): ?>
-                            <a href="?page=<?= $page + 1 ?>&gender=<?= urlencode($genderFilter) ?>&city=<?= urlencode($_GET['city'] ?? '') ?>&education=<?= urlencode($_GET['education'] ?? '') ?>" class="px-4 py-2 bg-white border border-gray-200 text-gray-500 rounded hover:bg-gray-50 transition"><i class="fas fa-chevron-right text-xs"></i></a>
+                            <a href="?page=<?= $page + 1 ?>&<?= $filterQueryString ?>" class="px-4 py-2 bg-white border border-gray-200 text-gray-500 rounded hover:bg-gray-50 transition"><i class="fas fa-chevron-right text-xs"></i></a>
                         <?php endif; ?>
                     </nav>
                 </div>

@@ -1,8 +1,8 @@
 <?php
 require_once '../includes/db.php';
-$current_page = 'members-approved.php';
+$current_page = 'members-blocked.php';
 
-// Handle status updates (Revoke approval -> pending)
+// Handle status updates (Hold or Delete)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['user_id'])) {
     $action = $_POST['action'];
     $userId = (int)$_POST['user_id'];
@@ -10,12 +10,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['use
     if ($action === 'hold') {
         $stmt = $pdo->prepare("UPDATE users SET status = 'pending' WHERE id = ?");
         $stmt->execute([$userId]);
-    } elseif ($action === 'block') {
-        $stmt = $pdo->prepare("UPDATE users SET status = 'blocked' WHERE id = ?");
+    } elseif ($action === 'delete') {
+        $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
         $stmt->execute([$userId]);
     }
     
-    header("Location: members-approved.php");
+    header("Location: members-blocked.php");
     exit;
 }
 
@@ -29,14 +29,14 @@ if ($page < 1) $page = 1;
 
 $offset = ($page - 1) * $limit;
 
-// Get total approved records
-$countStmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE status = 'approved'");
+// Get total blocked records
+$countStmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE status = 'blocked'");
 $countStmt->execute();
 $total_records = $countStmt->fetchColumn();
 $total_pages = max(1, ceil($total_records / $limit));
 
-// Fetch approved members from database
-$stmt = $pdo->prepare("SELECT * FROM users WHERE status = 'approved' ORDER BY created_at DESC LIMIT :limit OFFSET :offset");
+// Fetch blocked members from database
+$stmt = $pdo->prepare("SELECT * FROM users WHERE status = 'blocked' ORDER BY created_at DESC LIMIT :limit OFFSET :offset");
 $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
@@ -53,8 +53,8 @@ if ($total_records == 0) {
 <!-- Page Header -->
 <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
-        <h3 class="text-2xl font-bold text-gray-800">Approved Members</h3>
-        <p class="text-gray-500 text-sm">Members whose profiles have been verified and approved.</p>
+        <h3 class="text-2xl font-bold text-gray-800">Blocked Members</h3>
+        <p class="text-gray-500 text-sm">Members who have been blocked and are unable to access the platform.</p>
     </div>
     <div class="flex gap-2">
         <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition shadow-sm flex items-center">
@@ -107,8 +107,8 @@ if ($total_records == 0) {
                         <span class="text-xs text-gray-400"><?= date('h:i A', strtotime($member['created_at'])) ?></span>
                     </td>
                     <td class="py-4 px-6">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            Approved
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                            Blocked
                         </span>
                     </td>
                     <td class="py-4 px-6 text-right">
@@ -117,14 +117,14 @@ if ($total_records == 0) {
                         <form method="POST" class="inline-block m-0 p-0">
                             <input type="hidden" name="user_id" value="<?= $member['id'] ?>">
                             <button type="submit" name="action" value="hold" class="text-yellow-600 hover:text-yellow-900 mx-1 p-1 tooltip" title="Hold Profile"><i class="fas fa-pause-circle"></i></button>
-                            <button type="submit" name="action" value="block" class="text-gray-600 hover:text-gray-900 mx-1 p-1 tooltip" title="Block User"><i class="fas fa-ban"></i></button>
+                            <button type="submit" name="action" value="delete" class="text-red-600 hover:text-red-900 mx-1 p-1 tooltip" title="Delete Profile" onclick="return confirm('Are you sure you want to completely delete this profile?');"><i class="fas fa-trash"></i></button>
                         </form>
                     </td>
                 </tr>
                 <?php endforeach; ?>
                 <?php if (empty($members)): ?>
                 <tr>
-                    <td colspan="6" class="py-4 px-6 text-center text-gray-500">No approved members found.</td>
+                    <td colspan="6" class="py-4 px-6 text-center text-gray-500">No blocked members found.</td>
                 </tr>
                 <?php endif; ?>
             </tbody>

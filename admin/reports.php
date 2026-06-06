@@ -1,9 +1,72 @@
 <?php
+require_once '../includes/db.php';
 $current_page = 'reports.php';
+
+// 1. Signups (Last 30 Days)
+$stmt = $pdo->query("
+    SELECT DATE(created_at) as date, COUNT(*) as count 
+    FROM users 
+    WHERE status != 'blocked' 
+      AND created_at >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY) 
+    GROUP BY DATE(created_at) 
+    ORDER BY date ASC
+");
+$signups = $stmt->fetchAll();
+
+$signupDates = [];
+$signupCounts = [];
+$signupMap = [];
+foreach($signups as $row) {
+    $signupMap[$row['date']] = $row['count'];
+}
+for ($i = 29; $i >= 0; $i--) {
+    $date = date('Y-m-d', strtotime("-$i days"));
+    $signupDates[] = date('M d', strtotime($date));
+    $signupCounts[] = $signupMap[$date] ?? 0;
+}
+
+// 2. Professions
+$stmt = $pdo->query("
+    SELECT occupation, COUNT(*) as count 
+    FROM users 
+    WHERE status != 'blocked' AND occupation IS NOT NULL AND occupation != ''
+    GROUP BY occupation 
+    ORDER BY count DESC 
+    LIMIT 5
+");
+$professions = $stmt->fetchAll();
+$profLabels = [];
+$profCounts = [];
+foreach($professions as $row) {
+    $profLabels[] = $row['occupation'];
+    $profCounts[] = $row['count'];
+}
+
+// 3. Revenue Trends (This Year)
+$stmt = $pdo->query("
+    SELECT MONTH(created_at) as month, SUM(amount) as total 
+    FROM payments 
+    WHERE status = 'verified' AND YEAR(created_at) = YEAR(CURRENT_DATE()) 
+    GROUP BY MONTH(created_at)
+    ORDER BY month ASC
+");
+$revenues = $stmt->fetchAll();
+$revMap = [];
+foreach($revenues as $row) {
+    $revMap[$row['month']] = $row['total'];
+}
+
+$revLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+$revCounts = [];
+for ($i = 1; $i <= 12; $i++) {
+    $revCounts[] = $revMap[$i] ?? 0;
+}
+
+$totalRevenue = array_sum($revCounts);
+
 include 'includes/header.php'; 
 include 'includes/sidebar.php'; 
 ?>
-
 <!-- Page Header -->
 <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
@@ -53,7 +116,7 @@ include 'includes/sidebar.php';
     <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <div class="flex justify-between items-center mb-6">
             <h4 class="font-bold text-gray-800 text-lg">Revenue Trends</h4>
-            <div class="text-2xl font-bold text-gray-800">₹5,000 <span class="text-sm font-normal text-green-500 ml-2">+100%</span></div>
+            <div class="text-2xl font-bold text-gray-800">₹<?= number_format($totalRevenue) ?></div>
         </div>
         <div class="h-80 w-full">
             <canvas id="revenueChart"></canvas>
@@ -80,10 +143,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(ctxSignups, {
         type: 'line',
         data: {
-            labels: ['1', '5', '10', '15', '20', '25', '30'],
+            labels: <?= json_encode($signupDates) ?>,
             datasets: [{
                 label: 'New Registrations',
-                data: [0, 0, 0, 1, 0, 2, 1],
+                data: <?= json_encode($signupCounts) ?>,
                 borderColor: '#4338CA', // Indigo 700
                 backgroundColor: gradient,
                 borderWidth: 3,
@@ -135,9 +198,9 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(ctxProf, {
         type: 'doughnut',
         data: {
-            labels: ['Software Engineer', 'Business/Entrepreneur', 'Doctor/Medical', 'Finance/CA', 'Other'],
+            labels: <?= json_encode($profLabels) ?>,
             datasets: [{
-                data: [50, 25, 25, 0, 0],
+                data: <?= json_encode($profCounts) ?>,
                 backgroundColor: [
                     '#4338CA', // Indigo 700
                     '#DB2777', // Pink 600
@@ -180,10 +243,10 @@ document.addEventListener('DOMContentLoaded', function() {
     new Chart(ctxRev, {
         type: 'bar',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            labels: <?= json_encode($revLabels) ?>,
             datasets: [{
                 label: 'Revenue (₹)',
-                data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5000],
+                data: <?= json_encode($revCounts) ?>,
                 backgroundColor: '#DB2777', // Pink 600
                 borderRadius: 4,
                 barPercentage: 0.6

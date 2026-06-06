@@ -59,7 +59,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ref2_mobile = htmlspecialchars($_POST['ref2_mobile'] ?? '');
     $ref2_relation = htmlspecialchars($_POST['ref2_relation'] ?? '');
 
-    // Handle File Uploads
+    $ref2_relation = htmlspecialchars($_POST['ref2_relation'] ?? '');
+
+    // PHP Validations
+    if (!preg_match('/^[0-9]{7,15}$/', $_POST['mobile'])) {
+        $error = "Candidate mobile number must be 7 to 15 digits.";
+    } elseif (!preg_match('/^[0-9]{4,6}$/', $pin_code)) {
+        $error = "Pin code must be 4 to 6 digits.";
+    } elseif ($ref1_mobile && !preg_match('/^[0-9]{7,15}$/', $ref1_mobile)) {
+        $error = "Reference 1 mobile number must be 7 to 15 digits.";
+    } elseif ($ref2_mobile && !preg_match('/^[0-9]{7,15}$/', $ref2_mobile)) {
+        $error = "Reference 2 mobile number must be 7 to 15 digits.";
+    } elseif ($ref1_mobile && $ref1_mobile === $ref2_mobile) {
+        $error = "Reference 1 and 2 mobile numbers must be different.";
+    }
+
+    if (!$error) {
+        // Handle File Uploads
     $upload_dir = 'uploads/';
     if (!is_dir($upload_dir)) {
         mkdir($upload_dir, 0777, true);
@@ -84,16 +100,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         $stmt = $pdo->prepare("INSERT INTO users (
-            full_name, mobile, email, password, birth_date, birth_time, birth_place, native, gotra, mama_gotra, manglik,
-            height, weight, gender, permanent_address, pin_code, current_address, education, hobbies, partner_preference,
+            full_name, mobile, email, password, birth_date, birth_time, birth_place, native_place, gotra, mama_gotra, manglik,
+            height, weight, gender, permanent_address, pin_code, current_address, higher_education, hobbies, partner_preference,
             monthly_income, marital_status, handicapped, languages, occupation, company_name, designation, father_name,
             father_mobile, father_income, father_occupation, mother_name, mother_mobile, mother_occupation,
             mother_occupation_details, brothers, brothers_married, brothers_unmarried, sisters, sisters_married,
             sisters_unmarried, subcast, custom_subcast, mandir, custom_mandir, ref1_name, ref1_mobile, ref1_relation,
-            ref2_name, ref2_mobile, ref2_relation, photo, family_photo, payment_screenshot
+            ref2_name, ref2_mobile, ref2_relation, profile_photo, family_photo, payment_screenshot, status
         ) VALUES (
             ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,
-            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+            ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending'
         )");
 
         $stmt->execute([
@@ -114,6 +130,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $error = "Registration failed: " . $e->getMessage();
         }
     }
+    }
 }
 ?>
 <?php include 'includes/header.php'; ?>
@@ -125,10 +142,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <p class="text-center text-gray-600 mb-8" data-aos="fade-up" data-aos-delay="100">Join the most trusted Digambar Jain Matrimony platform</p>
             
             <?php if ($success): ?>
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <strong class="font-bold">Success!</strong>
-                    <span class="block sm:inline"><?php echo $success; ?></span>
-                </div>
+                <script>
+                    sessionStorage.removeItem("registrationFormData");
+                    window.location.href = "pending.php";
+                </script>
             <?php endif; ?>
             
             <?php if ($error): ?>
@@ -694,7 +711,101 @@ document.getElementById('registrationForm')?.addEventListener('submit', function
         return;
     }
 
-    e.target.submit();
+    this.submit();
+});
+
+// --- Auto-Save Form Data to Prevent Loss on Refresh ---
+document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById("registrationForm");
+    if (!form) return;
+
+    // Load saved data
+    const savedData = sessionStorage.getItem("registrationFormData");
+    if (savedData) {
+        try {
+            const data = JSON.parse(savedData);
+            Object.keys(data).forEach(key => {
+                const input = form.elements[key];
+                if (input) {
+                    // Handle RadioNodeList and single inputs
+                    if (input instanceof RadioNodeList || (input.length && input[0].type === 'radio')) {
+                        Array.from(input).forEach(radio => {
+                            if (Array.isArray(data[key])) {
+                                if (data[key].includes(radio.value)) radio.checked = true;
+                            } else {
+                                if (radio.value === data[key]) radio.checked = true;
+                            }
+                        });
+                    } else if (input.type === 'checkbox') {
+                        if (Array.isArray(data[key])) {
+                            input.checked = data[key].includes(input.value);
+                        } else {
+                            input.checked = (data[key] === input.value || data[key] === true);
+                        }
+                    } else if (input.type !== 'file' && input.type !== 'password') {
+                        input.value = data[key];
+                    }
+                }
+            });
+            // Trigger change events to update dependent UI
+            document.querySelectorAll('select').forEach(el => el.dispatchEvent(new Event('change')));
+            document.querySelectorAll('input[type="radio"]:checked').forEach(el => el.dispatchEvent(new Event('change')));
+        } catch (e) {
+            console.error("Error restoring form data", e);
+        }
+    }
+
+    // Save data on input change
+    form.addEventListener("input", function(e) {
+        if (e.target.type === 'password' || e.target.type === 'file') return;
+        
+        const formData = new FormData(form);
+        const data = {};
+        for (let [key, value] of formData.entries()) {
+            if (e.target.type === 'password' && e.target.name === key) continue;
+            if (data[key]) {
+                if (!Array.isArray(data[key])) {
+                    data[key] = [data[key]];
+                }
+                data[key].push(value);
+            } else {
+                data[key] = value;
+            }
+        }
+        sessionStorage.setItem("registrationFormData", JSON.stringify(data));
+    });
+
+    // --- Real-Time Field Validations ---
+    const nameFields = ['full_name', 'father_name', 'mother_name', 'ref1_name', 'ref2_name'];
+    const phoneFields = ['mobile', 'father_mobile', 'mother_mobile', 'ref1_mobile', 'ref2_mobile'];
+    
+    // Restrict name fields to letters and spaces
+    nameFields.forEach(name => {
+        const field = document.querySelector(`input[name="${name}"]`);
+        if (field) {
+            field.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^a-zA-Z\s\.]/g, '');
+            });
+        }
+    });
+
+    // Restrict phone fields to numbers only
+    phoneFields.forEach(name => {
+        const field = document.querySelector(`input[name="${name}"]`);
+        if (field) {
+            field.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        }
+    });
+
+    // Restrict pin code to exactly numbers, max 6 digits
+    const pinCodeField = document.querySelector('input[name="pin_code"]');
+    if (pinCodeField) {
+        pinCodeField.addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
+        });
+    }
 });
 </script>
 

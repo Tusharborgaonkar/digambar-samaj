@@ -1,16 +1,20 @@
 <?php
 require_once '../includes/db.php';
 $current_page = 'members-rejected.php';
-include 'includes/header.php'; 
-include 'includes/sidebar.php'; 
 
-// Handle status updates (Approve or Delete)
+// Handle status updates (Approve, Hold, Block or Delete)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['user_id'])) {
     $action = $_POST['action'];
     $userId = (int)$_POST['user_id'];
     
     if ($action === 'approve') {
         $stmt = $pdo->prepare("UPDATE users SET status = 'approved' WHERE id = ?");
+        $stmt->execute([$userId]);
+    } elseif ($action === 'hold') {
+        $stmt = $pdo->prepare("UPDATE users SET status = 'pending' WHERE id = ?");
+        $stmt->execute([$userId]);
+    } elseif ($action === 'block') {
+        $stmt = $pdo->prepare("UPDATE users SET status = 'blocked' WHERE id = ?");
         $stmt->execute([$userId]);
     } elseif ($action === 'delete') {
         $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
@@ -20,6 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['use
     header("Location: members-rejected.php");
     exit;
 }
+
+include 'includes/header.php'; 
+include 'includes/sidebar.php'; 
 
 // Pagination settings
 $limit = 10;
@@ -52,8 +59,8 @@ if ($total_records == 0) {
 <!-- Page Header -->
 <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
-        <h3 class="text-2xl font-bold text-gray-800">Rejected Members</h3>
-        <p class="text-gray-500 text-sm">Members whose profiles were rejected during the verification process.</p>
+        <h3 class="text-2xl font-bold text-gray-800">Denied Members</h3>
+        <p class="text-gray-500 text-sm">Members whose profiles were denied during the verification process.</p>
     </div>
     <div class="flex gap-2">
         <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition shadow-sm flex items-center">
@@ -87,7 +94,8 @@ if ($total_records == 0) {
                     <td class="py-4 px-6">
                         <div class="flex items-center">
                             <?php
-                            $photo = !empty($member['profile_photo']) ? '../' . htmlspecialchars($member['profile_photo']) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name']);
+                            $photo_path = !empty($member['profile_photo']) ? '../' . $member['profile_photo'] : '';
+                            $photo = ($photo_path && file_exists($photo_path)) ? htmlspecialchars($photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name']);
                             ?>
                             <img src="<?= $photo ?>" class="w-10 h-10 rounded-full object-cover mr-3 border border-gray-200" alt="Profile Photo">
                             <div>
@@ -106,7 +114,7 @@ if ($total_records == 0) {
                     </td>
                     <td class="py-4 px-6">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                            Rejected
+                            Denied
                         </span>
                     </td>
                     <td class="py-4 px-6 text-right">
@@ -115,6 +123,8 @@ if ($total_records == 0) {
                         <form method="POST" class="inline-block m-0 p-0">
                             <input type="hidden" name="user_id" value="<?= $member['id'] ?>">
                             <button type="submit" name="action" value="approve" class="text-green-600 hover:text-green-900 mx-1 p-1 tooltip" title="Approve"><i class="fas fa-check-circle"></i></button>
+                            <button type="submit" name="action" value="hold" class="text-yellow-600 hover:text-yellow-900 mx-1 p-1 tooltip" title="Hold Profile"><i class="fas fa-pause-circle"></i></button>
+                            <button type="submit" name="action" value="block" class="text-gray-600 hover:text-gray-900 mx-1 p-1 tooltip" title="Block User"><i class="fas fa-ban"></i></button>
                             <button type="submit" name="action" value="delete" class="text-red-600 hover:text-red-900 mx-1 p-1 tooltip" title="Delete Profile" onclick="return confirm('Are you sure you want to completely delete this profile?');"><i class="fas fa-trash"></i></button>
                         </form>
                     </td>
@@ -122,7 +132,7 @@ if ($total_records == 0) {
                 <?php endforeach; ?>
                 <?php if (empty($members)): ?>
                 <tr>
-                    <td colspan="6" class="py-4 px-6 text-center text-gray-500">No rejected members found.</td>
+                    <td colspan="6" class="py-4 px-6 text-center text-gray-500">No denied members found.</td>
                 </tr>
                 <?php endif; ?>
             </tbody>

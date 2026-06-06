@@ -57,7 +57,7 @@ if (!$member) {
 
 $fullName = htmlspecialchars($member['full_name'] ?? '');
 $memberId = htmlspecialchars($member['profile_id'] ?? '');
-$photo = !empty($member['profile_photo']) ? htmlspecialchars($member['profile_photo']) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name'] ?? 'User');
+$photo = (!empty($member['profile_photo']) && file_exists($member['profile_photo'])) ? htmlspecialchars($member['profile_photo']) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name'] ?? 'User');
 
 $age = 'N/A';
 if (!empty($member['birth_date'])) {
@@ -112,9 +112,6 @@ include 'includes/header.php';
                         <div class="flex items-center gap-3"><i class="fas fa-ring text-primary w-5 text-center"></i> <?= $maritalStatus ?></div>
                     </div>
 
-                    <div class="flex flex-wrap gap-4 mt-auto">
-                        <button class="bg-primary text-white px-8 py-3 rounded-md font-bold hover:bg-opacity-90 transition shadow-lg flex items-center"><i class="fas fa-phone-alt mr-2"></i> View Contact</button>
-                        <button class="bg-white border-2 border-primary text-primary px-8 py-3 rounded-md font-bold hover:bg-primary hover:text-white transition shadow-sm flex items-center"><i class="far fa-envelope mr-2"></i> Send Interest</button>
                     </div>
                 </div>
             </div>
@@ -224,6 +221,102 @@ include 'includes/header.php';
                         <div>
                             <span class="block text-sm text-gray-500 mb-1">Monthly Income</span>
                             <span class="text-dark font-semibold">₹ <?= number_format((float)($member['monthly_income'] ?? 0)) ?></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Family Details -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
+                    <h3 class="text-xl font-bold text-dark border-b-2 border-gray-100 pb-3 mb-5 flex items-center"><i class="fas fa-users text-primary mr-3 text-2xl"></i> Family Details</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8">
+                        <div>
+                            <span class="block text-sm text-gray-500 mb-1">Father's Name</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['father_name'] ?? 'N/A') ?></span>
+                        </div>
+                        <div>
+                            <span class="block text-sm text-gray-500 mb-1">Father's Occupation</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['father_occupation'] ?? 'N/A') ?></span>
+                        </div>
+                        <div>
+                            <span class="block text-sm text-gray-500 mb-1">Mother's Name</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['mother_name'] ?? 'N/A') ?></span>
+                        </div>
+                        <div>
+                            <span class="block text-sm text-gray-500 mb-1">Mother's Occupation</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['mother_occupation'] ?? 'N/A') ?></span>
+                        </div>
+                        <div>
+                            <span class="block text-sm text-gray-500 mb-1">Brothers</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['brothers'] ?? '0') ?> (Married: <?= htmlspecialchars($member['brothers_married'] ?? '0') ?>, Unmarried: <?= htmlspecialchars($member['brothers_unmarried'] ?? '0') ?>)</span>
+                        </div>
+                        <div>
+                            <span class="block text-sm text-gray-500 mb-1">Sisters</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['sisters'] ?? '0') ?> (Married: <?= htmlspecialchars($member['sisters_married'] ?? '0') ?>, Unmarried: <?= htmlspecialchars($member['sisters_unmarried'] ?? '0') ?>)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reference Details -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
+                    <h3 class="text-xl font-bold text-dark border-b-2 border-gray-100 pb-3 mb-5 flex items-center"><i class="fas fa-address-book text-primary mr-3 text-2xl"></i> References & Community</h3>
+                    
+                    <div class="mb-6">
+                        <span class="block text-sm text-gray-500 mb-1">Mandir / Community</span>
+                        <span class="text-dark font-semibold"><?= htmlspecialchars($member['mandir'] ?? 'N/A') ?> <?= !empty($member['custom_mandir']) ? ' - ' . htmlspecialchars($member['custom_mandir']) : '' ?></span>
+                    </div>
+
+                    <h4 class="font-bold text-gray-700 mb-3 border-b border-gray-100 pb-2">Reference 1</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-8 mb-6">
+                        <div>
+                            <span class="block text-sm text-gray-500 mb-1">Name</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['ref1_name'] ?? 'N/A') ?></span>
+                        </div>
+                        <div>
+                            <span class="block text-sm text-gray-500 mb-1">Mobile</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['ref1_mobile'] ?? 'N/A') ?></span>
+                        </div>
+                        <div>
+                            <span class="block text-sm text-gray-500 mb-1">Relation</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['ref1_relation'] ?? 'N/A') ?></span>
+                        </div>
+                    </div>
+
+                    <h4 class="font-bold text-gray-700 mb-3 border-b border-gray-100 pb-2">Reference 2</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-y-4 gap-x-8">
+                        <div>
+                            <span class="block text-sm text-gray-500 mb-1">Name</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['ref2_name'] ?? 'N/A') ?></span>
+                        </div>
+                        <div>
+                            <span class="block text-sm text-gray-500 mb-1">Mobile</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['ref2_mobile'] ?? 'N/A') ?></span>
+                        </div>
+                        <div>
+                            <span class="block text-sm text-gray-500 mb-1">Relation</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['ref2_relation'] ?? 'N/A') ?></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
+                    <h3 class="text-xl font-bold text-dark border-b-2 border-gray-100 pb-3 mb-5 flex items-center"><i class="fas fa-address-card text-primary mr-3 text-2xl"></i> Contact Information</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8">
+                        <div>
+                            <span class="block text-sm text-gray-500 mb-1">Mobile Number</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['mobile'] ?? 'N/A') ?></span>
+                        </div>
+                        <div>
+                            <span class="block text-sm text-gray-500 mb-1">Email Address</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['email'] ?? 'N/A') ?></span>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <span class="block text-sm text-gray-500 mb-1">Permanent Address</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['permanent_address'] ?? 'N/A') ?> <?= htmlspecialchars($member['pin_code'] ?? '') ?></span>
+                        </div>
+                        <div class="sm:col-span-2">
+                            <span class="block text-sm text-gray-500 mb-1">Current Address</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['current_address'] ?? 'N/A') ?></span>
                         </div>
                     </div>
                 </div>

@@ -1,8 +1,7 @@
 <?php include 'includes/header.php'; ?>
 
 <!-- Page Banner -->
-<section class="relative h-64 md:h-80 bg-cover bg-center"
-    style="background-image: url('assets/images/about-us_hero_banner.png');">
+<section class="relative h-72 md:h-[500px] bg-cover bg-[center_20%]" style="background-image: url('assets/images/herobanner.png');">
     <div class="absolute inset-0 bg-black bg-opacity-40"></div>
     <div class="relative h-full flex items-center justify-center text-center px-4">
         <!-- <div>
@@ -18,7 +17,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <div data-aos="fade-right">
                 <div class="relative">
-                    <img src="assets/images/about-us 1stimg.png" alt="Indian Wedding Tradition"
+                    <img src="assets/images/abtus-hero.png" alt="Indian Wedding Tradition"
                         class="rounded-xl shadow-xl w-full border-4 border-white">
                     <div
                         class="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-lg border border-gray-100 hidden md:block">
@@ -123,7 +122,7 @@
                         Free Now</a>
                 </div>
                 <div>
-                    <img src="assets/images/about-us 2nd img.png" alt="Why Choose Us"
+                    <img src="assets/images/couple1.png" alt="Why Choose Us"
                         class="rounded-xl shadow-2xl border-4 border-white/20 transform rotate-3">
                 </div>
             </div>

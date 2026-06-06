@@ -1,21 +1,27 @@
 <?php
 require_once '../includes/db.php';
-$current_page = 'members-approved.php';
+$current_page = 'members-approval.php';
 
-// Handle status updates (Revoke approval -> pending)
+// Handle status updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['user_id'])) {
     $action = $_POST['action'];
     $userId = (int)$_POST['user_id'];
     
-    if ($action === 'hold') {
-        $stmt = $pdo->prepare("UPDATE users SET status = 'pending' WHERE id = ?");
+    if ($action === 'approve') {
+        $stmt = $pdo->prepare("UPDATE users SET status = 'approved' WHERE id = ?");
+        $stmt->execute([$userId]);
+    } elseif ($action === 'reject') {
+        $stmt = $pdo->prepare("UPDATE users SET status = 'rejected' WHERE id = ?");
         $stmt->execute([$userId]);
     } elseif ($action === 'block') {
         $stmt = $pdo->prepare("UPDATE users SET status = 'blocked' WHERE id = ?");
         $stmt->execute([$userId]);
+    } elseif ($action === 'delete') {
+        $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
+        $stmt->execute([$userId]);
     }
     
-    header("Location: members-approved.php");
+    header("Location: members-approval.php?page=" . (isset($_GET['page']) ? $_GET['page'] : 1));
     exit;
 }
 
@@ -23,44 +29,92 @@ include 'includes/header.php';
 include 'includes/sidebar.php'; 
 
 // Pagination settings
-$limit = 10;
+$limit = 10; // Number of records per page
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($page < 1) $page = 1;
 
-$offset = ($page - 1) * $limit;
+// Filtering
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$gender = isset($_GET['gender']) ? trim($_GET['gender']) : '';
+$status = 'pending'; // Force pending status for this page
 
-// Get total approved records
-$countStmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE status = 'approved'");
-$countStmt->execute();
+$whereConditions = ["status = 'pending'"];
+$params = [];
+
+if (!empty($search)) {
+    $whereConditions[] = "(full_name LIKE ? OR email LIKE ? OR profile_id LIKE ?)";
+    $params[] = "%$search%";
+    $params[] = "%$search%";
+    $params[] = "%$search%";
+}
+
+if (!empty($gender)) {
+    $whereConditions[] = "gender = ?";
+    $params[] = $gender;
+}
+
+$whereClause = count($whereConditions) > 0 ? "WHERE " . implode(" AND ", $whereConditions) : "";
+
+// Get total records
+$countSql = "SELECT COUNT(*) FROM users $whereClause";
+$countStmt = $pdo->prepare($countSql);
+$countStmt->execute($params);
 $total_records = $countStmt->fetchColumn();
 $total_pages = max(1, ceil($total_records / $limit));
 
-// Fetch approved members from database
-$stmt = $pdo->prepare("SELECT * FROM users WHERE status = 'approved' ORDER BY created_at DESC LIMIT :limit OFFSET :offset");
-$stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-$stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-$stmt->execute();
+$offset = ($page - 1) * $limit;
+
+// Fetch members from database
+$sql = "SELECT * FROM users $whereClause ORDER BY created_at DESC LIMIT $limit OFFSET $offset";
+$stmt = $pdo->prepare($sql);
+$stmt->execute($params);
 $members = $stmt->fetchAll();
 
+// Calculate range for "Showing X to Y of Z results"
 $start_result = $offset + 1;
 $end_result = min($offset + $limit, $total_records);
 if ($total_records == 0) {
     $start_result = 0;
     $end_result = 0;
 }
+
+// Helper to retain query string
+if (!function_exists('buildQueryString')) {
+    function buildQueryString($page_num) {
+        $query = $_GET;
+        $query['page'] = $page_num;
+        return '?' . http_build_query($query);
+    }
+}
 ?>
 
 <!-- Page Header -->
 <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
-        <h3 class="text-2xl font-bold text-gray-800">Approved Members</h3>
-        <p class="text-gray-500 text-sm">Members whose profiles have been verified and approved.</p>
+        <h3 class="text-2xl font-bold text-gray-800">Members Approval</h3>
+        <p class="text-gray-500 text-sm">Review and approve new member registrations.</p>
     </div>
-    <div class="flex gap-2">
-        <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition shadow-sm flex items-center">
-            <i class="fas fa-download mr-2"></i> Export
-        </button>
-    </div>
+</div>
+
+<!-- Filters Bar -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+    <form method="GET" action="members-approval.php" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+            <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Search by ID, Name or Email" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+        </div>
+        <div>
+            <select name="gender" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none bg-white">
+                <option value="">All Genders</option>
+                <option value="Male" <?= $gender === 'Male' ? 'selected' : '' ?>>Groom (Male)</option>
+                <option value="Female" <?= $gender === 'Female' ? 'selected' : '' ?>>Bride (Female)</option>
+            </select>
+        </div>
+        <div>
+            <button type="submit" class="w-full bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-gray-200 transition">
+                Search
+            </button>
+        </div>
+    </form>
 </div>
 
 <!-- Data Table -->
@@ -107,24 +161,24 @@ if ($total_records == 0) {
                         <span class="text-xs text-gray-400"><?= date('h:i A', strtotime($member['created_at'])) ?></span>
                     </td>
                     <td class="py-4 px-6">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            Approved
-                        </span>
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Pending</span>
                     </td>
                     <td class="py-4 px-6 text-right">
                         <a href="../profile-details.php?id=<?= $member['id'] ?>" class="inline-block text-blue-600 hover:text-blue-900 mx-1 p-1 tooltip" title="View Profile"><i class="fas fa-eye"></i></a>
                         
                         <form method="POST" class="inline-block m-0 p-0">
                             <input type="hidden" name="user_id" value="<?= $member['id'] ?>">
-                            <button type="submit" name="action" value="hold" class="text-yellow-600 hover:text-yellow-900 mx-1 p-1 tooltip" title="Hold Profile"><i class="fas fa-pause-circle"></i></button>
+                            <button type="submit" name="action" value="approve" class="text-green-600 hover:text-green-900 mx-1 p-1 tooltip" title="Approve"><i class="fas fa-check-circle"></i></button>
+                            <button type="submit" name="action" value="reject" class="text-orange-500 hover:text-orange-700 mx-1 p-1 tooltip" title="Deny"><i class="fas fa-times-circle"></i></button>
                             <button type="submit" name="action" value="block" class="text-gray-600 hover:text-gray-900 mx-1 p-1 tooltip" title="Block User"><i class="fas fa-ban"></i></button>
+                            <button type="submit" name="action" value="delete" class="text-red-600 hover:text-red-900 mx-1 p-1 tooltip" title="Delete" onclick="return confirm('Are you sure you want to delete this profile?');"><i class="fas fa-trash"></i></button>
                         </form>
                     </td>
                 </tr>
                 <?php endforeach; ?>
                 <?php if (empty($members)): ?>
                 <tr>
-                    <td colspan="6" class="py-4 px-6 text-center text-gray-500">No approved members found.</td>
+                    <td colspan="6" class="py-4 px-6 text-center text-gray-500">No pending requests found.</td>
                 </tr>
                 <?php endif; ?>
             </tbody>
@@ -138,7 +192,7 @@ if ($total_records == 0) {
         </div>
         <div class="flex space-x-1">
             <?php if ($page > 1): ?>
-                <a href="?page=<?= $page - 1 ?>" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50">Previous</a>
+                <a href="<?= buildQueryString($page - 1) ?>" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50">Previous</a>
             <?php else: ?>
                 <button class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>Previous</button>
             <?php endif; ?>
@@ -148,7 +202,7 @@ if ($total_records == 0) {
             $end_page = min($total_pages, max(1, $page + 2));
             
             if ($start_page > 1) {
-                echo '<a href="?page=1" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50">1</a>';
+                echo '<a href="' . buildQueryString(1) . '" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50">1</a>';
                 if ($start_page > 2) {
                     echo '<span class="px-3 py-1 text-gray-500 flex items-center justify-center">...</span>';
                 }
@@ -158,7 +212,7 @@ if ($total_records == 0) {
                 if ($i == $page): ?>
                     <button class="px-3 py-1 border border-primary bg-primary text-white rounded text-sm font-medium"><?= $i ?></button>
                 <?php else: ?>
-                    <a href="?page=<?= $i ?>" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50"><?= $i ?></a>
+                    <a href="<?= buildQueryString($i) ?>" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50"><?= $i ?></a>
                 <?php endif; 
             endfor; 
             
@@ -166,12 +220,12 @@ if ($total_records == 0) {
                 if ($end_page < $total_pages - 1) {
                     echo '<span class="px-3 py-1 text-gray-500 flex items-center justify-center">...</span>';
                 }
-                echo '<a href="?page=' . $total_pages . '" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50">' . $total_pages . '</a>';
+                echo '<a href="' . buildQueryString($total_pages) . '" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50">' . $total_pages . '</a>';
             }
             ?>
 
             <?php if ($page < $total_pages): ?>
-                <a href="?page=<?= $page + 1 ?>" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50">Next</a>
+                <a href="<?= buildQueryString($page + 1) ?>" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50">Next</a>
             <?php else: ?>
                 <button class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>Next</button>
             <?php endif; ?>
