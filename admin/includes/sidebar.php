@@ -68,6 +68,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="advertisement.php" class="flex items-center px-3 py-2.5 rounded-md transition-colors <?= $current_page == 'advertisement.php' ? 'bg-primary text-white font-semibold' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
                 <span>Hero Advertisements</span>
             </a>
+            
+            <a href="success-stories.php" class="flex items-center px-3 py-2.5 rounded-md transition-colors <?= $current_page == 'success-stories.php' ? 'bg-primary text-white font-semibold' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
+                <span>Success Stories</span>
+            </a>
 
             <!-- Analytics -->
             <div class="pt-4 pb-1">

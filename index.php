@@ -50,7 +50,7 @@ include 'includes/header.php';
     <div class="absolute inset-0 w-full h-full bg-cover bg-center" style="background-image: url('assets/images/abtus-hero.png'); z-index: 0;"></div>
     
     <!-- Overlay -->
-    <div class="absolute inset-0 bg-black bg-opacity-60 z-10"></div>
+    <div class="absolute inset-0 bg-black bg-opacity-40 z-10"></div>
     
     <div class="container mx-auto px-4 relative z-20 w-full pt-24 pb-12">
         
@@ -227,7 +227,7 @@ include 'includes/header.php';
                 $link = $is_logged_in ? "profile-details.php?id=" . $p['id'] : "login.php";
             ?>
             <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 group border border-gray-100" data-aos="fade-up" data-aos-delay="<?= $p['delay'] ?>">
-                <div class="relative overflow-hidden" style="height: 320px;">
+                <div class="relative overflow-hidden aspect-[3/4]">
                     <?php if ($is_approved): ?>
                         <img src="<?= htmlspecialchars($p['computed_img']) ?>" alt="Profile Photo" class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-500">
                     <?php else: ?>

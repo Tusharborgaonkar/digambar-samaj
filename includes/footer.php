@@ -163,6 +163,11 @@
                 });
             }
         });
+
+        // Prevent Form Resubmission Warning on Refresh
+        if (window.history.replaceState) {
+            window.history.replaceState(null, null, window.location.href);
+        }
     </script>
     <script src="assets/js/main.js"></script>
 </body>
