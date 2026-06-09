@@ -112,7 +112,7 @@ if ($total_records == 0) {
                         </span>
                     </td>
                     <td class="py-4 px-6 text-right">
-                        <a href="../profile-details.php?id=<?= $member['id'] ?>" class="inline-block text-blue-600 hover:text-blue-900 mx-1 p-1 tooltip" title="View Profile"><i class="fas fa-eye"></i></a>
+                        <a href="member-details.php?id=<?= $member['id'] ?>" class="inline-block text-blue-600 hover:text-blue-900 mx-1 p-1 tooltip" title="View Profile"><i class="fas fa-eye"></i></a>
                         
                         <form method="POST" class="inline-block m-0 p-0">
                             <input type="hidden" name="user_id" value="<?= $member['id'] ?>">

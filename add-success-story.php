@@ -9,6 +9,30 @@ require_once 'includes/db.php';
 $success_msg = '';
 $error_msg = '';
 
+$is_approved = false;
+if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+    $is_approved = true;
+} else if (isset($_SESSION['user_id'])) {
+    $stmt = $pdo->prepare("SELECT status FROM users WHERE id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    if ($stmt->fetchColumn() === 'approved') {
+        $is_approved = true;
+    }
+}
+
+if (!$is_approved) {
+    include 'includes/header.php';
+    echo '<div class="bg-gray-50 py-8 min-h-screen"><div class="container mx-auto px-4">';
+    echo '<div class="max-w-2xl mx-auto bg-white rounded-xl shadow-sm border border-red-200 p-8 text-center mt-10">';
+    echo '<div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">';
+    echo '<i class="fas fa-lock text-3xl text-red-500"></i></div>';
+    echo '<h2 class="text-2xl font-bold text-gray-800 mb-4">Access Restricted</h2>';
+    echo '<p class="text-gray-600 mb-6">Your profile is currently on hold or under review by the administrator. Once your profile is approved, you will be able to upload success stories.</p>';
+    echo '</div></div></div>';
+    include 'includes/footer.php';
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $couple_name = $_POST['couple_name'] ?? '';
     $city = $_POST['city'] ?? '';
@@ -66,19 +90,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <p class="text-center text-gray-600 mb-8">We would love to hear how you found your life partner through our platform.</p>
             
             <?php if (!empty($success_msg)): ?>
-                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
-                    <p class="font-bold">Success!</p>
-                    <p><?= htmlspecialchars($success_msg) ?></p>
-                </div>
                 <div class="text-center">
                     <a href="success-stories.php" class="inline-block bg-primary text-white px-6 py-2 rounded-md hover:bg-opacity-90 transition font-bold">Back to Success Stories</a>
                 </div>
             <?php else: ?>
-                <?php if (!empty($error_msg)): ?>
-                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
-                        <p><?= htmlspecialchars($error_msg) ?></p>
-                    </div>
-                <?php endif; ?>
                 
                 <form action="add-success-story.php" method="POST" enctype="multipart/form-data" class="space-y-6">
                     <div>

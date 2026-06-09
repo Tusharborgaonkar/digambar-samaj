@@ -47,12 +47,6 @@ include 'includes/header.php';
         </div>
         
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md" data-aos="fade-up" data-aos-delay="200">
-            <?php if ($error): ?>
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4 shadow-sm" role="alert">
-                    <strong class="font-bold">Error!</strong>
-                    <span class="block sm:inline"><?php echo $error; ?></span>
-                </div>
-            <?php endif; ?>
             <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-100">
                 <form class="space-y-6" action="login.php" method="POST">
                     <div>

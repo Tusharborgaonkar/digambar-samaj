@@ -40,7 +40,36 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     </script>
     
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <!-- Global SweetAlert Handler -->
+    <?php if (!empty($success) || !empty($success_msg)): ?>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '<?= htmlspecialchars(addslashes($success ?? ($success_msg ?? ''))) ?>',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            });
+        </script>
+    <?php endif; ?>
+    <?php if (!empty($error) || !empty($error_msg)): ?>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '<?= htmlspecialchars(addslashes($error ?? ($error_msg ?? ''))) ?>'
+                });
+            });
+        </script>
+    <?php endif; ?>
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

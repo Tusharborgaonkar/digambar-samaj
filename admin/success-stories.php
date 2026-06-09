@@ -62,6 +62,31 @@ try {
     <title>Manage Success Stories - Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <?php if (!empty($success_msg)): ?>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: '<?= htmlspecialchars(addslashes($success_msg)) ?>',
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            });
+        </script>
+    <?php endif; ?>
+    <?php if (!empty($error_msg)): ?>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '<?= htmlspecialchars(addslashes($error_msg)) ?>'
+                });
+            });
+        </script>
+    <?php endif; ?>
     <script>
         tailwind.config = {
             theme: {
@@ -89,18 +114,6 @@ try {
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-2xl font-bold text-gray-800">Manage Success Stories</h1>
         </div>
-
-        <?php if (!empty($success_msg)): ?>
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded shadow-sm">
-                <?= htmlspecialchars($success_msg) ?>
-            </div>
-        <?php endif; ?>
-
-        <?php if (!empty($error_msg)): ?>
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm">
-                <?= htmlspecialchars($error_msg) ?>
-            </div>
-        <?php endif; ?>
 
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
             <div class="overflow-x-auto">
@@ -153,13 +166,13 @@ try {
                                             <input type="hidden" name="id" value="<?= $story['id'] ?>">
                                             <?php if ($story['status'] === 'pending'): ?>
                                                 <input type="hidden" name="action" value="approve">
-                                                <button type="submit" class="text-green-600 hover:text-green-900 mr-3" title="Approve"><i class="fas fa-check-circle text-lg"></i></button>
+                                                <button type="submit" class="text-green-600 hover:text-green-900 mr-3" title="Approve" onclick="event.preventDefault(); Swal.fire({title: 'Approve Story?', text: 'You are about to approve this story.', icon: 'success', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes, approve it!'}).then((result) => { if (result.isConfirmed) { this.form.submit(); } });"><i class="fas fa-check-circle text-lg"></i></button>
                                             <?php else: ?>
                                                 <input type="hidden" name="action" value="pending">
-                                                <button type="submit" class="text-yellow-600 hover:text-yellow-900 mr-3" title="Mark as Pending"><i class="fas fa-clock text-lg"></i></button>
+                                                <button type="submit" class="text-yellow-600 hover:text-yellow-900 mr-3" title="Mark as Pending" onclick="event.preventDefault(); Swal.fire({title: 'Hold Story?', text: 'You are about to mark this story as pending.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes, mark as pending!'}).then((result) => { if (result.isConfirmed) { this.form.submit(); } });"><i class="fas fa-clock text-lg"></i></button>
                                             <?php endif; ?>
                                         </form>
-                                        <form method="POST" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this story?');">
+                                        <form method="POST" class="inline-block" onsubmit="event.preventDefault(); Swal.fire({title: 'Are you sure?', text: 'You want to delete this story?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Yes, delete it!'}).then((result) => { if (result.isConfirmed) { this.submit(); } });">
                                             <input type="hidden" name="id" value="<?= $story['id'] ?>">
                                             <input type="hidden" name="action" value="delete">
                                             <button type="submit" class="text-red-600 hover:text-red-900" title="Delete"><i class="fas fa-trash-alt text-lg"></i></button>

@@ -51,6 +51,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <?php if (isset($error)): ?>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: '<?= htmlspecialchars(addslashes($error)) ?>'
+                });
+            });
+        </script>
+    <?php endif; ?>
 </head>
 <body class="bg-light h-screen flex items-center justify-center p-4">
 
@@ -65,11 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Form Section -->
         <div class="p-8">
-            <?php if (isset($error)): ?>
-                <div class="bg-red-50 text-red-600 p-3 rounded-lg text-sm mb-6 flex items-center">
-                    <i class="fas fa-exclamation-circle mr-2"></i> <?= htmlspecialchars($error) ?>
-                </div>
-            <?php endif; ?>
 
             <form action="login.php" method="POST" class="space-y-6">
                 <!-- Email Field -->

@@ -62,14 +62,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ref2_relation = htmlspecialchars($_POST['ref2_relation'] ?? '');
 
     // PHP Validations
-    if (!preg_match('/^[0-9]{7,15}$/', $_POST['mobile'])) {
-        $error = "Candidate mobile number must be 7 to 15 digits.";
+    if (!preg_match('/^[0-9]{10}$/', $_POST['mobile'])) {
+        $error = "Candidate mobile number must be exactly 10 digits.";
     } elseif (!preg_match('/^[0-9]{4,6}$/', $pin_code)) {
         $error = "Pin code must be 4 to 6 digits.";
-    } elseif ($ref1_mobile && !preg_match('/^[0-9]{7,15}$/', $ref1_mobile)) {
-        $error = "Reference 1 mobile number must be 7 to 15 digits.";
-    } elseif ($ref2_mobile && !preg_match('/^[0-9]{7,15}$/', $ref2_mobile)) {
-        $error = "Reference 2 mobile number must be 7 to 15 digits.";
+    } elseif (!is_numeric($monthly_income) || $monthly_income < 0) {
+        $error = "Candidate monthly income must be a valid positive amount.";
+    } elseif (!is_numeric($father_income) || $father_income < 0) {
+        $error = "Father monthly income must be a valid positive amount.";
+    } elseif ($father_mobile && !preg_match('/^[0-9]{10}$/', $father_mobile)) {
+        $error = "Father mobile number must be exactly 10 digits.";
+    } elseif ($mother_mobile && !preg_match('/^[0-9]{10}$/', $mother_mobile)) {
+        $error = "Mother mobile number must be exactly 10 digits.";
+    } elseif ($ref1_mobile && !preg_match('/^[0-9]{10}$/', $ref1_mobile)) {
+        $error = "Reference 1 mobile number must be exactly 10 digits.";
+    } elseif ($ref2_mobile && !preg_match('/^[0-9]{10}$/', $ref2_mobile)) {
+        $error = "Reference 2 mobile number must be exactly 10 digits.";
     } elseif ($ref1_mobile && $ref1_mobile === $ref2_mobile) {
         $error = "Reference 1 and 2 mobile numbers must be different.";
     }
@@ -122,7 +130,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $ref2_name, $ref2_mobile, $ref2_relation, $photo, $family_photo, $payment_screenshot
         ]);
 
-        $success = "Registration successful! You can now log in.";
+        $user_id = $pdo->lastInsertId();
+        $_SESSION['user_logged_in'] = true;
+        $_SESSION['user_id'] = $user_id;
+        $_SESSION['user_name'] = $full_name;
+
+        $success = "Registration successful! Welcome to the community.";
     } catch (PDOException $e) {
         if ($e->getCode() == 23000) { // Integrity constraint violation: duplicate email
             $error = "Email address is already registered.";
@@ -144,17 +157,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php if ($success): ?>
                 <script>
                     sessionStorage.removeItem("registrationFormData");
-                    window.location.href = "pending.php";
+                    window.location.href = "my-profile.php";
                 </script>
             <?php endif; ?>
             
-            <?php if ($error): ?>
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-                    <strong class="font-bold">Error!</strong>
-                    <span class="block sm:inline"><?php echo $error; ?></span>
-                </div>
-            <?php endif; ?>
-
             <form id="registrationForm" method="POST" action="" enctype="multipart/form-data" class="bg-white rounded-lg shadow-lg p-6 md:p-8" data-aos="fade-up" data-aos-delay="200">
                 <!-- Section 1: Basic Information -->
                 <div class="mb-8 pb-4 border-b border-gray-200">
@@ -188,7 +194,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Mobile Number (WhatsApp) *</label>
-                            <input type="tel" name="mobile" pattern="[0-9]{7,15}" title="Please enter a valid mobile number (7 to 15 digits)" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                            <input type="tel" name="mobile" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Please enter exactly 10 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
                         </div>
                     </div>
                 </div>
@@ -237,7 +243,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                         
                         <div><label class="block text-gray-700 font-medium mb-2">Permanent Full Address *</label><textarea name="permanent_address" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Pin Code of Permanent Address *</label><input type="text" name="pin_code" pattern="[0-9]{4,6}" title="Please enter a valid 4 to 6 digit pin code" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Pin Code of Permanent Address *</label><input type="text" name="pin_code" pattern="[0-9]{4,6}" maxlength="6" minlength="4" title="Please enter a valid 4 to 6 digit pin code" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Candidate Current Address *</label><textarea name="current_address" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Email *</label><input type="email" name="email" required class="w-full border rounded-lg px-4 py-2"></div>
                         
@@ -272,7 +278,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div><label class="block text-gray-700 font-medium mb-2">Higher Education *</label><input type="text" name="education" required class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Hobbies *</label><textarea name="hobbies" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Your Specific Preference for the Partner *</label><textarea name="partner_preference" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Candidate Monthly Income *</label><input type="number" name="monthly_income" required placeholder="Only Amount (e.g., 100000)" class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Candidate Monthly Income *</label><input type="number" name="monthly_income" min="0" step="1" required placeholder="Only Amount (e.g., 100000)" class="w-full border rounded-lg px-4 py-2"></div>
                         
                         <!-- Widow/Divorce -->
                         <div><label class="block text-gray-700 font-medium mb-2">Widow / Divorce *</label>
@@ -306,15 +312,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <h2 class="text-xl font-bold text-primary mb-4">Family Details</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div><label class="block text-gray-700 font-medium mb-2">Father Name *</label><input type="text" name="father_name" required class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Father Mobile Number *</label><input type="tel" name="father_mobile" pattern="[0-9]{7,15}" title="Please enter a valid mobile number" required class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Father Monthly Income *</label><input type="number" name="father_income" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Father Mobile Number *</label><input type="tel" name="father_mobile" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Please enter exactly 10 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Father Monthly Income *</label><input type="number" name="father_income" min="0" step="1" required class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Father Occupation *</label>
                             <select name="father_occupation" required class="w-full border rounded-lg px-4 py-2">
                                 <option>Job</option><option>Business</option><option>Retired</option><option>Other</option>
                             </select>
                         </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Mother Name *</label><input type="text" name="mother_name" required class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Mother Mobile Number (Optional)</label><input type="tel" name="mother_mobile" pattern="[0-9]{7,15}" title="Please enter a valid mobile number" class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Mother Mobile Number (Optional)</label><input type="tel" name="mother_mobile" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Please enter exactly 10 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Mother Occupation (Optional)</label>
                             <select name="mother_occupation" id="mother_occupation" class="w-full border rounded-lg px-4 py-2">
                                 <option value="House Wife">House Wife</option><option value="Job">Job</option><option value="Business">Business</option><option value="Other">Other</option>
@@ -426,7 +432,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     </div>
                                     <div>
                                         <label class="block text-sm text-gray-700 font-medium mb-1">Mobile Number *</label>
-                                        <input type="tel" name="ref1_mobile" id="ref1_mobile" pattern="[0-9]{7,15}" title="7 to 15 digit mobile number" class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
+                                        <input type="tel" name="ref1_mobile" id="ref1_mobile" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Exactly 10 digit mobile number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
                                     </div>
                                     <div>
                                         <label class="block text-sm text-gray-700 font-medium mb-1">Relationship (Optional)</label>
@@ -458,7 +464,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     </div>
                                     <div>
                                         <label class="block text-sm text-gray-700 font-medium mb-1">Mobile Number *</label>
-                                        <input type="tel" name="ref2_mobile" id="ref2_mobile" pattern="[0-9]{7,15}" title="7 to 15 digit mobile number" class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
+                                        <input type="tel" name="ref2_mobile" id="ref2_mobile" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Exactly 10 digit mobile number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
                                     </div>
                                     <div>
                                         <label class="block text-sm text-gray-700 font-medium mb-1">Relationship (Optional)</label>
@@ -524,7 +530,7 @@ document.querySelectorAll('input[name="is_digambar"]').forEach(radio => {
     radio.addEventListener('change', function() {
         const formElements = document.querySelectorAll('#registrationForm input:not([name="is_digambar"]), #registrationForm select, #registrationForm textarea, #registrationForm button[type="submit"]');
         if (this.value === 'no') {
-            alert('Sorry, this registration is strictly for Digambar Jains only.');
+            Swal.fire({icon: 'warning', title: 'Attention', text: 'Sorry, this registration is strictly for Digambar Jains only.'});
             formElements.forEach(el => el.disabled = true);
             
             // visually dim the form to indicate it's disabled
@@ -618,7 +624,7 @@ document.getElementById('registrationForm')?.addEventListener('submit', function
     // Digambar Jain validation
     const isDigambar = document.querySelector('input[name="is_digambar"]:checked')?.value;
     if (isDigambar === 'no') {
-        alert('Sorry, this registration is strictly for Digambar Jains only.');
+        Swal.fire({icon: 'warning', title: 'Attention', text: 'Sorry, this registration is strictly for Digambar Jains only.'});
         return;
     }
 
@@ -626,26 +632,26 @@ document.getElementById('registrationForm')?.addEventListener('submit', function
     const password = document.getElementById('password').value;
     const confirmPassword = document.getElementById('confirm_password').value;
     if (password !== confirmPassword) {
-        alert('Password and Confirm Password do not match.');
+        Swal.fire({icon: 'warning', title: 'Attention', text: 'Password and Confirm Password do not match.'});
         return;
     }
 
     // Phone number validations (basic 7-15 digits check)
     const mobile = document.querySelector('input[name="mobile"]').value;
     if (!/^\d{7,15}$/.test(mobile)) {
-        alert('Please enter a valid mobile number (7 to 15 digits).');
+        Swal.fire({icon: 'warning', title: 'Attention', text: 'Please enter a valid mobile number (7 to 15 digits).'});
         return;
     }
 
     const fatherMobile = document.querySelector('input[name="father_mobile"]').value;
     if (!/^\d{7,15}$/.test(fatherMobile)) {
-        alert('Please enter a valid father mobile number.');
+        Swal.fire({icon: 'warning', title: 'Attention', text: 'Please enter a valid father mobile number.'});
         return;
     }
 
     const motherMobile = document.querySelector('input[name="mother_mobile"]').value;
     if (motherMobile && !/^\d{7,15}$/.test(motherMobile)) {
-        alert('Please enter a valid mother mobile number.');
+        Swal.fire({icon: 'warning', title: 'Attention', text: 'Please enter a valid mother mobile number.'});
         return;
     }
 
@@ -659,33 +665,33 @@ document.getElementById('registrationForm')?.addEventListener('submit', function
         const ref2Mobile = document.getElementById('ref2_mobile').value.trim();
 
         if (!ref1Name || !ref1Mobile || !ref2Name || !ref2Mobile) {
-            alert('Please fill out both Reference Persons\' Name and Mobile number.');
+            Swal.fire({icon: 'warning', title: 'Attention', text: 'Please fill out both Reference Persons\' Name and Mobile number.'});
             return;
         }
 
         if (!/^\d{7,15}$/.test(ref1Mobile)) {
-            alert('Please enter a valid mobile number (7 to 15 digits) for Reference Person 1.');
+            Swal.fire({icon: 'warning', title: 'Attention', text: 'Please enter a valid mobile number (7 to 15 digits) for Reference Person 1.'});
             return;
         }
 
         if (!/^\d{7,15}$/.test(ref2Mobile)) {
-            alert('Please enter a valid mobile number (7 to 15 digits) for Reference Person 2.');
+            Swal.fire({icon: 'warning', title: 'Attention', text: 'Please enter a valid mobile number (7 to 15 digits) for Reference Person 2.'});
             return;
         }
 
         // Duplication and sanity checks
         if (ref1Mobile === ref2Mobile) {
-            alert('Reference Person 1 and Reference Person 2 must have different mobile numbers.');
+            Swal.fire({icon: 'warning', title: 'Attention', text: 'Reference Person 1 and Reference Person 2 must have different mobile numbers.'});
             return;
         }
 
         if (ref1Mobile === mobile || ref2Mobile === mobile) {
-            alert('Reference mobile number cannot be the same as the candidate\'s mobile number.');
+            Swal.fire({icon: 'warning', title: 'Attention', text: 'Reference mobile number cannot be the same as the candidate\'s mobile number.'});
             return;
         }
 
         if (ref1Mobile === fatherMobile || ref2Mobile === fatherMobile) {
-            alert('Reference mobile number cannot be the same as the father\'s mobile number.');
+            Swal.fire({icon: 'warning', title: 'Attention', text: 'Reference mobile number cannot be the same as the father\'s mobile number.'});
             return;
         }
     }
@@ -695,19 +701,19 @@ document.getElementById('registrationForm')?.addEventListener('submit', function
     
     const photo = document.querySelector('input[name="photo"]').files[0];
     if (photo && photo.size > maxFileSize) {
-        alert('Candidate Photo must be less than 10MB.');
+        Swal.fire({icon: 'warning', title: 'Attention', text: 'Candidate Photo must be less than 10MB.'});
         return;
     }
 
     const familyPhoto = document.querySelector('input[name="family_photo"]').files[0];
     if (familyPhoto && familyPhoto.size > maxFileSize) {
-        alert('Family Photo must be less than 10MB.');
+        Swal.fire({icon: 'warning', title: 'Attention', text: 'Family Photo must be less than 10MB.'});
         return;
     }
 
     const paymentScreenshot = document.querySelector('input[name="payment_screenshot"]').files[0];
     if (paymentScreenshot && paymentScreenshot.size > maxFileSize) {
-        alert('Payment Screenshot must be less than 10MB.');
+        Swal.fire({icon: 'warning', title: 'Attention', text: 'Payment Screenshot must be less than 10MB.'});
         return;
     }
 

@@ -9,7 +9,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['use
     
     if ($action === 'approve') {
         $stmt = $pdo->prepare("UPDATE users SET status = 'approved' WHERE id = ?");
-        $stmt->execute([$userId]);
+        $stmt->execute([$userId]);        
+        $stmtEmail = $pdo->prepare("SELECT email, full_name FROM users WHERE id = ?");
+        $stmtEmail->execute([$userId]);
+        $user = $stmtEmail->fetch();
+        if ($user && !empty($user['email'])) {
+            $to = $user['email'];
+            $subject = "Profile Approved - Digambar Samaj Matrimony";
+            $message = "Dear " . $user['full_name'] . ",
+
+Congrats! Your profile has been approved by the admin. You can now visit other profiles and write success stories.
+
+Best Regards,
+Digambar Samaj Matrimony Team";
+            $headers = "From: noreply@digambarsamaj.com
+";
+            @mail($to, $subject, $message, $headers);
+        }
+
     } elseif ($action === 'reject') {
         $stmt = $pdo->prepare("UPDATE users SET status = 'rejected' WHERE id = ?");
         $stmt->execute([$userId]);
@@ -192,23 +209,23 @@ function buildQueryString($page_num) {
                         <?php endif; ?>
                     </td>
                     <td class="py-4 px-6 text-right">
-                        <a href="../profile-details.php?id=<?= $member['id'] ?>" class="inline-block text-blue-600 hover:text-blue-900 mx-1 p-1 tooltip" title="View Profile"><i class="fas fa-eye"></i></a>
+                        <a href="member-details.php?id=<?= $member['id'] ?>" class="inline-block text-blue-600 hover:text-blue-900 mx-1 p-1 tooltip" title="View Profile"><i class="fas fa-eye"></i></a>
                         
                         <form method="POST" class="inline-block m-0 p-0">
                             <input type="hidden" name="user_id" value="<?= $member['id'] ?>">
                             <?php if($member['status'] !== 'approved'): ?>
-                                <button type="submit" name="action" value="approve" class="text-green-600 hover:text-green-900 mx-1 p-1 tooltip" title="Approve"><i class="fas fa-check-circle"></i></button>
+                                <button type="submit" name="action" value="approve" class="text-green-600 hover:text-green-900 mx-1 p-1 tooltip" title="Approve" onclick="event.preventDefault(); Swal.fire({title: 'Approve Profile?', text: 'You are about to approve this profile.', icon: 'success', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes, approve it!'}).then((result) => { if (result.isConfirmed) { const input = document.createElement('input'); input.type = 'hidden'; input.name = this.name; input.value = this.value; this.form.appendChild(input); this.form.submit(); } });"><i class="fas fa-check-circle"></i></button>
                             <?php endif; ?>
                             <?php if($member['status'] === 'approved' || $member['status'] === 'rejected' || $member['status'] === 'blocked'): ?>
-                                <button type="submit" name="action" value="hold" class="text-yellow-600 hover:text-yellow-900 mx-1 p-1 tooltip" title="Hold Profile"><i class="fas fa-pause-circle"></i></button>
+                                <button type="submit" name="action" value="hold" class="text-yellow-600 hover:text-yellow-900 mx-1 p-1 tooltip" title="Hold Profile" onclick="event.preventDefault(); Swal.fire({title: 'Hold Profile?', text: 'You are about to put this profile on hold.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes, hold it!'}).then((result) => { if (result.isConfirmed) { const input = document.createElement('input'); input.type = 'hidden'; input.name = this.name; input.value = this.value; this.form.appendChild(input); this.form.submit(); } });"><i class="fas fa-pause-circle"></i></button>
                             <?php endif; ?>
                             <?php if($member['status'] !== 'rejected'): ?>
-                                <button type="submit" name="action" value="reject" class="text-orange-500 hover:text-orange-700 mx-1 p-1 tooltip" title="Deny"><i class="fas fa-times-circle"></i></button>
+                                <button type="submit" name="action" value="reject" class="text-orange-500 hover:text-orange-700 mx-1 p-1 tooltip" title="Deny" onclick="event.preventDefault(); Swal.fire({title: 'Deny Profile?', text: 'You are about to reject this profile.', icon: 'warning', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes, reject it!'}).then((result) => { if (result.isConfirmed) { const input = document.createElement('input'); input.type = 'hidden'; input.name = this.name; input.value = this.value; this.form.appendChild(input); this.form.submit(); } });"><i class="fas fa-times-circle"></i></button>
                             <?php endif; ?>
                             <?php if($member['status'] !== 'blocked'): ?>
-                                <button type="submit" name="action" value="block" class="text-gray-600 hover:text-gray-900 mx-1 p-1 tooltip" title="Block User"><i class="fas fa-ban"></i></button>
+                                <button type="submit" name="action" value="block" class="text-gray-600 hover:text-gray-900 mx-1 p-1 tooltip" title="Block User" onclick="event.preventDefault(); Swal.fire({title: 'Block User?', text: 'You are about to block this user.', icon: 'error', showCancelButton: true, confirmButtonColor: '#3085d6', cancelButtonColor: '#d33', confirmButtonText: 'Yes, block them!'}).then((result) => { if (result.isConfirmed) { const input = document.createElement('input'); input.type = 'hidden'; input.name = this.name; input.value = this.value; this.form.appendChild(input); this.form.submit(); } });"><i class="fas fa-ban"></i></button>
                             <?php endif; ?>
-                            <button type="submit" name="action" value="delete" class="text-red-600 hover:text-red-900 mx-1 p-1 tooltip" title="Delete" onclick="return confirm('Are you sure you want to delete this profile?');"><i class="fas fa-trash"></i></button>
+                            <button type="submit" name="action" value="delete" class="text-red-600 hover:text-red-900 mx-1 p-1 tooltip" title="Delete" onclick="event.preventDefault(); Swal.fire({title: 'Are you sure?', text: 'You want to delete this profile?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'Yes, delete it!'}).then((result) => { if (result.isConfirmed) { const input = document.createElement('input'); input.type = 'hidden'; input.name = this.name; input.value = this.value; this.form.appendChild(input); this.form.submit(); } });"><i class="fas fa-trash"></i></button>
                         </form>
                     </td>
                 </tr>
