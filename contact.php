@@ -23,7 +23,7 @@
                     <div>
                         <h4 class="text-lg font-bold text-dark mb-1">Call Us</h4>
                         <p class="text-gray-600 mb-1">We are available 9 AM - 6 PM</p>
-                        <p class="font-bold text-primary">+91 98765 43210</p>
+                        <p class="font-bold text-primary">+91 7575005121</p>
                     </div>
                 </div>
 
@@ -35,7 +35,7 @@
                     <div>
                         <h4 class="text-lg font-bold text-dark mb-1">Email Us</h4>
                         <p class="text-gray-600 mb-1">Drop us a line anytime</p>
-                        <p class="font-bold text-primary">info@jaindigambarmatrimony.com</p>
+                        <p class="font-bold text-primary break-all">digambarjainparichay@gmail.com</p>
                     </div>
                 </div>
 
@@ -47,7 +47,7 @@
                     <div>
                         <h4 class="text-lg font-bold text-dark mb-1">Visit Us</h4>
                         <p class="text-gray-600 mb-1">Our Corporate Office</p>
-                        <p class="font-bold text-gray-800">123, Jain Temple Road, Borivali West, Mumbai, Maharashtra 400092</p>
+                        <p class="font-bold text-gray-800">23-A, Shubhlaxmi Palace, Opp. Money Plant Junction, Bhuyangdev Cross Road, Sola Road, Ahmedabad-380061.</p>
                     </div>
                 </div>
             </div>
@@ -105,7 +105,7 @@
 <!-- Map Section -->
 <section class="h-96 w-full bg-gray-200">
     <!-- Using an iframe for Google Maps -->
-    <iframe src="https://maps.google.com/maps?q=Borivali%20West,%20Mumbai,%20Maharashtra&t=&z=13&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <iframe src="https://maps.google.com/maps?q=Shubhlaxmi%20Palace,%20Ahmedabad&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
 </section>
 
 <?php include 'includes/footer.php'; ?>

@@ -1,6 +1,5 @@
 <?php
 require_once 'includes/db.php';
-include 'includes/header.php'; 
 
 // Check if user is logged in and approved
 $is_approved = false;
@@ -17,6 +16,17 @@ if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) 
     $is_logged_in = true;
     $is_approved = true;
 }
+
+// Redirect unauthorized users trying to access page > 1
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($page < 1) $page = 1;
+
+if (!$is_logged_in && $page > 1) {
+    header("Location: registration.php");
+    exit;
+}
+
+include 'includes/header.php'; 
 
 // Build Dynamic Query
 $where = ["status = 'approved'", "is_public = 1"];
@@ -89,9 +99,8 @@ if (empty($filterParams['gender'])) {
 $filterQueryString = http_build_query($filterParams);
 
 // Pagination
-$limit = 10;
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-if ($page < 1) $page = 1;
+$limit = $is_logged_in ? 10 : 8;
+// $page is already initialized at the top
 $offset = ($page - 1) * $limit;
 
 $countStmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE $whereClause");
@@ -119,7 +128,7 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <h3 class="text-sm font-medium text-blue-800">Limited View Mode</h3>
                         <div class="mt-2 text-sm text-blue-700">
                             <?php if (!$is_logged_in): ?>
-                                <p>You are viewing profiles as a guest. Please <a href="login.php" class="font-bold underline hover:text-blue-900">log in</a> or <a href="register.php" class="font-bold underline hover:text-blue-900">register</a> to view photos and full details.</p>
+                                <p>You are viewing profiles as a guest. Please <a href="login.php" class="font-bold underline hover:text-blue-900">log in</a> or <a href="registration.php" class="font-bold underline hover:text-blue-900">register</a> to view photos and full details.</p>
                             <?php else: ?>
                                 <p>Your profile is currently pending approval. Once an admin approves your profile, you will be able to view photos and full details.</p>
                             <?php endif; ?>

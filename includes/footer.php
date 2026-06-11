@@ -37,7 +37,7 @@
                     <ul class="space-y-2 text-gray-300">
                         <li><i class="fas fa-phone mr-2"></i> +91 7575005121</li>
                         <li><i class="fas fa-envelope mr-2"></i> digambarjainparichay@gmail.com</li>
-                        <li><i class="fas fa-map-marker-alt mr-2"></i> 111, Bhuyangdev Cross Road, Sola Road, Ahmedabad-380061</li>
+                        <li><i class="fas fa-map-marker-alt mr-2"></i> 23-A, Shubhlaxmi Palace, Opp. Money Plant Junction, Bhuyangdev Cross Road, Sola Road, Ahmedabad-380061.</li>
                     </ul>
                 </div>
             </div>
