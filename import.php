@@ -11,7 +11,7 @@ try {
     die("DB Connection failed: " . $e->getMessage());
 }
 
-$csvFile = 'C:\xampp\htdocs\digambar-jain-samaj\digambar-samaj\परिचय सम्मेलन 2025-26 फोर्म Parichay Sammelan 2025-26 Form (Responses) - Form Responses 1 (12).csv';
+$csvFile = __DIR__ . '/परिचय सम्मेलन 2025-26 फोर्म Parichay Sammelan 2025-26 Form (Responses) - Form Responses 1 (12).csv';
 
 if (!file_exists($csvFile)) {
     die("CSV file not found: " . $csvFile);
@@ -130,7 +130,7 @@ if ($handle !== FALSE) {
         $photoPath = "imports/profile_photos/{$photoName}_profile.jpg";
 
         // Validate if file actually exists locally, though we insert anyway
-        $fullPhotoPath = "C:\\xampp\\htdocs\\digambar-jain-samaj\\digambar-samaj\\$photoPath";
+        $fullPhotoPath = __DIR__ . "\\$photoPath";
         if (!file_exists($fullPhotoPath)) {
             // maybe try matching with regex or glob if needed?
         }

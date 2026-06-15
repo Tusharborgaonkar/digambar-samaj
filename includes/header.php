@@ -260,6 +260,7 @@ if (session_status() === PHP_SESSION_NONE) {
             </div>
             <a href="registration.php" class="text-dark hover:text-primary transition text-lg font-medium">Registration</a>
             <a href="success-stories.php" class="text-dark hover:text-primary transition text-lg font-medium">Success Stories</a>
+            <a href="gallery.php" class="text-dark hover:text-primary transition text-lg font-medium">Gallery</a>
             <a href="contact.php" class="text-dark hover:text-primary transition text-lg font-medium">Contact</a>
             <a href="my-profile.php" class="text-dark hover:text-primary transition text-lg font-medium">My Profile</a>
             <a href="profiles.php" class="text-dark hover:text-primary transition text-lg font-medium">Find Matches</a>
@@ -291,6 +292,7 @@ if (session_status() === PHP_SESSION_NONE) {
                     </div>
                     <a href="registration.php" class="text-dark hover:text-primary transition font-medium">Registration</a>
                     <a href="success-stories.php" class="text-dark hover:text-primary transition font-medium">Success Stories</a>
+                    <a href="gallery.php" class="text-dark hover:text-primary transition font-medium">Gallery</a>
                     <a href="contact.php" class="text-dark hover:text-primary transition font-medium">Contact</a>
                     <a href="my-profile.php" class="text-dark hover:text-primary transition font-medium">My Profile</a>
                     <a href="profiles.php" class="text-dark hover:text-primary transition font-medium">Find Matches</a>

@@ -1,17 +1,22 @@
-<?php 
+<?php
 require_once 'includes/db.php';
-include 'includes/header.php'; 
+include 'includes/header.php';
 ?>
 
 <!-- Preloader -->
-<div id="preloader" class="fixed inset-0 z-[9999] flex items-center justify-center bg-white transition-opacity duration-500">
+<div id="preloader"
+    class="fixed inset-0 z-[9999] flex items-center justify-center bg-white transition-opacity duration-500">
     <div class="flex flex-col items-center">
         <!-- Spinner -->
         <div class="relative w-20 h-20">
             <div class="absolute inset-0 rounded-full border-4 border-gray-100"></div>
-            <div class="absolute inset-0 rounded-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-spin"></div>
+            <div
+                class="absolute inset-0 rounded-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-spin">
+            </div>
             <div class="absolute inset-2 rounded-full border-4 border-gray-100"></div>
-            <div class="absolute inset-2 rounded-full border-4 border-t-accent border-r-transparent border-b-transparent border-l-transparent animate-spin-reverse"></div>
+            <div
+                class="absolute inset-2 rounded-full border-4 border-t-accent border-r-transparent border-b-transparent border-l-transparent animate-spin-reverse">
+            </div>
         </div>
         <!-- Logo / Brand Text -->
         <div class="mt-5 flex flex-col items-center">
@@ -22,18 +27,24 @@ include 'includes/header.php';
 </div>
 
 <style>
-@keyframes spin-reverse {
-    0% { transform: rotate(360deg); }
-    100% { transform: rotate(0deg); }
-}
-.animate-spin-reverse {
-    animation: spin-reverse 1.2s linear infinite;
-}
+    @keyframes spin-reverse {
+        0% {
+            transform: rotate(360deg);
+        }
+
+        100% {
+            transform: rotate(0deg);
+        }
+    }
+
+    .animate-spin-reverse {
+        animation: spin-reverse 1.2s linear infinite;
+    }
 </style>
 
 <script>
     // Hide preloader when page is fully loaded
-    window.addEventListener('load', function() {
+    window.addEventListener('load', function () {
         const preloader = document.getElementById('preloader');
         if (preloader) {
             preloader.classList.add('opacity-0', 'pointer-events-none');
@@ -45,34 +56,44 @@ include 'includes/header.php';
 </script>
 
 <!-- Hero Section -->
-<section class="relative min-h-screen flex flex-col justify-center items-center overflow-hidden">
-    <!-- Static Hero Banner -->
-    <div class="absolute inset-0 w-full h-full bg-cover bg-center" style="background-image: url('assets/images/abtus-hero.png'); z-index: 0;"></div>
-    
+<section
+    class="relative min-h-[140vw] md:min-h-screen flex flex-col justify-center items-center overflow-hidden bg-gray-900">
+    <!-- Desktop Hero Banner -->
+    <div class="absolute inset-0 w-full h-full bg-cover bg-center hidden md:block"
+        style="background-image: url('assets/images/herobanner.png'); z-index: 0;"></div>
+
+    <!-- Mobile Hero Banner -->
+    <div class="absolute inset-0 w-full h-full bg-contain bg-no-repeat bg-center block md:hidden"
+        style="background-image: url('assets/images/portrait.png'); z-index: 0;"></div>
+
     <!-- Overlay -->
     <div class="absolute inset-0 bg-black bg-opacity-40 z-10"></div>
-    
+
     <div class="container mx-auto px-4 relative z-20 w-full pt-24 pb-12">
-        
         <!-- Hero Title & Buttons -->
         <div class="text-center mb-10" data-aos="fade-up">
             <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">Digambar Jain Matrimony</h1>
-            <p class="text-xl md:text-2xl text-gray-200 mb-8 hero-subtitle">Find Your Special Someone Who Completes You</p>
+            <p class="text-xl md:text-2xl text-gray-200 mb-8 hero-subtitle">Find Your Special Someone Who Completes You
+            </p>
         </div>
     </div>
 </section>
 
 <!-- Quick Search Section -->
-<section class="bg-light relative z-20">
+<section class="bg-light relative z-20 mt-36">
     <div class="container mx-auto px-4 -mt-16 md:-mt-24 mb-12">
-        <div id="quick-search" class="bg-white bg-opacity-95 p-6 rounded-xl shadow-2xl max-w-6xl mx-auto backdrop-blur-sm border-t-4 border-primary" data-aos="fade-up" data-aos-delay="200">
-            <h3 class="text-xl font-bold text-dark mb-4 border-b pb-2"><i class="fas fa-search text-primary mr-2"></i>Quick Search</h3>
+        <div id="quick-search"
+            class="bg-white bg-opacity-95 p-6 rounded-xl shadow-2xl max-w-6xl mx-auto backdrop-blur-sm border-t-4 border-primary"
+            data-aos="fade-up" data-aos-delay="200">
+            <h3 class="text-xl font-bold text-dark mb-4 border-b pb-2"><i
+                    class="fas fa-search text-primary mr-2"></i>Quick Search</h3>
             <form action="profiles.php" method="GET">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <!-- Looking For -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Looking For</label>
-                        <select name="gender" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
+                        <select name="gender"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
                             <option value="bride">Bride</option>
                             <option value="groom">Groom</option>
                         </select>
@@ -81,15 +102,20 @@ include 'includes/header.php';
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Age Group</label>
                         <div class="flex items-center space-x-2">
-                            <input type="number" name="age_from" placeholder="From" class="w-1/2 border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50" min="18" max="70">
+                            <input type="number" name="age_from" placeholder="From"
+                                class="w-1/2 border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50"
+                                min="18" max="70">
                             <span class="text-gray-500 font-medium">to</span>
-                            <input type="number" name="age_to" placeholder="To" class="w-1/2 border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50" min="18" max="70">
+                            <input type="number" name="age_to" placeholder="To"
+                                class="w-1/2 border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50"
+                                min="18" max="70">
                         </div>
                     </div>
                     <!-- Marital Status -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Marital Status</label>
-                        <select name="marital_status" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
+                        <select name="marital_status"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
                             <option value="">Any</option>
                             <option value="never_married">Never Married</option>
                             <option value="widow">Widow / Widower</option>
@@ -99,7 +125,8 @@ include 'includes/header.php';
                     <!-- Manglik -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Manglik Status</label>
-                        <select name="manglik" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
+                        <select name="manglik"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
                             <option value="">Any</option>
                             <option value="manglik">Manglik</option>
                             <option value="non_manglik">Non-Manglik</option>
@@ -109,7 +136,8 @@ include 'includes/header.php';
                     <!-- State -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">State</label>
-                        <select name="state" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
+                        <select name="state"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
                             <option value="">Any State</option>
                             <option value="Delhi">Delhi</option>
                             <option value="Maharashtra">Maharashtra</option>
@@ -121,12 +149,14 @@ include 'includes/header.php';
                     <!-- City -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">City</label>
-                        <input type="text" name="city" placeholder="Enter City Name" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
+                        <input type="text" name="city" placeholder="Enter City Name"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
                     </div>
                     <!-- Education -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Education</label>
-                        <select name="education" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
+                        <select name="education"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
                             <option value="">Any Education</option>
                             <option value="Bachelors">Bachelors</option>
                             <option value="Masters">Masters</option>
@@ -137,7 +167,8 @@ include 'includes/header.php';
                     <!-- Profession -->
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Profession</label>
-                        <select name="profession" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
+                        <select name="profession"
+                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
                             <option value="">Any Profession</option>
                             <option value="Doctor">Doctor</option>
                             <option value="Engineer">Engineer</option>
@@ -148,7 +179,9 @@ include 'includes/header.php';
                     </div>
                 </div>
                 <div class="mt-6 text-center">
-                    <button type="submit" class="bg-primary text-white px-10 py-3 rounded-md text-lg font-bold hover:bg-opacity-90 transition shadow-lg w-full md:w-auto"><i class="fas fa-search mr-2"></i>Search Profiles</button>
+                    <button type="submit"
+                        class="bg-primary text-white px-10 py-3 rounded-md text-lg font-bold hover:bg-opacity-90 transition shadow-lg w-full md:w-auto"><i
+                            class="fas fa-search mr-2"></i>Search Profiles</button>
                 </div>
             </form>
         </div>
@@ -164,7 +197,7 @@ include 'includes/header.php';
             </h2>
             <p class="text-gray-600 mt-4">Find your life partner from our newly registered members</p>
         </div>
-        
+
         <?php
         $latest_gender = $_GET['latest_gender'] ?? 'Bride';
         if (!in_array($latest_gender, ['Bride', 'Groom'])) {
@@ -172,8 +205,12 @@ include 'includes/header.php';
         }
         ?>
         <div class="flex flex-wrap justify-center mb-8" data-aos="fade-up" data-aos-delay="100">
-            <a href="?latest_gender=Bride#latest" class="<?= $latest_gender === 'Bride' ? 'bg-primary text-white' : 'bg-white text-dark hover:bg-gray-100 border border-r-0' ?> px-8 py-2.5 rounded-l-full font-bold focus:outline-none transition shadow-md">Latest Brides</a>
-            <a href="?latest_gender=Groom#latest" class="<?= $latest_gender === 'Groom' ? 'bg-primary text-white' : 'bg-white text-dark hover:bg-gray-100 border border-l-0' ?> px-8 py-2.5 rounded-r-full font-bold focus:outline-none transition shadow-md">Latest Grooms</a>
+            <a href="?latest_gender=Bride#latest"
+                class="<?= $latest_gender === 'Bride' ? 'bg-primary text-white' : 'bg-white text-dark hover:bg-gray-100 border border-r-0' ?> px-8 py-2.5 rounded-l-full font-bold focus:outline-none transition shadow-md">Latest
+                Brides</a>
+            <a href="?latest_gender=Groom#latest"
+                class="<?= $latest_gender === 'Groom' ? 'bg-primary text-white' : 'bg-white text-dark hover:bg-gray-100 border border-l-0' ?> px-8 py-2.5 rounded-r-full font-bold focus:outline-none transition shadow-md">Latest
+                Grooms</a>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
@@ -207,7 +244,7 @@ include 'includes/header.php';
             foreach ($index_profiles as &$p) {
                 $p['delay'] = $delay;
                 $delay += 100;
-                
+
                 // Calculate age
                 $age = 'N/A';
                 if (!empty($p['birth_date'])) {
@@ -216,47 +253,68 @@ include 'includes/header.php';
                     $age = $bday->diff($today)->y;
                 }
                 $p['computed_age'] = $age;
-                
+
                 // Fallback image
-                $p['computed_img'] = (!empty($p['profile_photo']) && file_exists($p['profile_photo'])) ? $p['profile_photo'] : 'https://ui-avatars.com/api/?name='.urlencode($p['full_name']).'&background=random';
+                $p['computed_img'] = (!empty($p['profile_photo']) && file_exists($p['profile_photo'])) ? $p['profile_photo'] : 'https://ui-avatars.com/api/?name=' . urlencode($p['full_name']) . '&background=random';
             }
             unset($p); // break reference
             
 
             foreach ($index_profiles as $p):
                 $link = $is_logged_in ? "profile-details.php?id=" . $p['id'] : "login.php";
-            ?>
-            <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 group border border-gray-100" data-aos="fade-up" data-aos-delay="<?= $p['delay'] ?>">
-                <div class="relative overflow-hidden aspect-[3/4]">
-                    <?php if ($is_approved): ?>
-                        <img src="<?= htmlspecialchars($p['computed_img']) ?>" alt="Profile Photo" class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-500">
-                    <?php else: ?>
-                        <div class="w-full h-full group-hover:scale-110 transition duration-500" style="background-image: url('<?= htmlspecialchars($p['computed_img']) ?>'); background-size: cover; background-position: top center; filter: blur(10px);"></div>
-                        <div class="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40 text-white p-4 text-center z-10">
-                            <i class="fas fa-lock text-3xl mb-2"></i>
+                ?>
+                <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 group border border-gray-100"
+                    data-aos="fade-up" data-aos-delay="<?= $p['delay'] ?>">
+                    <div class="relative overflow-hidden aspect-[3/4]">
+                        <?php if ($is_approved): ?>
+                            <img src="<?= htmlspecialchars($p['computed_img']) ?>" alt="Profile Photo"
+                                class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-500">
+                        <?php else: ?>
+                            <div class="w-full h-full group-hover:scale-110 transition duration-500"
+                                style="background-image: url('<?= htmlspecialchars($p['computed_img']) ?>'); background-size: cover; background-position: top center; filter: blur(10px);">
+                            </div>
+                            <div
+                                class="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-40 text-white p-4 text-center z-10">
+                                <i class="fas fa-lock text-3xl mb-2"></i>
+                            </div>
+                        <?php endif; ?>
+                        <div
+                            class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-black/70 to-transparent p-4 z-20">
+                            <a href="<?= $link ?>"
+                                class="text-white font-bold text-lg hover:underline"><?= htmlspecialchars($p['full_name']) ?></a>
+                            <p class="text-gray-200 text-sm font-medium"><?= $p['computed_age'] ?> Yrs,
+                                <?= htmlspecialchars($p['height'] ?? 'N/A') ?>
+                            </p>
                         </div>
-                    <?php endif; ?>
-                    <div class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-black/70 to-transparent p-4 z-20">
-                        <a href="<?= $link ?>" class="text-white font-bold text-lg hover:underline"><?= htmlspecialchars($p['full_name']) ?></a>
-                        <p class="text-gray-200 text-sm font-medium"><?= $p['computed_age'] ?> Yrs, <?= htmlspecialchars($p['height'] ?? 'N/A') ?></p>
+                        <?php if (isset($p['created_at']) && strtotime($p['created_at']) > strtotime('-7 days')): ?>
+                            <div
+                                class="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded shadow z-20">
+                                New</div>
+                        <?php endif; ?>
                     </div>
-                    <?php if (isset($p['created_at']) && strtotime($p['created_at']) > strtotime('-7 days')): ?>
-                    <div class="absolute top-2 right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded shadow z-20">New</div>
-                    <?php endif; ?>
-                </div>
-                <div class="p-5">
-                    <div class="space-y-2 mb-4">
-                        <p class="text-sm text-gray-600 flex items-center"><i class="fas fa-graduation-cap w-6 text-primary mr-2"></i> <?= htmlspecialchars($p['higher_education'] ?? 'N/A') ?></p>
-                        <p class="text-sm text-gray-600 flex items-center"><i class="fas fa-briefcase w-6 text-primary mr-2"></i> <?= htmlspecialchars($p['occupation'] ?? 'N/A') ?></p>
-                        <p class="text-sm text-gray-600 flex items-center"><i class="fas fa-map-marker-alt w-6 text-primary mr-2"></i> <?= htmlspecialchars($p['native_place'] ?? 'N/A') ?></p>
+                    <div class="p-5">
+                        <div class="space-y-2 mb-4">
+                            <p class="text-sm text-gray-600 flex items-center"><i
+                                    class="fas fa-graduation-cap w-6 text-primary mr-2"></i>
+                                <?= htmlspecialchars($p['higher_education'] ?? 'N/A') ?></p>
+                            <p class="text-sm text-gray-600 flex items-center"><i
+                                    class="fas fa-briefcase w-6 text-primary mr-2"></i>
+                                <?= htmlspecialchars($p['occupation'] ?? 'N/A') ?></p>
+                            <p class="text-sm text-gray-600 flex items-center"><i
+                                    class="fas fa-map-marker-alt w-6 text-primary mr-2"></i>
+                                <?= htmlspecialchars($p['native_place'] ?? 'N/A') ?></p>
+                        </div>
+                        <a href="<?= $link ?>"
+                            class="block text-center bg-gray-50 border border-primary text-primary hover:bg-primary hover:text-white py-2 rounded-md transition font-semibold">View
+                            Profile</a>
                     </div>
-                    <a href="<?= $link ?>" class="block text-center bg-gray-50 border border-primary text-primary hover:bg-primary hover:text-white py-2 rounded-md transition font-semibold">View Profile</a>
                 </div>
-            </div>
             <?php endforeach; ?>
         </div>
         <div class="text-center mt-10">
-            <a href="profiles.php" class="inline-block bg-primary text-white px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold text-lg"><i class="fas fa-users mr-2"></i>View All Profiles</a>
+            <a href="profiles.php"
+                class="inline-block bg-primary text-white px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold text-lg"><i
+                    class="fas fa-users mr-2"></i>View All Profiles</a>
         </div>
     </div>
 </section>
@@ -270,31 +328,58 @@ include 'includes/header.php';
             </h2>
             <p class="text-gray-600 mt-4">Find matches based on your specific preferences</p>
         </div>
-        
+
         <div class="flex flex-wrap justify-center gap-4" data-aos="fade-up" data-aos-delay="100">
-            <a href="#" class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i class="fas fa-female mr-2 text-primary group-hover:text-white"></i> All Brides</a>
-            <a href="#" class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i class="fas fa-male mr-2 text-primary group-hover:text-white"></i> All Grooms</a>
-            <a href="#" class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i class="fas fa-user-md mr-2 text-primary"></i> Doctors</a>
-            <a href="#" class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i class="fas fa-hard-hat mr-2 text-primary"></i> Engineers</a>
-            <a href="#" class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i class="fas fa-user-graduate mr-2 text-primary"></i> MBA/MCA</a>
-            <a href="#" class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i class="fas fa-calculator mr-2 text-primary"></i> CA/CS</a>
-            <a href="#" class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i class="fas fa-briefcase mr-2 text-primary"></i> Business</a>
-            <a href="#" class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i class="fas fa-laptop-house mr-2 text-primary"></i> Service</a>
-            <a href="#" class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i class="fas fa-plane mr-2 text-primary"></i> NRI</a>
-            <a href="#" class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i class="fas fa-om mr-2 text-primary"></i> Manglik</a>
-            <a href="#" class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i class="fas fa-user-alt-slash mr-2 text-primary"></i> Widow</a>
-            <a href="#" class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i class="fas fa-heart-broken mr-2 text-primary"></i> Divorcee</a>
-            <a href="#" class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i class="fas fa-user-slash mr-2 text-primary"></i> Widower</a>
+            <a href="#"
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
+                    class="fas fa-female mr-2 text-primary group-hover:text-white"></i> All Brides</a>
+            <a href="#"
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
+                    class="fas fa-male mr-2 text-primary group-hover:text-white"></i> All Grooms</a>
+            <a href="#"
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
+                    class="fas fa-user-md mr-2 text-primary"></i> Doctors</a>
+            <a href="#"
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
+                    class="fas fa-hard-hat mr-2 text-primary"></i> Engineers</a>
+            <a href="#"
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
+                    class="fas fa-user-graduate mr-2 text-primary"></i> MBA/MCA</a>
+            <a href="#"
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
+                    class="fas fa-calculator mr-2 text-primary"></i> CA/CS</a>
+            <a href="#"
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
+                    class="fas fa-briefcase mr-2 text-primary"></i> Business</a>
+            <a href="#"
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
+                    class="fas fa-laptop-house mr-2 text-primary"></i> Service</a>
+            <a href="#"
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
+                    class="fas fa-plane mr-2 text-primary"></i> NRI</a>
+            <a href="#"
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
+                    class="fas fa-om mr-2 text-primary"></i> Manglik</a>
+            <a href="#"
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
+                    class="fas fa-user-alt-slash mr-2 text-primary"></i> Widow</a>
+            <a href="#"
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
+                    class="fas fa-heart-broken mr-2 text-primary"></i> Divorcee</a>
+            <a href="#"
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
+                    class="fas fa-user-slash mr-2 text-primary"></i> Widower</a>
         </div>
     </div>
 </section>
 
 <!-- Browse Directory (Location & Sect) -->
+<!--
 <section class="py-16 bg-light border-y border-gray-200">
     <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
             
-            <!-- Browse By City -->
+            Browse By City 
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="0">
                 <h3 class="text-xl font-bold text-dark mb-4 border-b-2 border-primary pb-2 flex items-center"><i class="fas fa-city text-primary mr-2"></i>Browse By City</h3>
                 <ul class="space-y-3 mt-4">
@@ -307,7 +392,7 @@ include 'includes/header.php';
                 </ul>
             </div>
 
-            <!-- Browse By State -->
+            Browse By State
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="100">
                 <h3 class="text-xl font-bold text-dark mb-4 border-b-2 border-primary pb-2 flex items-center"><i class="fas fa-map text-primary mr-2"></i>Browse By State</h3>
                 <ul class="space-y-3 mt-4">
@@ -321,7 +406,7 @@ include 'includes/header.php';
                 </ul>
             </div>
 
-            <!-- Browse By Country -->
+            Browse By Country 
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="200">
                 <h3 class="text-xl font-bold text-dark mb-4 border-b-2 border-primary pb-2 flex items-center"><i class="fas fa-globe text-primary mr-2"></i>Browse By Country</h3>
                 <ul class="space-y-3 mt-4">
@@ -334,7 +419,7 @@ include 'includes/header.php';
                 </ul>
             </div>
 
-            <!-- Browse By Sect -->
+            Browse By Sect 
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="300">
                 <h3 class="text-xl font-bold text-dark mb-4 border-b-2 border-primary pb-2 flex items-center"><i class="fas fa-praying-hands text-primary mr-2"></i>Browse By Sect</h3>
                 <ul class="space-y-3 mt-4">
@@ -349,55 +434,68 @@ include 'includes/header.php';
         </div>
     </div>
 </section>
+-->
 
 <!-- News & Updates / Stats Section -->
 <section class="py-16 bg-white">
     <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            
+
             <!-- News & Updates -->
             <div data-aos="fade-right">
                 <div class="flex justify-between items-center mb-6 border-b pb-2">
-                    <h2 class="text-3xl font-bold text-dark flex items-center"><i class="fas fa-newspaper text-primary mr-3 text-2xl"></i>News & Updates</h2>
-                    <a href="#" class="bg-light text-primary px-4 py-1.5 rounded-md hover:bg-primary hover:text-white transition text-sm font-bold shadow-sm">View All</a>
+                    <h2 class="text-3xl font-bold text-dark flex items-center"><i
+                            class="fas fa-newspaper text-primary mr-3 text-2xl"></i>News & Updates</h2>
+                    <a href="#"
+                        class="bg-light text-primary px-4 py-1.5 rounded-md hover:bg-primary hover:text-white transition text-sm font-bold shadow-sm">View
+                        All</a>
                 </div>
-                
+
                 <div class="space-y-4">
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:border-primary transition group cursor-pointer">
+                    <div
+                        class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:border-primary transition group cursor-pointer">
                         <div class="flex items-start">
                             <div class="bg-primary text-white rounded-lg text-center p-2 min-w-[65px] mr-4 shadow">
                                 <div class="text-2xl font-bold leading-none">15</div>
                                 <div class="text-xs uppercase font-medium mt-1">Oct</div>
                             </div>
                             <div>
-                                <h4 class="font-bold text-lg text-dark mb-1 group-hover:text-primary transition">All India Jain Parichay Sammelan 2026</h4>
-                                <p class="text-sm text-gray-600 line-clamp-2">Join us for the mega Parichay Sammelan organized by Digambar Jain Mahasabha in New Delhi.</p>
+                                <h4 class="font-bold text-lg text-dark mb-1 group-hover:text-primary transition">All
+                                    India Jain Parichay Sammelan 2026</h4>
+                                <p class="text-sm text-gray-600 line-clamp-2">Join us for the mega Parichay Sammelan
+                                    organized by Digambar Jain Mahasabha in New Delhi.</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:border-primary transition group cursor-pointer">
+                    <div
+                        class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:border-primary transition group cursor-pointer">
                         <div class="flex items-start">
                             <div class="bg-primary text-white rounded-lg text-center p-2 min-w-[65px] mr-4 shadow">
                                 <div class="text-2xl font-bold leading-none">05</div>
                                 <div class="text-xs uppercase font-medium mt-1">Nov</div>
                             </div>
                             <div>
-                                <h4 class="font-bold text-lg text-dark mb-1 group-hover:text-primary transition">New Branch Opening in Ahmedabad</h4>
-                                <p class="text-sm text-gray-600 line-clamp-2">We are glad to announce our new regional office in Ahmedabad for better offline support.</p>
+                                <h4 class="font-bold text-lg text-dark mb-1 group-hover:text-primary transition">New
+                                    Branch Opening in Ahmedabad</h4>
+                                <p class="text-sm text-gray-600 line-clamp-2">We are glad to announce our new regional
+                                    office in Ahmedabad for better offline support.</p>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:border-primary transition group cursor-pointer">
+
+                    <div
+                        class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:border-primary transition group cursor-pointer">
                         <div class="flex items-start">
                             <div class="bg-primary text-white rounded-lg text-center p-2 min-w-[65px] mr-4 shadow">
                                 <div class="text-2xl font-bold leading-none">22</div>
                                 <div class="text-xs uppercase font-medium mt-1">Nov</div>
                             </div>
                             <div>
-                                <h4 class="font-bold text-lg text-dark mb-1 group-hover:text-primary transition">Jain Community Medical Camp</h4>
-                                <p class="text-sm text-gray-600 line-clamp-2">Free health checkup camp for all community members organized by Seva Samiti.</p>
+                                <h4 class="font-bold text-lg text-dark mb-1 group-hover:text-primary transition">Jain
+                                    Community Medical Camp</h4>
+                                <p class="text-sm text-gray-600 line-clamp-2">Free health checkup camp for all community
+                                    members organized by Seva Samiti.</p>
                             </div>
                         </div>
                     </div>
@@ -407,32 +505,41 @@ include 'includes/header.php';
             <!-- Stats section -->
             <div class="bg-light p-8 rounded-2xl border border-gray-100" data-aos="fade-left">
                 <h2 class="text-3xl font-bold text-dark mb-4 text-center lg:text-left">Trusted by Millions</h2>
-                <p class="text-gray-600 mb-8 text-center lg:text-left">We have been serving the Jain community for over a decade, helping thousands of individuals find their soulmates through our trusted platform.</p>
-                
+                <p class="text-gray-600 mb-8 text-center lg:text-left">We have been serving the Jain community for over
+                    a decade, helping thousands of individuals find their soulmates through our trusted platform.</p>
+
                 <div class="grid grid-cols-2 gap-6">
-                    <div class="bg-white p-6 rounded-xl text-center shadow-sm border border-gray-100 hover:border-primary transition group">
-                        <div class="w-14 h-14 mx-auto bg-red-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary transition">
+                    <div
+                        class="bg-white p-6 rounded-xl text-center shadow-sm border border-gray-100 hover:border-primary transition group">
+                        <div
+                            class="w-14 h-14 mx-auto bg-red-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary transition">
                             <i class="fas fa-heart text-2xl text-primary group-hover:text-white"></i>
                         </div>
                         <div class="counter text-3xl font-bold text-dark mb-1" data-target="5000">5000+</div>
                         <p class="text-sm text-gray-500 font-semibold">Happy Marriages</p>
                     </div>
-                    <div class="bg-white p-6 rounded-xl text-center shadow-sm border border-gray-100 hover:border-primary transition group">
-                        <div class="w-14 h-14 mx-auto bg-blue-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary transition">
+                    <div
+                        class="bg-white p-6 rounded-xl text-center shadow-sm border border-gray-100 hover:border-primary transition group">
+                        <div
+                            class="w-14 h-14 mx-auto bg-blue-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary transition">
                             <i class="fas fa-users text-2xl text-primary group-hover:text-white"></i>
                         </div>
                         <div class="counter text-3xl font-bold text-dark mb-1" data-target="25000">25000+</div>
                         <p class="text-sm text-gray-500 font-semibold">Verified Profiles</p>
                     </div>
-                    <div class="bg-white p-6 rounded-xl text-center shadow-sm border border-gray-100 hover:border-primary transition group">
-                        <div class="w-14 h-14 mx-auto bg-green-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary transition">
+                    <div
+                        class="bg-white p-6 rounded-xl text-center shadow-sm border border-gray-100 hover:border-primary transition group">
+                        <div
+                            class="w-14 h-14 mx-auto bg-green-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary transition">
                             <i class="fas fa-globe-asia text-2xl text-primary group-hover:text-white"></i>
                         </div>
                         <div class="counter text-3xl font-bold text-dark mb-1" data-target="100">100+</div>
                         <p class="text-sm text-gray-500 font-semibold">Cities Covered</p>
                     </div>
-                    <div class="bg-white p-6 rounded-xl text-center shadow-sm border border-gray-100 hover:border-primary transition group">
-                        <div class="w-14 h-14 mx-auto bg-yellow-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary transition">
+                    <div
+                        class="bg-white p-6 rounded-xl text-center shadow-sm border border-gray-100 hover:border-primary transition group">
+                        <div
+                            class="w-14 h-14 mx-auto bg-yellow-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary transition">
                             <i class="fas fa-award text-2xl text-primary group-hover:text-white"></i>
                         </div>
                         <div class="counter text-3xl font-bold text-dark mb-1" data-target="15">15+</div>
@@ -455,22 +562,19 @@ include 'includes/header.php';
             <p class="text-gray-400 mt-4">Glimpses of our events, programs, and community gatherings</p>
         </div>
 
-        <!-- Gallery Filters -->
-        <div class="flex flex-wrap justify-center gap-3 mb-10" data-aos="fade-up" data-aos-delay="100">
-            <button class="bg-primary text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg transition">All Photos</button>
-            <button class="bg-transparent border border-gray-500 text-gray-300 px-6 py-2 rounded-full text-sm font-bold hover:border-white hover:text-white transition">Events</button>
-            <button class="bg-transparent border border-gray-500 text-gray-300 px-6 py-2 rounded-full text-sm font-bold hover:border-white hover:text-white transition">Parichay Sammelan</button>
-            <button class="bg-transparent border border-gray-500 text-gray-300 px-6 py-2 rounded-full text-sm font-bold hover:border-white hover:text-white transition">Religious Programs</button>
-            <button class="bg-transparent border border-gray-500 text-gray-300 px-6 py-2 rounded-full text-sm font-bold hover:border-white hover:text-white transition">Temple Functions</button>
-        </div>
 
         <!-- Gallery Grid -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             <!-- Darshan Jain -->
-            <a href="#" class="group relative overflow-hidden rounded-xl shadow-lg block h-64" data-aos="zoom-in" data-aos-delay="0">
-                <img src="assets/images/darshan jain.png" alt="Darshan Jain" class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-90 transition duration-300"></div>
-                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
+            <a href="#" class="group relative overflow-hidden rounded-xl shadow-lg block h-64" data-aos="zoom-in"
+                data-aos-delay="0">
+                <img src="assets/images/darshan jain.jpeg" alt="Darshan Jain"
+                    class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-700">
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-90 transition duration-300">
+                </div>
+                <div
+                    class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
                     <div class="bg-primary/90 text-white rounded-full p-3 shadow-lg">
                         <i class="fas fa-search-plus text-xl"></i>
                     </div>
@@ -480,10 +584,15 @@ include 'includes/header.php';
                 </div>
             </a>
             <!-- Manoj Jain -->
-            <a href="#" class="group relative overflow-hidden rounded-xl shadow-lg block h-64" data-aos="zoom-in" data-aos-delay="100">
-                <img src="assets/images/manoj jain.png" alt="Manoj Jain" class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-90 transition duration-300"></div>
-                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
+            <a href="#" class="group relative overflow-hidden rounded-xl shadow-lg block h-64" data-aos="zoom-in"
+                data-aos-delay="100">
+                <img src="assets/images/manoj jain.jpeg" alt="Manoj Jain"
+                    class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-700">
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-90 transition duration-300">
+                </div>
+                <div
+                    class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
                     <div class="bg-primary/90 text-white rounded-full p-3 shadow-lg">
                         <i class="fas fa-search-plus text-xl"></i>
                     </div>
@@ -493,10 +602,15 @@ include 'includes/header.php';
                 </div>
             </a>
             <!-- Naresh Jain / Narendra Jain -->
-            <a href="#" class="group relative overflow-hidden rounded-xl shadow-lg block h-64" data-aos="zoom-in" data-aos-delay="200">
-                <img src="assets/images/narendra jain.png" alt="Naresh Jain" class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-90 transition duration-300"></div>
-                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
+            <a href="#" class="group relative overflow-hidden rounded-xl shadow-lg block h-64" data-aos="zoom-in"
+                data-aos-delay="200">
+                <img src="assets/images/narendra jain.png" alt="Naresh Jain"
+                    class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-700">
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-90 transition duration-300">
+                </div>
+                <div
+                    class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
                     <div class="bg-primary/90 text-white rounded-full p-3 shadow-lg">
                         <i class="fas fa-search-plus text-xl"></i>
                     </div>
@@ -506,10 +620,15 @@ include 'includes/header.php';
                 </div>
             </a>
             <!-- Jitendra Shah -->
-            <a href="#" class="group relative overflow-hidden rounded-xl shadow-lg block h-64" data-aos="zoom-in" data-aos-delay="300">
-                <img src="assets/images/Jitendra Shah.png" alt="Jitendra Shah" class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-90 transition duration-300"></div>
-                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
+            <a href="#" class="group relative overflow-hidden rounded-xl shadow-lg block h-64" data-aos="zoom-in"
+                data-aos-delay="300">
+                <img src="assets/images/Jitendra Shah.png" alt="Jitendra Shah"
+                    class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-700">
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-90 transition duration-300">
+                </div>
+                <div
+                    class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
                     <div class="bg-primary/90 text-white rounded-full p-3 shadow-lg">
                         <i class="fas fa-search-plus text-xl"></i>
                     </div>
@@ -519,10 +638,15 @@ include 'includes/header.php';
                 </div>
             </a>
             <!-- Milesh K Doshi -->
-            <a href="#" class="group relative overflow-hidden rounded-xl shadow-lg block h-64" data-aos="zoom-in" data-aos-delay="400">
-                <img src="assets/images/milesh k doshi.png" alt="Milesh K Doshi" class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-700">
-                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-90 transition duration-300"></div>
-                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
+            <a href="#" class="group relative overflow-hidden rounded-xl shadow-lg block h-64" data-aos="zoom-in"
+                data-aos-delay="400">
+                <img src="assets/images/milesh k doshi.png" alt="Milesh K Doshi"
+                    class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-700">
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-90 transition duration-300">
+                </div>
+                <div
+                    class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
                     <div class="bg-primary/90 text-white rounded-full p-3 shadow-lg">
                         <i class="fas fa-search-plus text-xl"></i>
                     </div>
@@ -532,9 +656,11 @@ include 'includes/header.php';
                 </div>
             </a>
         </div>
-        
+
         <div class="text-center mt-12">
-            <a href="gallery.php" class="inline-block bg-white text-dark px-8 py-3 rounded-md hover:bg-gray-100 transition font-bold text-lg shadow-lg"><i class="fas fa-images mr-2"></i>View Complete Gallery</a>
+            <a href="gallery.php"
+                class="inline-block bg-white text-dark px-8 py-3 rounded-md hover:bg-gray-100 transition font-bold text-lg shadow-lg"><i
+                    class="fas fa-images mr-2"></i>View Complete Gallery</a>
         </div>
     </div>
 </section>
