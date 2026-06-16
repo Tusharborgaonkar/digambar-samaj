@@ -26,7 +26,7 @@ $fullName = htmlspecialchars($member['full_name'] ?? '');
 $memberId = htmlspecialchars($member['profile_id'] ?? '');
 // Ensure we have correct path from admin folder
 $photo_path = (!empty($member['profile_photo'])) ? '../' . $member['profile_photo'] : '';
-$photo = ($photo_path && file_exists($photo_path)) ? htmlspecialchars($photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name'] ?? 'User');
+$photo = ($photo_path && file_exists($photo_path)) ? '../image.php?file=' . urlencode($member['profile_photo']) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name'] ?? 'User');
 
 $age = 'N/A';
 if (!empty($member['birth_date'])) {

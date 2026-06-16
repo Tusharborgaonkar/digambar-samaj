@@ -3,18 +3,86 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Simple dummy login check (for UI presentation purposes)
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'] ?? '';
-    $password = $_POST['password'] ?? '';
+require_once '../includes/db.php';
 
-    // Dummy validation
-    if ($email === 'digambersamaj@example.com' && $password === 'digamberjain123') {
-        $_SESSION['admin_logged_in'] = true;
-        header("Location: dashboard.php");
-        exit();
+// Generate CSRF token if not exists
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Simple rate limiting logic
+if (!isset($_SESSION['login_attempts'])) {
+    $_SESSION['login_attempts'] = 0;
+}
+if (!isset($_SESSION['last_login_attempt'])) {
+    $_SESSION['last_login_attempt'] = time();
+}
+
+// Check if rate limited
+$is_rate_limited = false;
+$time_since_last_attempt = time() - $_SESSION['last_login_attempt'];
+if ($_SESSION['login_attempts'] >= 5 && $time_since_last_attempt < 300) { // 5 minutes lock
+    $is_rate_limited = true;
+    $error = "Too many failed attempts. Please try again in " . ceil((300 - $time_since_last_attempt) / 60) . " minutes.";
+} elseif ($time_since_last_attempt >= 300) {
+    // Reset after timeout
+    $_SESSION['login_attempts'] = 0;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$is_rate_limited) {
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        $error = "Invalid request. Please refresh and try again.";
     } else {
-        $error = "Invalid credentials. Please try again.";
+        $email = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
+        $password = $_POST['password'] ?? '';
+
+        if (empty($email) || empty($password)) {
+            $error = "Please enter both email and password.";
+        } else {
+            try {
+                $stmt = $pdo->prepare("SELECT id, name, email, password_hash, role, status FROM admins WHERE email = :email");
+                $stmt->execute(['email' => $email]);
+                $admin = $stmt->fetch();
+
+                if ($admin && password_verify($password, $admin['password_hash'])) {
+                    if ($admin['status'] == 1) {
+                        // Success: Regenerate session ID
+                        session_regenerate_id(true);
+
+                        $_SESSION['admin_logged_in'] = true;
+                        $_SESSION['admin_id'] = $admin['id'];
+                        $_SESSION['admin_name'] = $admin['name'];
+                        $_SESSION['admin_role'] = $admin['role'];
+
+                        // Reset rate limiting
+                        $_SESSION['login_attempts'] = 0;
+
+                        // Update last login
+                        $update_stmt = $pdo->prepare("UPDATE admins SET last_login = NOW(), last_login_ip = :ip WHERE id = :id");
+                        $update_stmt->execute([
+                            'ip' => $_SERVER['REMOTE_ADDR'] ?? null,
+                            'id' => $admin['id']
+                        ]);
+
+                        header("Location: dashboard.php");
+                        exit();
+                    } else {
+                        $error = "Your account has been deactivated. Please contact the super admin.";
+                        $_SESSION['login_attempts']++;
+                        $_SESSION['last_login_attempt'] = time();
+                    }
+                } else {
+                    $error = "Invalid email or password.";
+                    $_SESSION['login_attempts']++;
+                    $_SESSION['last_login_attempt'] = time();
+                }
+            } catch (PDOException $e) {
+                // Log actual error and show generic one
+                error_log("Login error: " . $e->getMessage());
+                $error = "An error occurred during login. Please try again later.";
+            }
+        }
     }
 }
 ?>
@@ -88,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-envelope text-gray-400"></i>
                         </div>
-                        <input type="email" name="email" id="email" required value="digambersamaj@example.com"
+                        <input type="email" name="email" id="email" required value="<?= htmlspecialchars($_POST['email'] ?? '') ?>"
                                class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition outline-none"
                                placeholder="admin@example.com">
                     </div>
@@ -103,7 +171,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fas fa-lock text-gray-400"></i>
                         </div>
-                        <input type="password" name="password" id="password" required value="digamberjain123"
+                        <input type="password" name="password" id="password" required
                                class="w-full pl-10 pr-10 py-2.5 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition outline-none"
                                placeholder="••••••••">
                         
@@ -114,13 +182,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
+                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+
                 <!-- Remember Me & Forgot Password -->
                 <div class="flex items-center justify-between text-sm">
                     <div class="flex items-center">
                         <input type="checkbox" id="remember" class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary">
                         <label for="remember" class="ml-2 text-gray-600">Remember me</label>
                     </div>
-                    <a href="#" class="text-primary hover:underline font-medium">Forgot password?</a>
+                    <a href="forgot-password.php" class="text-primary hover:underline font-medium">Forgot password?</a>
                 </div>
 
                 <!-- Submit Button -->

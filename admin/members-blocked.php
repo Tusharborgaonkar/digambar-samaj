@@ -88,8 +88,8 @@ if ($total_records == 0) {
                     <td class="py-4 px-6">
                         <div class="flex items-center">
                             <?php
-                            $photo_path = !empty($member['profile_photo']) ? '../' . $member['profile_photo'] : '';
-                            $photo = ($photo_path && file_exists($photo_path)) ? htmlspecialchars($photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name']);
+                            $photo_path_real = !empty($member['profile_photo']) ? '../' . $member['profile_photo'] : '';
+                            $photo = ($photo_path_real && file_exists($photo_path_real)) ? '../image.php?file=' . urlencode($member['profile_photo']) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name']);
                             ?>
                             <img src="<?= $photo ?>" class="w-10 h-10 rounded-full object-cover mr-3 border border-gray-200" alt="Profile Photo">
                             <div>

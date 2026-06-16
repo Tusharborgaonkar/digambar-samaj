@@ -128,7 +128,7 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <h3 class="text-sm font-medium text-blue-800">Limited View Mode</h3>
                         <div class="mt-2 text-sm text-blue-700">
                             <?php if (!$is_logged_in): ?>
-                                <p>You are viewing profiles as a guest. Please <a href="login.php" class="font-bold underline hover:text-blue-900">log in</a> or <a href="registration.php" class="font-bold underline hover:text-blue-900">register</a> to view photos and full details.</p>
+                                <p>You are viewing profiles as a guest. Please <a href="login.php" class="font-bold underline hover:text-blue-900">log in</a> or <a href="register.php" class="font-bold underline hover:text-blue-900">register</a> to view photos and full details.</p>
                             <?php else: ?>
                                 <p>Your profile is currently pending approval. Once an admin approves your profile, you will be able to view photos and full details.</p>
                             <?php endif; ?>
@@ -267,20 +267,21 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 $today = new DateTime('today');
                                 $age = $bday->diff($today)->y;
                             }
-                            $img = (!empty($p['profile_photo']) && file_exists($p['profile_photo'])) ? $p['profile_photo'] : 'https://ui-avatars.com/api/?name='.urlencode($p['full_name']).'&background=random';
+                            $img = (!empty($p['profile_photo']) && file_exists($p['profile_photo'])) ? 'image.php?file='.urlencode($p['profile_photo']) : 'https://ui-avatars.com/api/?name='.urlencode($p['full_name']).'&background=random';
                         ?>
                         <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition flex flex-col sm:flex-row">
                             <div class="w-full sm:w-1/4 md:w-56 relative bg-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0" style="min-height: 280px;">
                                 <?php if ($is_approved): ?>
                                     <img src="<?= htmlspecialchars($img) ?>" alt="Profile" class="w-full h-full object-cover object-top absolute inset-0">
                                 <?php else: ?>
-                                    <!-- Blurred photo with lock overlay for guests / pending users -->
-                                    <img src="<?= htmlspecialchars($img) ?>" alt="Profile" class="w-full h-full object-cover object-top absolute inset-0 blur-lg opacity-30 select-none pointer-events-none">
-                                    <div class="absolute inset-0 flex flex-col items-center justify-center text-gray-500 p-4 text-center z-10">
-                                        <div class="w-14 h-14 bg-white/80 rounded-full flex items-center justify-center mb-2 shadow">
-                                            <i class="fas fa-lock text-xl text-gray-400"></i>
+                                    <!-- Beautiful AI Placeholder with lock overlay for guests / pending users -->
+                                    <?php $placeholder = ($p['gender'] == 'Female') ? 'assets/images/bride_placeholder.png' : 'assets/images/groom_placeholder.png'; ?>
+                                    <img src="<?= $placeholder ?>" alt="Profile Locked" class="w-full h-full object-cover object-top absolute inset-0">
+                                    <div class="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-30 p-4 text-center z-10 backdrop-blur-[2px]">
+                                        <div class="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center mb-2 shadow-lg">
+                                            <i class="fas fa-lock text-xl text-primary"></i>
                                         </div>
-                                        <span class="text-xs font-semibold bg-white/80 px-3 py-1 rounded-full shadow-sm"><?= $is_logged_in ? 'Approval Pending' : 'Login to View' ?></span>
+                                        <span class="text-xs font-semibold bg-white/90 text-primary px-3 py-1 rounded-full shadow-md"><?= $is_logged_in ? 'Approval Pending' : 'Login to View' ?></span>
                                     </div>
                                 <?php endif; ?>
                             </div>

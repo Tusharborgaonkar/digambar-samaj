@@ -57,7 +57,7 @@ if (!$member) {
 
 $fullName = htmlspecialchars($member['full_name'] ?? '');
 $memberId = htmlspecialchars($member['profile_id'] ?? '');
-$photo = (!empty($member['profile_photo']) && file_exists($member['profile_photo'])) ? htmlspecialchars($member['profile_photo']) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name'] ?? 'User');
+$photo = (!empty($member['profile_photo']) && file_exists($member['profile_photo'])) ? 'image.php?file='.urlencode($member['profile_photo']) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name'] ?? 'User');
 
 $age = 'N/A';
 if (!empty($member['birth_date'])) {

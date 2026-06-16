@@ -1,39 +1,81 @@
 <?php
+ini_set('session.cookie_httponly', 1);
+ini_set('session.use_only_cookies', 1);
 session_start();
 include 'includes/db.php';
 
+// Generate CSRF token if not exists
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// Simple rate limiting logic
+if (!isset($_SESSION['register_attempts'])) {
+    $_SESSION['register_attempts'] = 0;
+}
+if (!isset($_SESSION['last_register_attempt'])) {
+    $_SESSION['last_register_attempt'] = time();
+}
+
+$is_rate_limited = false;
+$time_since_last_attempt = time() - $_SESSION['last_register_attempt'];
+if ($_SESSION['register_attempts'] >= 5 && $time_since_last_attempt < 300) {
+    $is_rate_limited = true;
+    $error = "Too many failed attempts. Please try again in " . ceil((300 - $time_since_last_attempt) / 60) . " minutes.";
+} elseif ($time_since_last_attempt >= 300) {
+    $_SESSION['register_attempts'] = 0;
+}
+
 $success = '';
-$error = '';
+if (empty($error)) {
+    $error = '';
+}
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $full_name = htmlspecialchars($_POST['full_name']);
-    $mobile = $_POST['country_code'] . $_POST['mobile'];
-    $email = htmlspecialchars($_POST['email']);
-    $password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
-
-    if ($password !== $confirm_password) {
-        $error = "Passwords do not match.";
-    } elseif (!preg_match('/^[0-9]{10}$/', $_POST['mobile'])) {
-        $error = "Mobile number must be exactly 10 digits.";
+if ($_SERVER["REQUEST_METHOD"] == "POST" && !$is_rate_limited) {
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        $error = "Invalid request. Please refresh and try again.";
     } else {
-        $password_hash = password_hash($password, PASSWORD_DEFAULT);
+        $full_name = trim($_POST['full_name'] ?? '');
+        $mobile = ($_POST['country_code'] ?? '') . ($_POST['mobile'] ?? '');
+        $email = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
+        $password = $_POST['password'] ?? '';
+        $confirm_password = $_POST['confirm_password'] ?? '';
 
-        try {
-            $stmt = $pdo->prepare("INSERT INTO users (
-                full_name, mobile, email, password, status
-            ) VALUES (?, ?, ?, ?, 'account_pending')");
+        if ($password !== $confirm_password) {
+            $error = "Passwords do not match.";
+            $_SESSION['register_attempts']++;
+            $_SESSION['last_register_attempt'] = time();
+        } elseif (!preg_match('/^[0-9]{10}$/', $_POST['mobile'] ?? '')) {
+            $error = "Mobile number must be exactly 10 digits.";
+            $_SESSION['register_attempts']++;
+            $_SESSION['last_register_attempt'] = time();
+        } elseif (empty($full_name) || empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = "Please provide valid details.";
+            $_SESSION['register_attempts']++;
+            $_SESSION['last_register_attempt'] = time();
+        } else {
+            $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-            $stmt->execute([
-                $full_name, $mobile, $email, $password_hash
-            ]);
+            try {
+                $stmt = $pdo->prepare("INSERT INTO users (
+                    full_name, mobile, email, password, status
+                ) VALUES (?, ?, ?, ?, 'account_pending')");
 
-            $success = "Your account request has been submitted to the admin for approval. Please wait for confirmation.";
-        } catch (PDOException $e) {
-            if ($e->getCode() == 23000) {
-                $error = "An account with this email or mobile already exists.";
-            } else {
-                $error = "Registration failed: " . $e->getMessage();
+                $stmt->execute([
+                    $full_name, $mobile, $email, $password_hash
+                ]);
+
+                $success = "Your account request has been submitted to the admin for approval. Please wait for confirmation.";
+                $_SESSION['register_attempts'] = 0;
+            } catch (PDOException $e) {
+                if ($e->getCode() == 23000) {
+                    $error = "An account with this email or mobile already exists.";
+                } else {
+                    error_log("Registration failed: " . $e->getMessage());
+                    $error = "Registration failed. Please try again later.";
+                }
+                $_SESSION['register_attempts']++;
+                $_SESSION['last_register_attempt'] = time();
             }
         }
     }
@@ -87,6 +129,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <?php endif; ?>
 
                     <form class="space-y-6" action="" method="POST">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
                         <div>
                             <label for="full_name" class="block text-sm font-medium text-gray-700">Full Name *</label>
                             <div class="mt-1 relative rounded-md shadow-sm">

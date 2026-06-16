@@ -119,9 +119,17 @@ function buildQueryString($page_num) {
     </div>
     
     <div class="flex gap-2">
-        <button class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition shadow-sm flex items-center">
+        <?php
+        $export_url = 'export-members.php';
+        $export_params = [];
+        if (!empty($search)) $export_params['search'] = $search;
+        if (!empty($gender)) $export_params['gender'] = $gender;
+        if (!empty($status)) $export_params['status'] = $status;
+        if (!empty($export_params)) $export_url .= '?' . http_build_query($export_params);
+        ?>
+        <a href="<?= htmlspecialchars($export_url) ?>" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-opacity-90 transition shadow-sm flex items-center">
             <i class="fas fa-download mr-2"></i> Export
-        </button>
+        </a>
     </div>
 </div>
 
@@ -179,8 +187,8 @@ function buildQueryString($page_num) {
                     <td class="py-4 px-6">
                         <div class="flex items-center">
                             <?php
-                            $photo_path = !empty($member['profile_photo']) ? '../' . $member['profile_photo'] : '';
-                            $photo = ($photo_path && file_exists($photo_path)) ? htmlspecialchars($photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name']);
+                            $photo_path_real = !empty($member['profile_photo']) ? '../' . $member['profile_photo'] : '';
+                            $photo = ($photo_path_real && file_exists($photo_path_real)) ? '../image.php?file=' . urlencode($member['profile_photo']) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name']);
                             ?>
                             <img src="<?= $photo ?>" class="w-10 h-10 rounded-full object-cover mr-3 border border-gray-200" alt="Profile Photo">
                             <div>

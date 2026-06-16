@@ -57,9 +57,9 @@ if ($total_records == 0) {
         <p class="text-gray-500 text-sm">Members whose profiles have been verified and approved.</p>
     </div>
     <div class="flex gap-2">
-        <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition shadow-sm flex items-center">
+        <a href="export-members.php?status=approved" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition shadow-sm flex items-center">
             <i class="fas fa-download mr-2"></i> Export
-        </button>
+        </a>
     </div>
 </div>
 
@@ -88,8 +88,8 @@ if ($total_records == 0) {
                     <td class="py-4 px-6">
                         <div class="flex items-center">
                             <?php
-                            $photo_path = !empty($member['profile_photo']) ? '../' . $member['profile_photo'] : '';
-                            $photo = ($photo_path && file_exists($photo_path)) ? htmlspecialchars($photo_path) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name']);
+                            $photo_path_real = !empty($member['profile_photo']) ? '../' . $member['profile_photo'] : '';
+                            $photo = ($photo_path_real && file_exists($photo_path_real)) ? '../image.php?file=' . urlencode($member['profile_photo']) : 'https://ui-avatars.com/api/?name=' . urlencode($member['full_name']);
                             ?>
                             <img src="<?= $photo ?>" class="w-10 h-10 rounded-full object-cover mr-3 border border-gray-200" alt="Profile Photo">
                             <div>

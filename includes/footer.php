@@ -8,10 +8,10 @@
                     <h3 class="text-2xl font-bold text-accent mb-4">Jain Digambar</h3>
                     <p class="text-gray-300">Exclusive matrimony platform for the Digambar Jain Samaj. Find your perfect life partner within the community.</p>
                     <div class="flex space-x-4 mt-4">
-                        <a href="#" class="text-gray-300 hover:text-accent transition"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-gray-300 hover:text-accent transition"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-gray-300 hover:text-accent transition"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-gray-300 hover:text-accent transition"><i class="fab fa-youtube"></i></a>
+                        <a href="https://facebook.com" class="text-gray-300 hover:text-accent transition" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://instagram.com" class="text-gray-300 hover:text-accent transition" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="https://twitter.com" class="text-gray-300 hover:text-accent transition" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="https://youtube.com" class="text-gray-300 hover:text-accent transition" target="_blank"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
                 <div>
@@ -27,9 +27,9 @@
                     <h4 class="text-lg font-semibold mb-4">Support</h4>
                     <ul class="space-y-2">
                         <li><a href="contact.php" class="text-gray-300 hover:text-accent transition">Contact Us</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-accent transition">Privacy Policy</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-accent transition">Terms & Conditions</a></li>
-                        <li><a href="#" class="text-gray-300 hover:text-accent transition">FAQs</a></li>
+                        <li><a href="privacy.php" class="text-gray-300 hover:text-accent transition">Privacy Policy</a></li>
+                        <li><a href="terms.php" class="text-gray-300 hover:text-accent transition">Terms & Conditions</a></li>
+                        <li><a href="faq.php" class="text-gray-300 hover:text-accent transition">FAQs</a></li>
                     </ul>
                 </div>
                 <div>

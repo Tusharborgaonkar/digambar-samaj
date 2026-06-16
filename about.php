@@ -238,21 +238,6 @@
     </div>
 </section>
 
-<!-- Video Section -->
-<section class="py-16 bg-white border-t border-gray-100">
-    <div class="container mx-auto px-4 max-w-4xl text-center" data-aos="fade-up">
-        <h2 class="text-3xl font-bold text-dark mb-4">Learn More About Us</h2>
-        <div class="w-16 h-1 bg-primary mx-auto mb-8"></div>
-        <div class="relative w-full overflow-hidden rounded-2xl shadow-2xl border-4 border-gray-50 bg-black"
-            style="padding-top: 56.25%;">
-            <!-- This URL would dynamically come from the admin settings (DB), currently hardcoded for UI purposes -->
-            <iframe class="absolute top-0 left-0 w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                title="About Jain Digambar Matrimony" frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen></iframe>
-        </div>
-    </div>
-</section>
 
 <!-- Messages from Committee -->
 <section class="py-16 bg-light border-t border-gray-100">
