@@ -45,6 +45,6 @@ try {
     // Log the actual error internally (ensure error logging is configured in php.ini)
     error_log("Database connection failed: " . $e->getMessage());
     // Display a generic error message to the user
-    die("Database connection failed. Please try again later.");
+    die("Database connection failed. Please try again later. EXACT ERROR: " . $e->getMessage());
 }
 ?>
