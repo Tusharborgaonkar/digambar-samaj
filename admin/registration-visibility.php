@@ -14,6 +14,7 @@ $current_page = 'registration-visibility.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add_custom_field') {
     $label = trim($_POST['field_label']);
     $type = trim($_POST['field_type']);
+    $group = trim($_POST['field_group'] ?? 'Additional Information');
     $options = trim($_POST['field_options'] ?? '');
     $is_required = isset($_POST['is_required']) ? 1 : 0;
     
@@ -30,9 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $options = trim($_POST['field_options'] ?? '');
         }
 
-        $stmt = $pdo->prepare("INSERT INTO registration_fields (field_group, field_key, field_label, field_type, field_options, is_custom, is_visible, is_required) VALUES ('Custom Fields', ?, ?, ?, ?, 1, 1, ?)");
+        $stmt = $pdo->prepare("INSERT INTO registration_fields (field_group, field_key, field_label, field_type, field_options, is_custom, is_visible, is_required) VALUES (?, ?, ?, ?, ?, 1, 1, ?)");
         try {
-            $stmt->execute([$key, $label, $type, $options, $is_required]);
+            $stmt->execute([$group, $key, $label, $type, $options, $is_required]);
         } catch (PDOException $e) {
             // Key might already exist
         }
@@ -191,6 +192,18 @@ include 'includes/sidebar.php';
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Field Label *</label>
                         <input type="text" name="field_label" required placeholder="e.g. Dietary Preference" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Section (Where to add this field) *</label>
+                        <select name="field_group" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none bg-white text-sm" required>
+                            <option value="Section 1: Basic Information">Section 1: Basic Information</option>
+                            <option value="Section 2: Personal Details">Section 2: Personal Details</option>
+                            <option value="Family Details">Family Details</option>
+                            <option value="Section 4: Mandir Verification Details">Section 4: Mandir Verification Details</option>
+                            <option value="Photos">Photos</option>
+                            <option value="Documents & Payment">Documents & Payment</option>
+                            <option value="Additional Information">Additional Information</option>
+                        </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Field Type *</label>

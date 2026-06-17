@@ -29,6 +29,41 @@ $error = '';
 $stmtCustom = $pdo->query("SELECT * FROM registration_fields WHERE is_custom = 1 AND is_visible = 1 ORDER BY sort_order ASC, id ASC");
 $customFields = $stmtCustom->fetchAll();
 
+$customFieldsByGroup = [];
+foreach ($customFields as $field) {
+    $group = $field['field_group'] ?: 'Additional Information';
+    if ($group === 'Custom Fields') $group = 'Additional Information';
+    $customFieldsByGroup[$group][] = $field;
+}
+
+function renderCustomFieldHTML($field) {
+    $req = $field['is_required'] ? '*' : '';
+    $reqAttr = $field['is_required'] ? 'required' : '';
+    $label = htmlspecialchars($field['field_label']);
+    $key = htmlspecialchars($field['field_key']);
+    $type = htmlspecialchars($field['field_type']);
+    
+    $html = '<div><label class="block text-gray-700 font-medium mb-2">' . $label . ' ' . $req . '</label>';
+    if ($type === 'textarea') {
+        $html .= '<textarea name="' . $key . '" ' . $reqAttr . ' rows="2" class="w-full border rounded-lg px-4 py-2"></textarea>';
+    } elseif ($type === 'dropdown') {
+        $html .= '<select name="' . $key . '" ' . $reqAttr . ' class="w-full border rounded-lg px-4 py-2"><option value="">Select ' . $label . '</option>';
+        $options = explode(',', $field['field_options']);
+        foreach ($options as $opt) {
+            $opt = trim($opt);
+            if ($opt) $html .= '<option value="' . htmlspecialchars($opt) . '">' . htmlspecialchars($opt) . '</option>';
+        }
+        $html .= '</select>';
+    } elseif ($type === 'file') {
+        $html .= '<input type="file" name="' . $key . '" ' . $reqAttr . ' class="w-full border rounded-lg px-4 py-2">';
+    } else {
+        $html .= '<input type="' . $type . '" name="' . $key . '" ' . $reqAttr . ' class="w-full border rounded-lg px-4 py-2">';
+    }
+    $html .= '</div>';
+    return $html;
+}
+
+
 // Fetch core fields visibility settings
 $stmtCore = $pdo->query("SELECT field_key, is_visible, is_required, field_options FROM registration_fields WHERE is_custom = 0");
 $coreFieldsSettings = [];
@@ -229,6 +264,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <label class="block text-gray-700 font-medium mb-2">Mobile Number</label>
                             <input type="tel" name="mobile" value="<?= htmlspecialchars($current_user['mobile']) ?>" readonly class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed">
                         </div>
+                        <?php 
+                        if (!empty($customFieldsByGroup['Section 1: Basic Information'])) {
+                            foreach ($customFieldsByGroup['Section 1: Basic Information'] as $f) echo renderCustomFieldHTML($f);
+                        }
+                        ?>
                     </div>
                 </div>
                 
@@ -309,6 +349,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         
                         <div><label class="block text-gray-700 font-medium mb-2">Company/Firm Name (Optional)</label><input type="text" name="company_name" class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Designation (Optional)</label><input type="text" name="designation" class="w-full border rounded-lg px-4 py-2"></div>
+                        <?php 
+                        if (!empty($customFieldsByGroup['Section 2: Personal Details'])) {
+                            foreach ($customFieldsByGroup['Section 2: Personal Details'] as $f) echo renderCustomFieldHTML($f);
+                        }
+                        ?>
                     </div>
                 </div>
                 
@@ -352,6 +397,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div><label class="block text-gray-700 font-medium mb-2">Sisters Unmarried Count (Optional)</label>
                             <select name="sisters_unmarried" class="w-full border rounded-lg px-4 py-2"><option>0</option><?php for($i=1;$i<=5;$i++) echo "<option>$i</option>"; ?></select>
                         </div>
+                        <?php 
+                        if (!empty($customFieldsByGroup['Family Details'])) {
+                            foreach ($customFieldsByGroup['Family Details'] as $f) echo renderCustomFieldHTML($f);
+                        }
+                        ?>
                     </div>
                 </div>
                 
@@ -411,6 +461,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <?php endif; ?>
                     </div>
 
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <?php 
+                        if (!empty($customFieldsByGroup['Section 4: Mandir Verification Details'])) {
+                            foreach ($customFieldsByGroup['Section 4: Mandir Verification Details'] as $f) echo renderCustomFieldHTML($f);
+                        }
+                        ?>
+                    </div>
                     <!-- Reference Persons (Hidden initially, dynamic slide down) -->
                     <div id="referencePersonsContainer" class="mt-6 border-t border-dashed border-gray-200 pt-6 hidden opacity-0 transition-all duration-500 transform translate-y-2">
                         <div class="mb-4 bg-blue-50/50 p-4 rounded-lg border border-primary/10">
@@ -529,6 +586,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <input type="url" name="profile_photo_drive_url" <?= $coreFieldsSettings['profile_photo_drive_url']['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
                         </div>
                         <?php endif; ?>
+                        <?php 
+                        if (!empty($customFieldsByGroup['Photos'])) {
+                            foreach ($customFieldsByGroup['Photos'] as $f) echo renderCustomFieldHTML($f);
+                        }
+                        ?>
                     </div>
                 </div>
                 <?php endif; ?>
@@ -560,38 +622,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <input type="url" name="payment_proof_drive_url" <?= $coreFieldsSettings['payment_proof_drive_url']['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
                         </div>
                         <?php endif; ?>
+                        <?php 
+                        if (!empty($customFieldsByGroup['Documents & Payment'])) {
+                            foreach ($customFieldsByGroup['Documents & Payment'] as $f) echo renderCustomFieldHTML($f);
+                        }
+                        ?>
                     </div>
                 </div>
                 <?php endif; ?>
 
-                <!-- Custom Fields Section -->
-                <?php if (count($customFields) > 0): ?>
+                <!-- Additional Information Section -->
+                <?php if (!empty($customFieldsByGroup['Additional Information'])): ?>
                 <div class="mb-8">
                     <h2 class="text-xl font-bold text-primary mb-4">Additional Information</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <?php foreach ($customFields as $field): ?>
-                            <div>
-                                <label class="block text-gray-700 font-medium mb-2"><?= htmlspecialchars($field['field_label']) ?> <?= $field['is_required'] ? '*' : '' ?></label>
-                                <?php if ($field['field_type'] === 'textarea'): ?>
-                                    <textarea name="<?= htmlspecialchars($field['field_key']) ?>" <?= $field['is_required'] ? 'required' : '' ?> rows="2" class="w-full border rounded-lg px-4 py-2"></textarea>
-                                <?php elseif ($field['field_type'] === 'dropdown'): ?>
-                                    <select name="<?= htmlspecialchars($field['field_key']) ?>" <?= $field['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
-                                        <option value="">Select <?= htmlspecialchars($field['field_label']) ?></option>
-                                        <?php 
-                                        $options = explode(',', $field['field_options']);
-                                        foreach ($options as $opt): 
-                                            $opt = trim($opt);
-                                        ?>
-                                            <option value="<?= htmlspecialchars($opt) ?>"><?= htmlspecialchars($opt) ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                <?php elseif ($field['field_type'] === 'file'): ?>
-                                    <input type="file" name="<?= htmlspecialchars($field['field_key']) ?>" <?= $field['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
-                                <?php else: ?>
-                                    <input type="<?= htmlspecialchars($field['field_type']) ?>" name="<?= htmlspecialchars($field['field_key']) ?>" <?= $field['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
+                        <?php foreach ($customFieldsByGroup['Additional Information'] as $f) echo renderCustomFieldHTML($f); ?>
                     </div>
                 </div>
                 <?php endif; ?>

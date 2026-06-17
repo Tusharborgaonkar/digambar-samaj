@@ -162,6 +162,16 @@
                     document.body.style.overflow = '';
                 });
             }
+            
+            const closeBtn = document.getElementById('closeMobileMenu');
+            if(closeBtn) {
+                closeBtn.addEventListener('click', () => {
+                    if (hamburger) hamburger.classList.remove('active');
+                    if (mobileMenu) mobileMenu.classList.remove('active');
+                    if (overlay) overlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            }
         });
 
         // Prevent Form Resubmission Warning on Refresh

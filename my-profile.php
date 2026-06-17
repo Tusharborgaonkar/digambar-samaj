@@ -35,13 +35,16 @@ $profile_img = (!empty($user['profile_photo']) && file_exists($user['profile_pho
             <!-- Page Header -->
             <div class="flex flex-col md:flex-row justify-between items-center mb-8" data-aos="fade-up">
                 <h1 class="text-3xl md:text-4xl font-bold text-dark">My Profile</h1>
-                <div class="mt-4 md:mt-0 flex gap-4">
+                <div class="mt-4 md:mt-0 flex gap-4 flex-wrap">
                     <button class="bg-primary text-white px-6 py-2.5 rounded-lg hover:bg-opacity-90 shadow-md transition font-medium flex items-center gap-2" onclick="Swal.fire({icon: 'info', title: 'Coming Soon', text: 'Edit profile functionality coming soon.'})">
                         <i class="fas fa-edit"></i> Edit Profile
                     </button>
                     <button class="bg-white border border-gray-300 text-gray-700 px-6 py-2.5 rounded-lg hover:bg-gray-50 transition font-medium flex items-center gap-2 shadow-sm" onclick="Swal.fire({icon: 'info', title: 'Coming Soon', text: 'Change password functionality coming soon.'})">
                         <i class="fas fa-key"></i> Change Password
                     </button>
+                    <a href="login.php?logout=1" class="bg-red-50 border border-red-200 text-red-600 px-6 py-2.5 rounded-lg hover:bg-red-100 transition font-medium flex items-center gap-2 shadow-sm">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
                 </div>
             </div>
 

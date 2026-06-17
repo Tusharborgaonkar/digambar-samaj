@@ -4,6 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 $is_logged_in = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'];
+$is_admin_logged_in = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'];
 $user_status = null;
 $registration_link = 'pre-register.php';
 $show_registration = true;
@@ -19,12 +20,14 @@ if ($is_logged_in && isset($_SESSION['user_id'])) {
                 $user_status = $hdrUser['status'];
                 if ($user_status === 'account_approved') {
                     $registration_link = 'registration.php';
-                } elseif ($user_status === 'active' || $user_status === 'pending' || $user_status === 'account_pending') {
+                } elseif ($user_status === 'active' || $user_status === 'pending' || $user_status === 'account_pending' || $user_status === 'approved') {
                     $show_registration = false;
                 }
             }
         }
     }
+} elseif ($is_admin_logged_in) {
+    $show_registration = false;
 }
 ?>
 <!DOCTYPE html>
@@ -272,7 +275,8 @@ if ($is_logged_in && isset($_SESSION['user_id'])) {
     
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
-        <div class="flex flex-col space-y-6 px-8">
+        <button id="closeMobileMenu" class="absolute top-6 right-6 text-2xl text-gray-600 hover:text-red-500 transition focus:outline-none"><i class="fas fa-times"></i></button>
+        <div class="flex flex-col space-y-6 px-8 mt-4">
             <a href="index.php" class="text-dark hover:text-primary transition text-lg font-medium">Home</a>
             <div class="relative group">
                 <a href="about.php" class="text-dark hover:text-primary transition text-lg font-medium flex items-center gap-2">
@@ -289,12 +293,12 @@ if ($is_logged_in && isset($_SESSION['user_id'])) {
             <a href="gallery.php" class="text-dark hover:text-primary transition text-lg font-medium">Gallery</a>
             <a href="contact.php" class="text-dark hover:text-primary transition text-lg font-medium">Contact</a>
             
+            <a href="profiles.php" class="text-dark hover:text-primary transition text-lg font-medium">Find Matches</a>
             <?php if ($is_logged_in): ?>
                 <a href="my-profile.php" class="text-dark hover:text-primary transition text-lg font-medium">My Profile</a>
-                <a href="profiles.php" class="text-dark hover:text-primary transition text-lg font-medium">Find Matches</a>
                 <a href="login.php?logout=1" class="text-red-500 hover:text-red-700 transition text-lg font-medium">Logout</a>
             <?php else: ?>
-                <a href="login.php" class="text-primary font-bold transition text-lg">Login</a>
+                <!-- <a href="login.php" class="text-dark hover:text-primary transition text-lg font-medium">Login</a> -->
             <?php endif; ?>
         </div>
     </div>
@@ -329,12 +333,12 @@ if ($is_logged_in && isset($_SESSION['user_id'])) {
                     <a href="gallery.php" class="text-dark hover:text-primary transition font-medium">Gallery</a>
                     <a href="contact.php" class="text-dark hover:text-primary transition font-medium">Contact</a>
                     
+                    <a href="profiles.php" class="text-dark hover:text-primary transition font-medium">Find Matches</a>
                     <?php if ($is_logged_in): ?>
                         <a href="my-profile.php" class="text-dark hover:text-primary transition font-medium">My Profile</a>
-                        <a href="profiles.php" class="text-dark hover:text-primary transition font-medium">Find Matches</a>
-                        <a href="login.php?logout=1" class="text-red-500 hover:text-red-700 transition font-medium" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+                        <a href="login.php?logout=1" class="text-red-500 hover:text-red-700 transition font-medium">Logout</a>
                     <?php else: ?>
-                        <a href="login.php" class="bg-primary text-white px-5 py-2 rounded-lg font-bold hover:bg-opacity-90 transition shadow-sm">Login</a>
+                        <!-- <a href="login.php" class="text-dark hover:text-primary transition font-medium">Login</a> -->
                     <?php endif; ?>
                 </div>
                 

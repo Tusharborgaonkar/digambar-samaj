@@ -79,6 +79,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="gallery.php" class="flex items-center px-3 py-2.5 rounded-md transition-colors <?= $current_page == 'gallery.php' ? 'bg-primary text-white font-semibold' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
                 <span>Photo Gallery</span>
             </a>
+            
+            <a href="contacts.php" class="flex items-center px-3 py-2.5 rounded-md transition-colors <?= $current_page == 'contacts.php' ? 'bg-primary text-white font-semibold' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
+                <span>Contact Messages</span>
+            </a>
 
             <!-- Analytics -->
             <div class="pt-4 pb-1">

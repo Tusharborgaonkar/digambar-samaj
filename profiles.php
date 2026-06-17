@@ -1,6 +1,8 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once 'includes/db.php';
-
 // Check if user is logged in and approved
 $is_approved = false;
 $is_logged_in = false;

@@ -71,11 +71,11 @@ include 'includes/header.php';
 
     <div class="container mx-auto px-4 relative z-20 w-full pt-24 pb-12">
         <!-- Hero Title & Buttons -->
-        <div class="text-center mb-10" data-aos="fade-up">
-            <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">Digambar Jain Matrimony</h1>
-            <p class="text-xl md:text-2xl text-gray-200 mb-8 hero-subtitle">Find Your Special Someone Who Completes You
-            </p>
-        </div>
+            <!-- <div class="text-center mb-10" data-aos="fade-up">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">Digambar Jain Matrimony</h1>
+                <p class="text-xl md:text-2xl text-gray-200 mb-8 hero-subtitle">Find Your Special Someone Who Completes You
+                </p>
+            </div> -->
     </div>
 </section>
 

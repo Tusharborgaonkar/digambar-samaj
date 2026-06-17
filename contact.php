@@ -1,4 +1,57 @@
-<?php include 'includes/header.php'; ?>
+<?php 
+require_once 'includes/db.php';
+
+$message_sent = false;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_contact'])) {
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $phone = trim($_POST['phone'] ?? '');
+    $subject = trim($_POST['subject'] ?? '');
+    $message = trim($_POST['message'] ?? '');
+
+    if (!empty($name) && !empty($email) && !empty($subject) && !empty($message)) {
+        try {
+            $stmt = $pdo->prepare("INSERT INTO contact_messages (name, email, phone, subject, message) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$name, $email, $phone, $subject, $message]);
+            $message_sent = true;
+        } catch (PDOException $e) {
+            $error = "Failed to send message: " . $e->getMessage();
+        }
+    } else {
+        $error = "Please fill in all required fields.";
+    }
+}
+
+include 'includes/header.php'; 
+?>
+
+<?php if ($message_sent): ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        title: 'Success!',
+        text: 'Your message has been sent successfully.',
+        icon: 'success',
+        confirmButtonColor: '#eab308'
+    });
+});
+</script>
+<?php endif; ?>
+<?php if (isset($error)): ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    Swal.fire({
+        title: 'Error!',
+        text: <?= json_encode($error) ?>,
+        icon: 'error',
+        confirmButtonColor: '#eab308'
+    });
+});
+</script>
+<?php endif; ?>
 
 <!-- Page Banner -->
 <section class="bg-primary py-16">
@@ -61,22 +114,22 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Your Name <span class="text-red-500">*</span></label>
-                                <input type="text" placeholder="John Doe" required class="w-full border-gray-300 border rounded-lg p-3 bg-gray-50 focus:border-primary focus:outline-none transition">
+                                <input type="text" name="name" placeholder="John Doe" required class="w-full border-gray-300 border rounded-lg p-3 bg-gray-50 focus:border-primary focus:outline-none transition">
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address <span class="text-red-500">*</span></label>
-                                <input type="email" placeholder="john@example.com" required class="w-full border-gray-300 border rounded-lg p-3 bg-gray-50 focus:border-primary focus:outline-none transition">
+                                <input type="email" name="email" placeholder="john@example.com" required class="w-full border-gray-300 border rounded-lg p-3 bg-gray-50 focus:border-primary focus:outline-none transition">
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
-                                <input type="tel" placeholder="+91 90000 00000" class="w-full border-gray-300 border rounded-lg p-3 bg-gray-50 focus:border-primary focus:outline-none transition">
+                                <input type="tel" name="phone" placeholder="+91 90000 00000" class="w-full border-gray-300 border rounded-lg p-3 bg-gray-50 focus:border-primary focus:outline-none transition">
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Subject <span class="text-red-500">*</span></label>
-                                <select required class="w-full border-gray-300 border rounded-lg p-3 bg-gray-50 focus:border-primary focus:outline-none transition">
+                                <select name="subject" required class="w-full border-gray-300 border rounded-lg p-3 bg-gray-50 focus:border-primary focus:outline-none transition">
                                     <option value="">Select a Subject</option>
                                     <option value="General Inquiry">General Inquiry</option>
                                     <option value="Profile Assistance">Profile Assistance</option>
@@ -88,10 +141,10 @@
 
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Your Message <span class="text-red-500">*</span></label>
-                            <textarea rows="5" placeholder="How can we help you today?" required class="w-full border-gray-300 border rounded-lg p-3 bg-gray-50 focus:border-primary focus:outline-none transition resize-none"></textarea>
+                            <textarea name="message" rows="5" placeholder="How can we help you today?" required class="w-full border-gray-300 border rounded-lg p-3 bg-gray-50 focus:border-primary focus:outline-none transition resize-none"></textarea>
                         </div>
 
-                        <button type="submit" class="bg-primary text-white font-bold text-lg px-8 py-3 rounded-lg hover:bg-opacity-90 transition shadow-lg w-full md:w-auto">
+                        <button type="submit" name="submit_contact" class="bg-primary text-white font-bold text-lg px-8 py-3 rounded-lg hover:bg-opacity-90 transition shadow-lg w-full md:w-auto">
                             <i class="far fa-paper-plane mr-2"></i> Send Message
                         </button>
                     </form>
