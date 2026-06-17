@@ -721,7 +721,7 @@ function checkReferenceSection() {
         document.getElementById('ref2_mobile')
     ].filter(el => el !== null);
 
-    if (subcast && mandir) {
+    if (mandir) {
         refContainer.classList.remove('hidden');
         // Trigger reflow for transition
         refContainer.offsetHeight;
@@ -733,7 +733,7 @@ function checkReferenceSection() {
         refContainer.classList.remove('opacity-100', 'translate-y-0');
         // Hide after animation finishes
         setTimeout(() => {
-            if (!subcastEl.value || !mandirEl.value) {
+            if (!mandirEl.value) {
                 refContainer.classList.add('hidden');
             }
         }, 500);
