@@ -461,13 +461,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <?php endif; ?>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        <?php 
-                        if (!empty($customFieldsByGroup['Section 4: Mandir Verification Details'])) {
-                            foreach ($customFieldsByGroup['Section 4: Mandir Verification Details'] as $f) echo renderCustomFieldHTML($f);
-                        }
-                        ?>
-                    </div>
                     <!-- Reference Persons (Hidden initially, dynamic slide down) -->
                     <div id="referencePersonsContainer" class="mt-6 border-t border-dashed border-gray-200 pt-6 hidden opacity-0 transition-all duration-500 transform translate-y-2">
                         <div class="mb-4 bg-blue-50/50 p-4 rounded-lg border border-primary/10">
@@ -554,6 +547,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <?php 
+                        if (!empty($customFieldsByGroup['Section 4: Mandir Verification Details'])) {
+                            foreach ($customFieldsByGroup['Section 4: Mandir Verification Details'] as $f) echo renderCustomFieldHTML($f);
+                        }
+                        ?>
                     </div>
                 </div>
 
@@ -706,11 +707,13 @@ document.getElementById('mandir')?.addEventListener('change', function() {
 });
 
 function checkReferenceSection() {
+    const subcastEl = document.getElementById('subcast');
     const mandirEl = document.getElementById('mandir');
     const refContainer = document.getElementById('referencePersonsContainer');
     
-    if (!mandirEl || !refContainer) return;
+    if (!subcastEl || !mandirEl || !refContainer) return;
 
+    const subcast = subcastEl.value;
     const mandir = mandirEl.value;
     const refInputs = [
         document.getElementById('ref1_name'),
