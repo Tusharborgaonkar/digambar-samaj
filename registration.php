@@ -706,13 +706,11 @@ document.getElementById('mandir')?.addEventListener('change', function() {
 });
 
 function checkReferenceSection() {
-    const subcastEl = document.getElementById('subcast');
     const mandirEl = document.getElementById('mandir');
     const refContainer = document.getElementById('referencePersonsContainer');
     
-    if (!subcastEl || !mandirEl || !refContainer) return;
+    if (!mandirEl || !refContainer) return;
 
-    const subcast = subcastEl.value;
     const mandir = mandirEl.value;
     const refInputs = [
         document.getElementById('ref1_name'),
