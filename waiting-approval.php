@@ -1,9 +1,23 @@
 <?php
 session_start();
 include 'includes/db.php';
+
+if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in']) {
+    $stmt = $pdo->prepare("SELECT status FROM users WHERE id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $current_status = $stmt->fetchColumn();
+
+    if ($current_status === 'account_approved') {
+        header('Location: registration.php');
+        exit;
+    } elseif ($current_status === 'approved') {
+        header('Location: my-profile.php');
+        exit;
+    }
+}
+
 include 'includes/header.php'; 
 ?>
-
 <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
         <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-100 text-center">

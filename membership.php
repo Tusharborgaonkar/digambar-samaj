@@ -39,7 +39,7 @@
                     <div class="mb-4"><input type="email" placeholder="Email Address" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:border-primary"></div>
                     <div class="mb-4"><input type="password" placeholder="Password" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:border-primary"></div>
                     <button type="submit" class="w-full bg-primary text-white py-2 rounded-lg hover:bg-opacity-90">Login</button>
-                    <p class="text-center text-gray-600 mt-4">Don't have an account? <a href="register.php" class="text-primary">Register Now</a></p>
+                    <p class="text-center text-gray-600 mt-4">Don't have an account? <a href="pre-register.php" class="text-primary">Register Now</a></p>
                 </form>
             </div>
         </div>

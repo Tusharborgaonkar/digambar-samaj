@@ -9,7 +9,7 @@ include 'includes/header.php';
     <div class="container mx-auto px-4 max-w-4xl text-center">
         <i class="fas fa-users text-6xl text-primary mb-6"></i>
         <h1 class="text-4xl font-bold text-dark mb-4">Our Community Initiatives</h1>
-        <p class="text-gray-600 text-lg mb-8">This page is under construction. We will soon update this space with details about our social programs, community gatherings, and upcoming initiatives for the Digambar Jain Samaj.</p>
+        <p class="text-gray-600 text-lg mb-8">This page is under development. We will soon update this space with details about our social programs, community gatherings, and upcoming initiatives for the Digambar Jain Samaj.</p>
         
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
             <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">

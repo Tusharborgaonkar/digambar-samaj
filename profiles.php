@@ -128,7 +128,7 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <h3 class="text-sm font-medium text-blue-800">Limited View Mode</h3>
                         <div class="mt-2 text-sm text-blue-700">
                             <?php if (!$is_logged_in): ?>
-                                <p>You are viewing profiles as a guest. Please <a href="login.php" class="font-bold underline hover:text-blue-900">log in</a> or <a href="register.php" class="font-bold underline hover:text-blue-900">register</a> to view photos and full details.</p>
+                                <p>You are viewing profiles as a guest. Please <a href="login.php" class="font-bold underline hover:text-blue-900">log in</a> or <a href="pre-register.php" class="font-bold underline hover:text-blue-900">register</a> to view photos and full details.</p>
                             <?php else: ?>
                                 <p>Your profile is currently pending approval. Once an admin approves your profile, you will be able to view photos and full details.</p>
                             <?php endif; ?>

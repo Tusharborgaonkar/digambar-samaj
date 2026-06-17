@@ -22,6 +22,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $key = strtolower(preg_replace('/[^a-zA-Z0-9_]/', '_', $label));
         $key = 'custom_' . trim($key, '_');
         
+        $options = '';
+        if (isset($_POST['dynamic_options']) && is_array($_POST['dynamic_options'])) {
+            $valid_opts = array_filter(array_map('trim', $_POST['dynamic_options']));
+            $options = implode(',', $valid_opts);
+        } else {
+            $options = trim($_POST['field_options'] ?? '');
+        }
+
         $stmt = $pdo->prepare("INSERT INTO registration_fields (field_group, field_key, field_label, field_type, field_options, is_custom, is_visible, is_required) VALUES ('Custom Fields', ?, ?, ?, ?, 1, 1, ?)");
         try {
             $stmt->execute([$key, $label, $type, $options, $is_required]);
@@ -39,6 +47,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $stmt = $pdo->prepare("DELETE FROM registration_fields WHERE id = ? AND is_custom = 1");
     $stmt->execute([$field_id]);
     header("Location: registration-visibility.php");
+    exit;
+}
+
+// Handle Edit Field Options
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'edit_field_options') {
+    $field_id = (int)$_POST['field_id'];
+    $options = '';
+    if (isset($_POST['edit_dynamic_options']) && is_array($_POST['edit_dynamic_options'])) {
+        $valid_opts = array_filter(array_map('trim', $_POST['edit_dynamic_options']));
+        $options = implode(',', $valid_opts);
+    }
+    $stmt = $pdo->prepare("UPDATE registration_fields SET field_options = ? WHERE id = ? AND (field_type = 'dropdown' OR field_type = 'radio' OR field_type = 'checkbox')");
+    $stmt->execute([$options, $field_id]);
+    header("Location: registration-visibility.php?updated=1");
     exit;
 }
 
@@ -121,6 +143,11 @@ include 'includes/sidebar.php';
                                 <p class="text-xs text-gray-500">Type: <?= htmlspecialchars($field['field_type']) ?></p>
                             </div>
                             <div class="flex items-center space-x-6">
+                                <?php if ($field['field_type'] === 'dropdown' || $field['field_type'] === 'radio' || $field['field_type'] === 'checkbox'): ?>
+                                    <div class="flex flex-col items-center">
+                                        <button type="button" class="text-xs text-primary font-medium hover:underline bg-primary/10 px-2 py-1 rounded" onclick="openEditOptionsModal(<?= $field['id'] ?>, '<?= htmlspecialchars($field['field_label'], ENT_QUOTES) ?>', '<?= htmlspecialchars($field['field_options'] ?? '', ENT_QUOTES) ?>')"><i class="fas fa-edit"></i> Edit Options</button>
+                                    </div>
+                                <?php endif; ?>
                                 <?php if ($field['is_core']): ?>
                                     <div class="flex flex-col items-end">
                                         <label class="relative inline-flex items-center cursor-pointer mb-1">
@@ -181,8 +208,13 @@ include 'includes/sidebar.php';
                         </select>
                     </div>
                     <div id="optionsGroup" class="hidden">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Options (Comma separated)</label>
-                        <input type="text" name="field_options" placeholder="Vegetarian, Vegan, Jain" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Options</label>
+                        <div id="dynamicOptionsContainer" class="space-y-2">
+                            <div class="flex items-center gap-2">
+                                <input type="text" name="dynamic_options[]" placeholder="Option 1" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
+                                <button type="button" class="bg-gray-200 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-300 transition" onclick="addOptionInput('dynamicOptionsContainer', 'dynamic_options[]')"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
                     </div>
                     <div class="flex items-center">
                         <input type="checkbox" name="is_required" id="is_required" value="1" class="rounded border-gray-300 text-primary focus:ring-primary w-4 h-4">
@@ -223,16 +255,83 @@ include 'includes/sidebar.php';
     </div>
 </div>
 
+<!-- Edit Options Modal -->
+<div id="editOptionsModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl shadow-lg w-full max-w-lg p-6 relative">
+        <button type="button" onclick="closeEditOptionsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <i class="fas fa-times text-xl"></i>
+        </button>
+        <h3 class="text-xl font-bold text-gray-800 mb-1">Edit Options</h3>
+        <p class="text-sm text-gray-500 mb-4" id="editOptionsFieldLabel"></p>
+        
+        <form method="POST" action="registration-visibility.php">
+            <input type="hidden" name="action" value="edit_field_options">
+            <input type="hidden" name="field_id" id="editOptionsFieldId" value="">
+            
+            <div id="editDynamicOptionsContainer" class="space-y-2 mb-4 max-h-60 overflow-y-auto pr-2">
+                <!-- Options will be injected here -->
+            </div>
+            
+            <div class="flex justify-end gap-3 mt-6 border-t pt-4 border-gray-100">
+                <button type="button" onclick="addOptionInput('editDynamicOptionsContainer', 'edit_dynamic_options[]')" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition">
+                    <i class="fas fa-plus mr-1"></i> Add Option
+                </button>
+                <button type="submit" class="bg-primary text-white px-5 py-2 rounded-lg font-bold hover:bg-opacity-90 transition">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
     document.getElementById('fieldTypeSelect').addEventListener('change', function(e) {
         const val = e.target.value;
         const optsGroup = document.getElementById('optionsGroup');
-        if(val === 'dropdown' || val === 'radio') {
+        if(val === 'dropdown' || val === 'radio' || val === 'checkbox') {
             optsGroup.classList.remove('hidden');
         } else {
             optsGroup.classList.add('hidden');
         }
     });
+
+    function addOptionInput(containerId, inputName, value = '') {
+        const container = document.getElementById(containerId);
+        const div = document.createElement('div');
+        div.className = 'flex items-center gap-2 mt-2';
+        div.innerHTML = `
+            <input type="text" name="${inputName}" value="${value}" placeholder="New Option" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
+            <button type="button" class="bg-red-50 text-red-500 px-3 py-2 rounded-lg hover:bg-red-100 transition" onclick="this.parentElement.remove()"><i class="fas fa-minus"></i></button>
+        `;
+        container.appendChild(div);
+    }
+
+    function openEditOptionsModal(fieldId, fieldLabel, currentOptions) {
+        document.getElementById('editOptionsFieldId').value = fieldId;
+        document.getElementById('editOptionsFieldLabel').textContent = fieldLabel;
+        
+        const container = document.getElementById('editDynamicOptionsContainer');
+        container.innerHTML = '';
+        
+        let options = [];
+        if (currentOptions.trim() !== '') {
+            options = currentOptions.split(',').map(s => s.trim());
+        }
+        
+        if (options.length > 0) {
+            options.forEach(opt => {
+                if (opt) addOptionInput('editDynamicOptionsContainer', 'edit_dynamic_options[]', opt);
+            });
+        } else {
+            addOptionInput('editDynamicOptionsContainer', 'edit_dynamic_options[]');
+        }
+        
+        document.getElementById('editOptionsModal').classList.remove('hidden');
+    }
+
+    function closeEditOptionsModal() {
+        document.getElementById('editOptionsModal').classList.add('hidden');
+    }
 </script>
 
 <?php include 'includes/footer.php'; ?>

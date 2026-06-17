@@ -2,6 +2,30 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+$is_logged_in = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'];
+$user_status = null;
+$registration_link = 'pre-register.php';
+$show_registration = true;
+
+if ($is_logged_in && isset($_SESSION['user_id'])) {
+    if (file_exists('includes/db.php')) {
+        require_once 'includes/db.php';
+        if (isset($pdo)) {
+            $stmtHdr = $pdo->prepare("SELECT status FROM users WHERE id = ?");
+            $stmtHdr->execute([$_SESSION['user_id']]);
+            $hdrUser = $stmtHdr->fetch(PDO::FETCH_ASSOC);
+            if ($hdrUser) {
+                $user_status = $hdrUser['status'];
+                if ($user_status === 'account_approved') {
+                    $registration_link = 'registration.php';
+                } elseif ($user_status === 'active' || $user_status === 'pending' || $user_status === 'account_pending') {
+                    $show_registration = false;
+                }
+            }
+        }
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -258,12 +282,20 @@ if (session_status() === PHP_SESSION_NONE) {
                     <a href="community.php" class="block text-gray-600 hover:text-primary transition">Community</a>
                 </div>
             </div>
-            <a href="registration.php" class="text-dark hover:text-primary transition text-lg font-medium">Registration</a>
+            <?php if ($show_registration): ?>
+                <a href="<?= htmlspecialchars($registration_link) ?>" class="text-dark hover:text-primary transition text-lg font-medium">Registration</a>
+            <?php endif; ?>
             <a href="success-stories.php" class="text-dark hover:text-primary transition text-lg font-medium">Success Stories</a>
             <a href="gallery.php" class="text-dark hover:text-primary transition text-lg font-medium">Gallery</a>
             <a href="contact.php" class="text-dark hover:text-primary transition text-lg font-medium">Contact</a>
-            <a href="my-profile.php" class="text-dark hover:text-primary transition text-lg font-medium">My Profile</a>
-            <a href="profiles.php" class="text-dark hover:text-primary transition text-lg font-medium">Find Matches</a>
+            
+            <?php if ($is_logged_in): ?>
+                <a href="my-profile.php" class="text-dark hover:text-primary transition text-lg font-medium">My Profile</a>
+                <a href="profiles.php" class="text-dark hover:text-primary transition text-lg font-medium">Find Matches</a>
+                <a href="login.php?logout=1" class="text-red-500 hover:text-red-700 transition text-lg font-medium">Logout</a>
+            <?php else: ?>
+                <a href="login.php" class="text-primary font-bold transition text-lg">Login</a>
+            <?php endif; ?>
         </div>
     </div>
     
@@ -290,12 +322,20 @@ if (session_status() === PHP_SESSION_NONE) {
                             <a href="community.php" class="block px-4 py-2 text-gray-700 hover:bg-primary hover:text-white rounded-t-lg transition">Community</a>
                         </div>
                     </div>
-                    <a href="registration.php" class="text-dark hover:text-primary transition font-medium">Registration</a>
+                    <?php if ($show_registration): ?>
+                        <a href="<?= htmlspecialchars($registration_link) ?>" class="text-dark hover:text-primary transition font-medium">Registration</a>
+                    <?php endif; ?>
                     <a href="success-stories.php" class="text-dark hover:text-primary transition font-medium">Success Stories</a>
                     <a href="gallery.php" class="text-dark hover:text-primary transition font-medium">Gallery</a>
                     <a href="contact.php" class="text-dark hover:text-primary transition font-medium">Contact</a>
-                    <a href="my-profile.php" class="text-dark hover:text-primary transition font-medium">My Profile</a>
-                    <a href="profiles.php" class="text-dark hover:text-primary transition font-medium">Find Matches</a>
+                    
+                    <?php if ($is_logged_in): ?>
+                        <a href="my-profile.php" class="text-dark hover:text-primary transition font-medium">My Profile</a>
+                        <a href="profiles.php" class="text-dark hover:text-primary transition font-medium">Find Matches</a>
+                        <a href="login.php?logout=1" class="text-red-500 hover:text-red-700 transition font-medium" title="Logout"><i class="fas fa-sign-out-alt"></i></a>
+                    <?php else: ?>
+                        <a href="login.php" class="bg-primary text-white px-5 py-2 rounded-lg font-bold hover:bg-opacity-90 transition shadow-sm">Login</a>
+                    <?php endif; ?>
                 </div>
                 
                 <!-- Hamburger Icon (Mobile) -->

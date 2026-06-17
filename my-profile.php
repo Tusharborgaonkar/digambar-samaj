@@ -259,17 +259,26 @@ $profile_img = (!empty($user['profile_photo']) && file_exists($user['profile_pho
                             </div>
                             <div>
                                 <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Registered Mandir (मंदिर)</p>
-                                <p class="font-medium text-dark"><?= htmlspecialchars($user['registered_mandir'] ?? 'N/A') ?></p>
+                                <p class="font-medium text-dark"><?= htmlspecialchars($user['mandir'] ?? 'N/A') ?> <?= !empty($user['custom_mandir']) ? ' - ' . htmlspecialchars($user['custom_mandir']) : '' ?></p>
                             </div>
                         </div>
 
                         <h4 class="text-sm font-semibold text-gray-700 mb-3 border-b pb-2">Reference Persons</h4>
-                        <div class="grid grid-cols-1 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
                                 <p class="text-xs font-bold text-primary uppercase mb-2">Reference Person 1</p>
                                 <div class="space-y-1 text-sm text-gray-700">
-                                    <p><span class="text-gray-500">Name:</span> <span class="font-medium text-dark"><?= htmlspecialchars($user['reference_name'] ?? 'N/A') ?></span></p>
-                                    <p><span class="text-gray-500">Mobile:</span> <span class="font-medium text-dark"><?= htmlspecialchars($user['reference_contact'] ?? 'N/A') ?></span></p>
+                                    <p><span class="text-gray-500">Name:</span> <span class="font-medium text-dark"><?= htmlspecialchars($user['ref1_name'] ?? 'N/A') ?></span></p>
+                                    <p><span class="text-gray-500">Mobile:</span> <span class="font-medium text-dark"><?= htmlspecialchars($user['ref1_mobile'] ?? 'N/A') ?></span></p>
+                                    <p><span class="text-gray-500">Relation:</span> <span class="font-medium text-dark"><?= htmlspecialchars($user['ref1_relation'] ?? 'N/A') ?></span></p>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                <p class="text-xs font-bold text-primary uppercase mb-2">Reference Person 2</p>
+                                <div class="space-y-1 text-sm text-gray-700">
+                                    <p><span class="text-gray-500">Name:</span> <span class="font-medium text-dark"><?= htmlspecialchars($user['ref2_name'] ?? 'N/A') ?></span></p>
+                                    <p><span class="text-gray-500">Mobile:</span> <span class="font-medium text-dark"><?= htmlspecialchars($user['ref2_mobile'] ?? 'N/A') ?></span></p>
+                                    <p><span class="text-gray-500">Relation:</span> <span class="font-medium text-dark"><?= htmlspecialchars($user['ref2_relation'] ?? 'N/A') ?></span></p>
                                 </div>
                             </div>
                         </div>
