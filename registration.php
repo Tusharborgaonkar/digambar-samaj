@@ -405,6 +405,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                 </div>
                 
+                <?php /* ?>
                 <!-- Section 4: Mandir Verification Details -->
                 <div class="mb-8 pb-4 border-b border-gray-200">
                     <h2 class="text-xl font-bold text-primary mb-4">Section 4: Mandir Verification Details</h2>
@@ -556,45 +557,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         }
                         ?>
                     </div>
-                </div>
 
-                <!-- Photos Section -->
-                <?php if (
-                    (isset($coreFieldsSettings['profile_photo']) && $coreFieldsSettings['profile_photo']['is_visible']) || 
-                    (isset($coreFieldsSettings['family_photo']) && $coreFieldsSettings['family_photo']['is_visible']) || 
-                    (isset($coreFieldsSettings['profile_photo_drive_url']) && $coreFieldsSettings['profile_photo_drive_url']['is_visible'])
-                ): ?>
-                <div class="mb-8 pb-4 border-b border-gray-200">
-                    <h2 class="text-xl font-bold text-primary mb-4">Photos</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <?php if (isset($coreFieldsSettings['profile_photo']) && $coreFieldsSettings['profile_photo']['is_visible']): ?>
-                        <div>
-                            <label class="block text-gray-700 font-medium mb-2">Candidate Photo <?= $coreFieldsSettings['profile_photo']['is_required'] ? '*' : '' ?> (Passport size photo, max 10MB)</label>
-                            <input type="file" name="photo" accept="image/*" <?= $coreFieldsSettings['profile_photo']['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
-                        </div>
-                        <?php endif; ?>
-                        
-                        <?php if (isset($coreFieldsSettings['family_photo']) && $coreFieldsSettings['family_photo']['is_visible']): ?>
-                        <div>
-                            <label class="block text-gray-700 font-medium mb-2">Family Photo <?= $coreFieldsSettings['family_photo']['is_required'] ? '*' : '' ?> (Max 10MB)</label>
-                            <input type="file" name="family_photo" accept="image/*" <?= $coreFieldsSettings['family_photo']['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
-                        </div>
-                        <?php endif; ?>
+                    <!-- Photos Section (Now part of Section 4) -->
+                    <?php if (
+                        (isset($coreFieldsSettings['profile_photo']) && $coreFieldsSettings['profile_photo']['is_visible']) || 
+                        (isset($coreFieldsSettings['family_photo']) && $coreFieldsSettings['family_photo']['is_visible']) || 
+                        (isset($coreFieldsSettings['profile_photo_drive_url']) && $coreFieldsSettings['profile_photo_drive_url']['is_visible'])
+                    ): ?>
+                    <div class="mt-6 border-t border-dashed border-gray-200 pt-6">
+                        <h3 class="text-lg font-bold text-primary mb-4">Photos</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <?php if (isset($coreFieldsSettings['profile_photo']) && $coreFieldsSettings['profile_photo']['is_visible']): ?>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Candidate Photo <?= $coreFieldsSettings['profile_photo']['is_required'] ? '*' : '' ?> (Passport size photo, max 10MB)</label>
+                                <input type="file" name="photo" accept="image/*" <?= $coreFieldsSettings['profile_photo']['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
+                            </div>
+                            <?php endif; ?>
+                            
+                            <?php if (isset($coreFieldsSettings['family_photo']) && $coreFieldsSettings['family_photo']['is_visible']): ?>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Family Photo <?= $coreFieldsSettings['family_photo']['is_required'] ? '*' : '' ?> (Max 10MB)</label>
+                                <input type="file" name="family_photo" accept="image/*" <?= $coreFieldsSettings['family_photo']['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
+                            </div>
+                            <?php endif; ?>
 
-                        <?php if (isset($coreFieldsSettings['profile_photo_drive_url']) && $coreFieldsSettings['profile_photo_drive_url']['is_visible']): ?>
-                        <div>
-                            <label class="block text-gray-700 font-medium mb-2">Profile Photo Drive URL <?= $coreFieldsSettings['profile_photo_drive_url']['is_required'] ? '*' : '' ?></label>
-                            <input type="url" name="profile_photo_drive_url" <?= $coreFieldsSettings['profile_photo_drive_url']['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
+                            <?php if (isset($coreFieldsSettings['profile_photo_drive_url']) && $coreFieldsSettings['profile_photo_drive_url']['is_visible']): ?>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Profile Photo Drive URL <?= $coreFieldsSettings['profile_photo_drive_url']['is_required'] ? '*' : '' ?></label>
+                                <input type="url" name="profile_photo_drive_url" <?= $coreFieldsSettings['profile_photo_drive_url']['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
+                            </div>
+                            <?php endif; ?>
+                            <?php 
+                            if (!empty($customFieldsByGroup['Photos'])) {
+                                foreach ($customFieldsByGroup['Photos'] as $f) echo renderCustomFieldHTML($f);
+                            }
+                            ?>
                         </div>
-                        <?php endif; ?>
-                        <?php 
-                        if (!empty($customFieldsByGroup['Photos'])) {
-                            foreach ($customFieldsByGroup['Photos'] as $f) echo renderCustomFieldHTML($f);
-                        }
-                        ?>
                     </div>
+                    <?php endif; ?>
                 </div>
-                <?php endif; ?>
+                <?php */ ?>
                 
                 <!-- Documents & Payment -->
                 <?php if (

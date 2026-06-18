@@ -41,6 +41,16 @@ try {
         // Drive URLs
         ['Media & Payment', 'profile_photo_drive_url', 'Profile Photo Drive URL', 'url', '', 0, 1, 0, 0, 30],
         ['Media & Payment', 'payment_proof_drive_url', 'Payment Proof Drive URL', 'url', '', 0, 1, 0, 0, 31],
+        
+        // Section 4: Mandir Verification Details & Reference Details
+        ['Basic Details', 'subcast', 'Subcast (उपजाति)', 'dropdown', 'Lad, Visa, Dasha', 0, 1, 1, 0, 32],
+        ['Basic Details', 'mandir', 'Registered Mandir (मंदिर)', 'dropdown', 'N/A', 0, 1, 1, 0, 33],
+        ['Reference Details', 'ref1_name', 'Reference 1 Name', 'text', '', 0, 1, 1, 0, 34],
+        ['Reference Details', 'ref1_mobile', 'Reference 1 Mobile', 'text', '', 0, 1, 1, 0, 35],
+        ['Reference Details', 'ref1_relation', 'Reference 1 Relation', 'text', '', 0, 1, 1, 0, 36],
+        ['Reference Details', 'ref2_name', 'Reference 2 Name', 'text', '', 0, 1, 1, 0, 37],
+        ['Reference Details', 'ref2_mobile', 'Reference 2 Mobile', 'text', '', 0, 1, 1, 0, 38],
+        ['Reference Details', 'ref2_relation', 'Reference 2 Relation', 'text', '', 0, 1, 1, 0, 39],
     ];
 
     $stmt = $pdo->prepare("INSERT IGNORE INTO registration_fields (field_group, field_key, field_label, field_type, field_options, is_custom, is_visible, is_required, is_core, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
