@@ -58,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$is_rate_limited) {
 
             try {
                 $stmt = $pdo->prepare("INSERT INTO users (
-                    full_name, mobile, email, password, status
+                    full_name, mobile, email, password_hash, status
                 ) VALUES (?, ?, ?, ?, 'account_pending')");
 
                 $stmt->execute([
