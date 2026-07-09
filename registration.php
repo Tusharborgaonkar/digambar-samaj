@@ -114,6 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sisters = (int)($_POST['sisters'] ?? 0);
     $sisters_married = (int)($_POST['sisters_married'] ?? 0);
     $sisters_unmarried = (int)($_POST['sisters_unmarried'] ?? 0);
+    $cast = htmlspecialchars($_POST['cast'] ?? '');
     $subcast = htmlspecialchars($_POST['subcast'] ?? '');
     $custom_subcast = htmlspecialchars($_POST['custom_subcast'] ?? '');
     $mandir = htmlspecialchars($_POST['mandir'] ?? '');
@@ -192,7 +193,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         $stmt = $pdo->prepare("UPDATE users SET 
-            birth_date=?, birth_time=?, birth_place=?, native_place=?, gotra=?, mama_gotra=?, manglik=?,
+            cast=?, birth_date=?, birth_time=?, birth_place=?, native_place=?, gotra=?, mama_gotra=?, manglik=?,
             height=?, weight=?, gender=?, permanent_address=?, pin_code=?, current_address=?, higher_education=?, hobbies=?, partner_preference=?,
             monthly_income=?, marital_status=?, handicapped=?, languages=?, occupation=?, company_name=?, designation=?, father_name=?,
             father_mobile=?, father_income=?, father_occupation=?, mother_name=?, mother_mobile=?, mother_occupation=?,
@@ -204,7 +205,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ");
 
         $stmt->execute([
-            $birth_date, $birth_time, $birth_place, $native, $gotra, $mama_gotra, $manglik,
+            $cast, $birth_date, $birth_time, $birth_place, $native, $gotra, $mama_gotra, $manglik,
             $height, $weight, $gender, $permanent_address, $pin_code, $current_address, $education, $hobbies, $partner_preference,
             $monthly_income, $marital_status, $handicapped, $languages, $occupation, $company_name, $designation, $father_name,
             $father_mobile, $father_income, $father_occupation, $mother_name, $mother_mobile, $mother_occupation,
@@ -356,6 +357,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Birth Place *</label><input type="text" name="birth_place" required class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Native (परिवार का मूल स्थान) *</label><input type="text" name="native" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Cast (जाति) *</label>
+                            <select name="cast" required class="w-full border rounded-lg px-4 py-2">
+                                <option value="">Select Cast</option>
+                                <option value="Digambar Jain">Digambar Jain</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Sub-Cast (उपजाति)</label>
+                            <select name="subcast" id="subcast" class="w-full border rounded-lg px-4 py-2">
+                                <option value="">Select Sub-Cast</option>
+                                <option value="Khandelwal">Khandelwal</option>
+                                <option value="Agrawal">Agrawal</option>
+                                <option value="Oswal">Oswal</option>
+                                <option value="Porwal">Porwal</option>
+                                <option value="Golalare">Golalare</option>
+                                <option value="Humad">Humad</option>
+                                <option value="Bagherwal">Bagherwal</option>
+                                <option value="Chaturth">Chaturth</option>
+                                <option value="Pancham">Pancham</option>
+                                <option value="Other">Other (अन्य)</option>
+                            </select>
+                            <input type="text" name="custom_subcast" id="custom_subcast" placeholder="Please specify sub-cast" class="w-full border rounded-lg px-4 py-2 mt-2 hidden">
+                        </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Gotra (गोत्र) *</label><input type="text" name="gotra" required class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Mama Gotra (मामा का गोत्र) *</label><input type="text" name="mama_gotra" required class="w-full border rounded-lg px-4 py-2"></div>
                         
@@ -700,6 +726,18 @@ document.querySelectorAll('input[name="is_digambar"]').forEach(radio => {
             document.getElementById('registrationForm').classList.remove('opacity-50');
         }
     });
+});
+
+document.getElementById('subcast')?.addEventListener('change', function() {
+    const custom = document.getElementById('custom_subcast');
+    if (this.value === 'Other') {
+        custom.classList.remove('hidden');
+        custom.required = true;
+    } else {
+        custom.classList.add('hidden');
+        custom.required = false;
+        custom.value = '';
+    }
 });
 
 document.getElementById('mother_occupation')?.addEventListener('change', function(e) {
