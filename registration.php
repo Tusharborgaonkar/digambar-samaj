@@ -312,17 +312,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
 
                     <!-- Candidate Full Name -->
+                    <?php if (!isset($coreFieldsSettings['full_name']) || $coreFieldsSettings['full_name']['is_visible']): ?>
                     <div class="mb-4">
                         <label class="block text-gray-700 font-medium mb-2">Candidate Full Name (प्रत्याशी का नाम) *</label>
                         <input type="text" name="full_name" value="<?= htmlspecialchars($current_user['full_name']) ?>" readonly class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed">
                     </div>
+                    <?php endif; ?>
                     
                     <!-- Country Code & Mobile -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <?php if (!isset($coreFieldsSettings['mobile']) || $coreFieldsSettings['mobile']['is_visible']): ?>
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Mobile Number</label>
                             <input type="tel" name="mobile" value="<?= htmlspecialchars($current_user['mobile']) ?>" readonly class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed">
                         </div>
+                        <?php endif; ?>
                         <?php 
                         if (!empty($customFieldsByGroup['Section 1: Basic Information'])) {
                             foreach ($customFieldsByGroup['Section 1: Basic Information'] as $f) echo renderCustomFieldHTML($f);
@@ -870,12 +874,30 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Load saved data
     const savedData = sessionStorage.getItem("registrationFormData");
+    const currentName = "<?= addslashes($current_user['full_name']) ?>";
+    const currentMobile = "<?= addslashes($current_user['mobile']) ?>";
+
+    // Clear saved data if it belongs to a different user
     if (savedData) {
         try {
-            const data = JSON.parse(savedData);
+            const parsed = JSON.parse(savedData);
+            if (parsed['full_name'] !== currentName || parsed['mobile'] !== currentMobile) {
+                sessionStorage.removeItem("registrationFormData");
+            }
+        } catch(e) {
+            sessionStorage.removeItem("registrationFormData");
+        }
+    }
+
+    const freshData = sessionStorage.getItem("registrationFormData");
+    if (freshData) {
+        try {
+            const data = JSON.parse(freshData);
             Object.keys(data).forEach(key => {
                 const input = form.elements[key];
                 if (input) {
+                    // Skip readonly fields — always use server value
+                    if (input.readOnly || input.hasAttribute('readonly')) return;
                     // Handle RadioNodeList and single inputs
                     if (input instanceof RadioNodeList || (input.length && input[0].type === 'radio')) {
                         Array.from(input).forEach(radio => {
