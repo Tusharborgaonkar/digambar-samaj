@@ -59,13 +59,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$is_rate_limited) {
             try {
                 $stmt = $pdo->prepare("INSERT INTO users (
                     full_name, mobile, email, password_hash, status
-                ) VALUES (?, ?, ?, ?, 'account_pending')");
+                ) VALUES (?, ?, ?, ?, 'account_approved')");
 
                 $stmt->execute([
                     $full_name, $mobile, $email, $password_hash
                 ]);
 
-                $success = "Your account request has been submitted to the admin for approval. Please wait for confirmation.";
+                $success = "Your account has been created successfully. You can now login to complete your registration.";
                 $_SESSION['register_attempts'] = 0;
             } catch (PDOException $e) {
                 if ($e->getCode() == 23000) {

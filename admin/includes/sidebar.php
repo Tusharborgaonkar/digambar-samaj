@@ -32,6 +32,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <a href="account-approvals.php" class="flex items-center px-3 py-2.5 rounded-md transition-colors <?= $current_page == 'account-approvals.php' ? 'bg-primary text-white font-semibold' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
                 <span>Account Approvals</span>
             </a>
+            <a href="members-incomplete.php" class="flex items-center px-3 py-2.5 rounded-md transition-colors <?= $current_page == 'members-incomplete.php' ? 'bg-primary text-white font-semibold' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
+                <span>Incomplete Registrations</span>
+            </a>
             <a href="members-approval.php" class="flex items-center px-3 py-2.5 rounded-md transition-colors <?= $current_page == 'members-approval.php' ? 'bg-primary text-white font-semibold' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
                 <span>Profile Approvals</span>
             </a>
@@ -76,7 +79,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <span>Success Stories</span>
             </a>
             
-            <a href="gallery.php" class="flex items-center px-3 py-2.5 rounded-md transition-colors <?= $current_page == 'gallery.php' ? 'bg-primary text-white font-semibold' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
+            <a href="gallery-manage.php" class="flex items-center px-3 py-2.5 rounded-md transition-colors <?= $current_page == 'gallery-manage.php' ? 'bg-primary text-white font-semibold' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
                 <span>Photo Gallery</span>
             </a>
             

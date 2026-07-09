@@ -4,12 +4,8 @@ ini_set('session.use_only_cookies', 1);
 session_start();
 include 'includes/db.php';
 
-// Include PHPMailer classes manually
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-require 'includes/PHPMailer/Exception.php';
-require 'includes/PHPMailer/PHPMailer.php';
-require 'includes/PHPMailer/SMTP.php';
+// Include custom Mailer
+require_once 'includes/Mailer.php';
 
 // Generate CSRF token if not exists
 if (empty($_SESSION['csrf_token'])) {
@@ -42,11 +38,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $stmt->fetch();
 
         if ($user) {
-            // Set success message explicitly since user exists
-            $success = "A password reset link has been sent to your email address.";
-
             // Generate a secure token
             $token = bin2hex(random_bytes(32));
+
+            // Ensure password_resets table exists
+            try {
+                $pdo->exec("CREATE TABLE IF NOT EXISTS password_resets (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    email VARCHAR(255) NOT NULL,
+                    token VARCHAR(255) NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )");
+            } catch (Exception $e) {}
             
             // Delete any existing tokens for this email
             $stmt = $pdo->prepare("DELETE FROM password_resets WHERE email = ?");
@@ -59,59 +62,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Create Reset Link
             $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
             $domainName = $_SERVER['HTTP_HOST'];
-            // assuming the script is in the root directory (digambar-samaj)
             $path = dirname($_SERVER['PHP_SELF']);
             if($path == '\\' || $path == '/') $path = '';
             
             $resetLink = $protocol . $domainName . $path . "/reset-password.php?token=" . $token;
 
-            // Send Email using PHPMailer
-            $mail = new PHPMailer(true);
+            // Send Email using custom Mailer
+            $mailer = new Mailer();
+            $emailBody = "
+                <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
+                    <h2>Password Reset Request</h2>
+                    <p>Hello {$user['full_name']},</p>
+                    <p>We received a request to reset your password for your Digambar Jain Parichay account.</p>
+                    <p>Please click the button below to reset your password. This link will expire in 1 hour.</p>
+                    <p style='text-align: center; margin: 30px 0;'>
+                        <a href='{$resetLink}' style='background-color: #d97706; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Reset Password</a>
+                    </p>
+                    <p>If the button doesn't work, copy and paste this link into your browser:</p>
+                    <p><a href='{$resetLink}'>{$resetLink}</a></p>
+                    <p>If you did not request this, please ignore this email.</p>
+                    <hr>
+                    <p style='font-size: 12px; color: #666;'>Regards,<br>Digambar Jain Parichay Team</p>
+                </div>
+            ";
 
-            try {
-                //Server settings
-                $mail->isSMTP();
-                $mail->Host       = $_ENV['SMTP_HOST'] ?? 'mail.digambarjainparichay.com';
-                $mail->SMTPAuth   = true;
-                $mail->Username   = $_ENV['SMTP_USER'] ?? 'help@digambarjainparichay.com';
-                $mail->Password   = $_ENV['SMTP_PASS'] ?? '';
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-                $mail->Port       = $_ENV['SMTP_PORT'] ?? 465;
-
-                //Recipients
-                $mail->setFrom($mail->Username, 'Digambar Samaj Matrimony');
-                $mail->addAddress($email, $user['full_name']);
-
-                //Content
-                $mail->isHTML(true);
-                $mail->Subject = 'Password Reset Request';
-                $mail->Body    = "
-                    <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;'>
-                        <h2>Password Reset Request</h2>
-                        <p>Hello {$user['full_name']},</p>
-                        <p>We received a request to reset your password for your Digambar Samaj Matrimony account.</p>
-                        <p>Please click the button below to reset your password. This link will expire in 1 hour.</p>
-                        <p style='text-align: center; margin: 30px 0;'>
-                            <a href='{$resetLink}' style='background-color: #d97706; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Reset Password</a>
-                        </p>
-                        <p>If the button doesn't work, copy and paste this link into your browser:</p>
-                        <p><a href='{$resetLink}'>{$resetLink}</a></p>
-                        <p>If you did not request this, please ignore this email.</p>
-                        <hr>
-                        <p style='font-size: 12px; color: #666;'>Regards,<br>Digambar Samaj Matrimony Team</p>
-                    </div>
-                ";
-                $mail->AltBody = "Hello {$user['full_name']},\n\nWe received a request to reset your password. Please visit this link to reset it: {$resetLink}\n\nIf you did not request this, please ignore this email.";
-
-                $mail->send();
-            } catch (Exception $e) {
-                // Log the error internally but do not expose to the user
-                error_log("Message could not be sent. Mailer Error: {$mail->ErrorInfo}");
+            $sent = $mailer->send($email, 'Password Reset Request', $emailBody);
+            if ($sent) {
+                $success = "A password reset link has been sent to your email address.";
+            } else {
                 $error = "There was a problem sending the email. Please try again later or contact support.";
-                $success = ''; // Clear success message if email failed
             }
         } else {
-            // User requested to see an explicit error if account is not found
             $error = "Account not found. There is no user registered with this email address.";
         }
     }

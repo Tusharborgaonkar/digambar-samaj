@@ -54,6 +54,9 @@ include 'includes/sidebar.php';
     </div>
     
     <div class="flex gap-2">
+        <a href="export-profile-excel.php?id=<?= $id ?>" target="_blank" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition shadow-sm flex items-center">
+            <i class="fas fa-file-excel mr-2"></i> Export Excel
+        </a>
         <a href="members.php" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition shadow-sm flex items-center">
             <i class="fas fa-arrow-left mr-2"></i> Back to Members
         </a>
@@ -86,6 +89,7 @@ include 'includes/sidebar.php';
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-gray-700 font-medium bg-gray-50 p-4 rounded-lg border border-gray-100">
                 <div class="flex items-center gap-2"><i class="far fa-calendar-alt text-primary w-5 text-center"></i> <?= $age ?>, <?= $heightDisplay ?></div>
+                <div class="flex items-center gap-2 text-green-700 font-bold"><i class="fas fa-wallet text-green-700 w-5 text-center"></i> ₹<?= htmlspecialchars($member['monthly_income'] ?? '0') ?>/mo</div>
                 <div class="flex items-center gap-2"><i class="fas fa-graduation-cap text-primary w-5 text-center"></i> <?= $education ?></div>
                 <div class="flex items-center gap-2"><i class="fas fa-briefcase text-primary w-5 text-center"></i> <?= $occupation ?></div>
                 <div class="flex items-center gap-2"><i class="fas fa-om text-primary w-5 text-center"></i> Digambar Jain</div>
@@ -103,6 +107,7 @@ include 'includes/sidebar.php';
         <h3 class="text-lg font-bold text-gray-800 border-b border-gray-100 pb-3 mb-4 flex items-center"><i class="far fa-id-card text-primary mr-3"></i> Personal Information</h3>
         <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
             <div><span class="block text-gray-500 mb-1">Name</span><span class="text-gray-800 font-medium"><?= $fullName ?></span></div>
+            <div><span class="block text-gray-500 mb-1">Form Filled By</span><span class="text-gray-800 font-medium bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs"><?= htmlspecialchars($member['filled_by'] ?? 'Candidate') ?></span></div>
             <div><span class="block text-gray-500 mb-1">Date of Birth</span><span class="text-gray-800 font-medium"><?= !empty($member['birth_date']) ? date('d M Y', strtotime($member['birth_date'])) : 'N/A' ?></span></div>
             <div><span class="block text-gray-500 mb-1">Height</span><span class="text-gray-800 font-medium"><?= $heightDisplay ?></span></div>
             <div><span class="block text-gray-500 mb-1">Weight</span><span class="text-gray-800 font-medium"><?= !empty($member['weight']) ? htmlspecialchars($member['weight']) . ' kg' : 'N/A' ?></span></div>
@@ -154,11 +159,19 @@ include 'includes/sidebar.php';
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
             <div>
                 <span class="block text-gray-500 mb-1 font-semibold">References</span>
-                <p class="mb-2 text-gray-800"><strong>Ref 1:</strong> <?= htmlspecialchars($member['ref1_name'] ?? 'N/A') ?> (<?= htmlspecialchars($member['ref1_relation'] ?? '') ?>) - <?= htmlspecialchars($member['ref1_mobile'] ?? '') ?></p>
-                <p class="mb-4 text-gray-800"><strong>Ref 2:</strong> <?= htmlspecialchars($member['ref2_name'] ?? 'N/A') ?> (<?= htmlspecialchars($member['ref2_relation'] ?? '') ?>) - <?= htmlspecialchars($member['ref2_mobile'] ?? '') ?></p>
+                <p class="mb-2 text-gray-800"><strong>Ref 1:</strong> <?= htmlspecialchars($member['ref1_name'] ?? 'N/A') ?> - <?= htmlspecialchars($member['ref1_mobile'] ?? '') ?></p>
+                <p class="mb-4 text-gray-800"><strong>Ref 2:</strong> <?= htmlspecialchars($member['ref2_name'] ?? 'N/A') ?> - <?= htmlspecialchars($member['ref2_mobile'] ?? '') ?></p>
                 
-                <span class="block text-gray-500 mb-1 font-semibold">Mandir / Community</span>
-                <p class="text-gray-800"><?= htmlspecialchars($member['mandir'] ?? 'N/A') ?> <?= !empty($member['custom_mandir']) ? ' - ' . htmlspecialchars($member['custom_mandir']) : '' ?></p>
+                <span class="block text-gray-500 mb-1 font-semibold">Mandir Verification</span>
+                <p class="mb-1 text-gray-800"><strong>Name:</strong> <?= htmlspecialchars($member['mandir_name'] ?? 'N/A') ?></p>
+                <p class="mb-1 text-gray-800"><strong>Address:</strong> <?= htmlspecialchars($member['mandir_address'] ?? 'N/A') ?></p>
+                <p class="mb-4 text-gray-800"><strong>Pincode:</strong> <?= htmlspecialchars($member['mandir_pincode'] ?? 'N/A') ?></p>
+
+                <span class="block text-gray-500 mb-1 font-semibold">ID Proof Verification</span>
+                <p class="mb-1 text-gray-800"><strong>Type:</strong> <?= htmlspecialchars($member['id_proof_type'] ?? 'N/A') ?></p>
+                <?php if (!empty($member['id_proof_path'])): ?>
+                    <a href="../<?= htmlspecialchars($member['id_proof_path']) ?>" target="_blank" class="text-primary hover:underline text-sm"><i class="fas fa-external-link-alt"></i> View Document</a>
+                <?php endif; ?>
             </div>
             <div>
                 <span class="block text-gray-500 mb-1 font-semibold">Hobbies & Interests</span>

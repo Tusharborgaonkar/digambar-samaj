@@ -23,6 +23,15 @@ if ($is_admin_logged_in) {
     }
 }
 
+$is_liked = false;
+if ($is_user_logged_in && isset($_GET['id'])) {
+    $stmtLike = $pdo->prepare("SELECT 1 FROM user_likes WHERE user_id = ? AND liked_user_id = ?");
+    $stmtLike->execute([$_SESSION['user_id'], (int)$_GET['id']]);
+    if ($stmtLike->fetchColumn()) {
+        $is_liked = true;
+    }
+}
+
 if (!$is_approved) {
     include 'includes/header.php';
     echo '<div class="bg-gray-50 py-8 min-h-screen"><div class="container mx-auto px-4">';
@@ -98,7 +107,16 @@ include 'includes/header.php';
                 <div class="w-full md:w-2/3 p-6 md:p-10 flex flex-col justify-center">
                     <div class="flex justify-between items-start mb-2">
                         <h1 class="text-3xl font-bold text-dark mb-2"><?= $fullName ?> <span class="text-lg text-primary font-medium ml-2">[MID: <?= $memberId ?>]</span></h1>
-                        <button class="text-gray-400 hover:text-red-500 transition tooltip" title="Shortlist"><i class="far fa-heart text-2xl"></i></button>
+                        <div class="flex gap-2">
+                            <?php if ($is_user_logged_in): ?>
+                            <button class="like-btn border border-primary px-3 py-1.5 rounded hover:bg-primary hover:text-white transition shadow-sm <?= $is_liked ? 'bg-primary text-white' : 'text-primary' ?>" data-id="<?= $id ?>" title="<?= $is_liked ? 'Unlike' : 'Like' ?>">
+                                <i class="<?= $is_liked ? 'fas' : 'far' ?> fa-heart"></i>
+                            </button>
+                            <?php endif; ?>
+                            <button onclick="downloadPDF()" class="border border-green-600 text-green-600 px-3 py-1.5 rounded hover:bg-green-600 hover:text-white transition shadow-sm" title="Download PDF">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </button>
+                        </div>
                     </div>
                     
                     <p class="text-gray-600 mb-6 text-lg"><i class="fas fa-map-marker-alt text-primary mr-2"></i> <?= $location ?></p>
@@ -340,3 +358,58 @@ include 'includes/header.php';
 </div>
 
 <?php include 'includes/footer.php'; ?>
+
+<!-- html2pdf for generating PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+function downloadPDF() {
+    // We can target the main content block to download
+    const element = document.querySelector('.bg-gray-50 .container');
+    const opt = {
+      margin:       10,
+      filename:     'Profile_<?= $memberId ?>.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
+}
+
+// Like Button logic
+document.querySelectorAll('.like-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const userId = this.getAttribute('data-id');
+        const icon = this.querySelector('i');
+        const isLiked = this.classList.contains('bg-primary');
+        
+        fetch('api_like.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'liked_user_id=' + userId + '&action=' + (isLiked ? 'unlike' : 'like')
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                if (data.action === 'liked') {
+                    this.classList.add('bg-primary', 'text-white');
+                    this.classList.remove('text-primary');
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    this.setAttribute('title', 'Unlike');
+                } else {
+                    this.classList.remove('bg-primary', 'text-white');
+                    this.classList.add('text-primary');
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    this.setAttribute('title', 'Like');
+                }
+            } else {
+                Swal.fire('Error', data.message || 'Something went wrong', 'error');
+            }
+        });
+    });
+});
+</script>

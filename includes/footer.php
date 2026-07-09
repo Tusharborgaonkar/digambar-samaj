@@ -5,7 +5,7 @@
         <div class="container mx-auto px-4 md:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
-                    <h3 class="text-2xl font-bold text-accent mb-4">Jain Digambar</h3>
+                    <h3 class="text-2xl font-bold text-accent mb-4">Digambar Jain Parichay Sammelan Samiti, Ahmedabad</h3>
                     <p class="text-gray-300">Exclusive matrimony platform for the Digambar Jain Samaj. Find your perfect life partner within the community.</p>
                     <div class="flex space-x-4 mt-4">
                         <a href="https://facebook.com" class="text-gray-300 hover:text-accent transition" target="_blank"><i class="fab fa-facebook-f"></i></a>
@@ -35,7 +35,8 @@
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Contact Info</h4>
                     <ul class="space-y-2 text-gray-300">
-                        <li><i class="fas fa-phone mr-2"></i> +91 7575005121</li>
+                        <li><strong>Digambar Jain Parichay Sammelan Samiti, Ahmedabad</strong></li>
+                        <li><i class="fab fa-whatsapp mr-2"></i> WhatsApp: +91 7575005121</li>
                         <li><i class="fas fa-envelope mr-2"></i> digambarjainparichay@gmail.com</li>
                         <li><i class="fas fa-map-marker-alt mr-2"></i> 23-A, Shubhlaxmi Palace, Opp. Money Plant Junction, Bhuyangdev Cross Road, Sola Road, Ahmedabad-380061.</li>
                     </ul>
@@ -46,6 +47,11 @@
             </div>
         </div>
     </footer>
+    
+    <!-- Sticky WhatsApp Button -->
+    <a href="https://wa.me/917575005121" target="_blank" class="fixed bottom-6 right-6 bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-2xl hover:bg-green-600 hover:scale-110 transition-all duration-300 z-50">
+        <i class="fab fa-whatsapp text-3xl"></i>
+    </a>
     
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>

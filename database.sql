@@ -221,18 +221,9 @@ CREATE TABLE IF NOT EXISTS advertisements (
 
 -- 12. site_settings
 CREATE TABLE IF NOT EXISTS site_settings (
-    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    site_name VARCHAR(255),
-    site_email VARCHAR(255),
-    site_phone VARCHAR(50),
-    site_address TEXT,
-    upi_id VARCHAR(255),
-    facebook VARCHAR(255),
-    instagram VARCHAR(255),
-    youtube VARCHAR(255),
-    logo VARCHAR(255),
-    favicon VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    setting_key VARCHAR(100) UNIQUE NOT NULL,
+    setting_value LONGTEXT NULL
 );
 
 -- 13. activity_logs

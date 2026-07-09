@@ -57,25 +57,24 @@ include 'includes/header.php';
 
 <!-- Hero Section -->
 <section
-    class="relative min-h-[140vw] md:min-h-screen flex flex-col justify-center items-center overflow-hidden bg-gray-900">
-    <!-- Desktop Hero Banner -->
-    <div class="absolute inset-0 w-full h-full bg-cover bg-center hidden md:block"
-        style="background-image: url('assets/images/herobanner.png'); z-index: 0;"></div>
+    class="relative min-h-[100vw] md:min-h-[85vh] flex flex-col justify-center items-center overflow-hidden bg-gray-900">
+    <!-- Solid Background instead of image -->
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-primary/20 z-0"></div>
 
-    <!-- Mobile Hero Banner -->
-    <div class="absolute inset-0 w-full h-full bg-contain bg-no-repeat bg-center block md:hidden"
-        style="background-image: url('assets/images/portrait.png'); z-index: 0;"></div>
-
-    <!-- Overlay -->
-    <div class="absolute inset-0 bg-black bg-opacity-40 z-10"></div>
-
-    <div class="container mx-auto px-4 relative z-20 w-full pt-24 pb-12">
-        <!-- Hero Title & Buttons -->
-            <!-- <div class="text-center mb-10" data-aos="fade-up">
-                <h1 class="text-4xl md:text-6xl font-bold text-white mb-4">Digambar Jain Matrimony</h1>
-                <p class="text-xl md:text-2xl text-gray-200 mb-8 hero-subtitle">Find Your Special Someone Who Completes You
-                </p>
-            </div> -->
+    <div class="container mx-auto px-4 relative z-20 w-full pt-20 pb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center" data-aos="fade-up">
+            <!-- Left Side: Content -->
+            <div class="text-center md:text-left">
+                <h1 class="text-4xl md:text-6xl md:text-[4.5rem] font-bold text-white mb-6 leading-tight">दिगंबर जैन युवक-युवती परिचय</h1>
+                <p class="text-2xl md:text-3xl text-yellow-400 font-bold mb-6 drop-shadow-lg tracking-wide">The most trusted matrimony service for Digambar Jain!</p>
+                <p class="text-lg md:text-xl text-gray-200 leading-relaxed max-w-xl mx-auto md:mx-0">This website is created only for the Digambar Jain community to help eligible young men and women of the entire Digambar Jain society find their suitable life partner.</p>
+            </div>
+            
+            <!-- Right Side: Image -->
+            <div class="flex justify-center md:justify-end mt-12 md:mt-0">
+                <img src="assets/images/gallery/TEMP1.jpg" alt="Matrimony Couple" class="w-full max-w-[650px] h-auto rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/30 transform hover:scale-[1.02] transition duration-500">
+            </div>
+        </div>
     </div>
 </section>
 

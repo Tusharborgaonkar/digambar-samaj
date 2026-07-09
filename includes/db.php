@@ -28,7 +28,7 @@ function loadEnv($path)
 loadEnv(__DIR__ . '/../.env');
 
 $host = $_ENV['DB_HOST'] ?? 'localhost';
-$dbname = $_ENV['DB_NAME'] ?? 'digambar-samaj';
+$dbname = $_ENV['DB_NAME'] ?? 'digambarfinal';
 $username = $_ENV['DB_USER'] ?? 'root';
 $password = $_ENV['DB_PASS'] ?? '';
 

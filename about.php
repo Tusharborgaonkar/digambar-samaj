@@ -1,4 +1,10 @@
-<?php include 'includes/header.php'; ?>
+<?php
+require_once 'includes/db.php';
+$stmt = $pdo->query("SELECT setting_value FROM site_settings WHERE setting_key = 'about_us'");
+$dynamic_about = $stmt->fetchColumn();
+
+include 'includes/header.php';
+?>
 
 <!-- Page Banner -->
 <section class="relative h-72 md:h-[500px] bg-cover bg-center"
@@ -23,23 +29,17 @@
 <!-- About Content -->
 <section class="py-12 bg-white">
     <div class="container mx-auto px-4 max-w-6xl">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div data-aos="fade-right">
-                <div class="relative">
-                    <img src="assets/images/about-us-img1.jpg" alt="Indian Wedding Tradition"
-                        class="rounded-xl shadow-xl mx-auto block max-w-full border-4 border-white">
-                    <div
-                        class="absolute -bottom-6 -right-6 bg-white p-4 rounded-xl shadow-lg border border-gray-100 hidden md:block">
-                        <div class="text-primary font-bold text-3xl">10k+</div>
-                        <div class="text-gray-600 text-sm font-semibold">Happy Marriages</div>
-                    </div>
-                </div>
-            </div>
-            <div data-aos="fade-left">
-                <h2 class="text-3xl md:text-4xl font-bold text-dark mb-4" id="aboutTitleHi">हमारे बारे में</h2>
-                <h2 class="text-3xl md:text-4xl font-bold text-dark mb-4 hidden" id="aboutTitleEn">About Us</h2>
-                <div class="w-16 h-1 bg-primary mb-6"></div>
+        <div data-aos="fade-up">
+            <h2 class="text-3xl md:text-4xl font-bold text-dark mb-4" id="aboutTitleHi">हमारे बारे में</h2>
+            <h2 class="text-3xl md:text-4xl font-bold text-dark mb-4 hidden" id="aboutTitleEn">About Us</h2>
+            <div class="w-16 h-1 bg-primary mb-6"></div>
 
+            <!-- Content -->
+            <?php if (!empty($dynamic_about)): ?>
+                <div class="text-gray-600 leading-relaxed text-lg space-y-4">
+                    <?= $dynamic_about ?>
+                </div>
+            <?php else: ?>
                 <!-- Hindi Content -->
                 <div id="aboutContentHi" class="text-gray-600 leading-relaxed text-lg space-y-4">
                     <p>धर्म, समाज, संस्क्रति और राष्ट्र की प्रतिष्ठा को बनाये रखने मे विवाह की महत्वपूर्ण भूमिका रहती
@@ -81,6 +81,7 @@
                     <p>Our main objective is that a Jain's marriage should happen within Jainism and Jain religious
                         values should be maintained in our children.</p>
                 </div>
+            <?php endif; ?>
             </div>
         </div>
     </div>
@@ -239,80 +240,65 @@
 </section>
 
 
-<!-- Messages from Committee -->
+<!-- Committee Members -->
 <section class="py-16 bg-light border-t border-gray-100">
     <div class="container mx-auto px-4 max-w-6xl">
         <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-dark mb-3">Messages from the Committee</h2>
+            <h2 class="text-3xl font-bold text-dark mb-3">Committee Members</h2>
             <div class="w-16 h-1 bg-primary mx-auto"></div>
+            <p class="text-gray-600 mt-4">The dedicated individuals working tirelessly for the community.</p>
         </div>
 
-        <div class="grid grid-cols-1 gap-12">
-            <!-- Message 1: CS Manoj Jain -->
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-                <div class="grid grid-cols-1 md:grid-cols-2">
-                    <div class="p-8 md:p-12 flex flex-col justify-center">
-                        <div class="prose max-w-none text-gray-600 text-sm md:text-base">
-                            <p class="mb-4"><strong>Jai Jinendra,</strong></p>
-                            <p class="mb-4">Marriage plays an important role in preserving the dignity and values of
-                                religion, society, culture, and the nation. Marriage is not merely the union of two
-                                individuals; it also contributes significantly to shaping future generations. If, at the
-                                right time, a suitable bride and groom are selected and married, it undoubtedly helps
-                                create a healthy environment for society and the country.</p>
-                            <p class="mb-4">The organization of a matrimonial introduction conference serves as a useful
-                                and meaningful platform for young men and women in selecting a suitable life partner. At
-                                the same time, it is an important medium for mutual exchange of ideas and for
-                                strengthening social relationships.</p>
-                            <p class="mb-4">I extend my best wishes for a bright future to all the parents and unmarried
-                                young men and women participating in this event. I hope that everyone will find a
-                                suitable life partner through this matrimonial conference and achieve complete success
-                                in life.</p>
-                            <p class="mb-4">This year as well, we received a very encouraging response from both India
-                                and abroad. Due to space limitations, we had to decline many application forms, for
-                                which we sincerely seek forgiveness.</p>
-                            <p class="mb-6">On behalf of the committee, I express my heartfelt gratitude to all the
-                                supporters, donors, and everyone who directly or indirectly contributed to making this
-                                program successful.</p>
-                            <p class="mb-1"><strong>Jai Jinendra</strong></p>
-                            <p class="mb-1 font-bold text-primary text-lg">CS Manoj Jain</p>
-                            <p class="mb-1 text-gray-500">9825127221</p>
-                            <p class="mb-1 text-gray-500">Ahmedabad</p>
-                            <p class="text-gray-500">05-01-2026</p>
-                        </div>
-                    </div>
-                    <div class="relative h-80 md:h-auto bg-gray-200">
-                        <img src="assets/images/manoj jain.jpeg" alt="CS Manoj Jain"
-                            class="w-full h-full object-cover object-[center_18%]">
-                    </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Member 1 -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 text-center p-6">
+                <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary">
+                    <img src="assets/images/Jitendra Shah.png" alt="Member 1" class="w-full h-full object-cover">
                 </div>
+                <h3 class="font-bold text-xl text-dark">Member Name 1</h3>
+                <p class="text-primary font-semibold text-sm mb-2">Designation / Role</p>
+                <p class="text-gray-600 text-sm mb-4">Brief profile description about the member's contribution to the samaj and their vision.</p>
+            </div>
+            
+            <!-- Member 2 -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 text-center p-6">
+                <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary">
+                    <img src="assets/images/manoj jain.jpeg" alt="Member 2" class="w-full h-full object-cover">
+                </div>
+                <h3 class="font-bold text-xl text-dark">Member Name 2</h3>
+                <p class="text-primary font-semibold text-sm mb-2">Designation / Role</p>
+                <p class="text-gray-600 text-sm mb-4">Brief profile description about the member's contribution to the samaj and their vision.</p>
             </div>
 
-            <!-- Message 2: Narendra Jain -->
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-                <div class="grid grid-cols-1 md:grid-cols-2">
-                    <div class="relative h-80 md:h-auto bg-gray-200 order-2 md:order-1">
-                        <img src="assets/images/Jitendra Shah.png" alt="Jitendra Shah"
-                            class="w-full h-full object-cover object-top">
-                    </div>
-                    <div class="p-8 md:p-12 flex flex-col justify-center order-1 md:order-2">
-                        <div class="prose max-w-none text-gray-600 text-sm md:text-base">
-                            <p class="mb-4">For the past three years, the Digambar Jain Youth Introduction Conference
-                                (Parichay Sammelan) has been successfully organized in Ahmedabad. In today’s society,
-                                finding a suitable bride and groom has become quite difficult and complex. Keeping this
-                                in mind, the committee has organized this program. I have full faith that, just as in
-                                previous years, this year’s Youth Introduction Conference will also be organized
-                                successfully by the committee with complete dedication and enthusiasm.</p>
-                            <p class="mb-6">The success of this program has been possible only because of the support of
-                                all of you and the tireless day-and-night efforts of the committee members. On behalf of
-                                the committee, I express my heartfelt gratitude to all of you. I also congratulate the
-                                organizers of the 11th January 2026 event and wish a bright and prosperous future to all
-                                the young men and women participating in this Youth Introduction Conference.</p>
-                            <p class="mb-1"><strong>Jai Jinendra</strong></p>
-                            <p class="mb-1 font-bold text-primary text-lg">Jitendra Shah</p>
-                            <p class="text-gray-500">9825041734</p>
-                        </div>
-                    </div>
+            <!-- Member 3 -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 text-center p-6">
+                <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary">
+                    <img src="assets/images/milesh k doshi.png" alt="Member 3" class="w-full h-full object-cover">
                 </div>
+                <h3 class="font-bold text-xl text-dark">Member Name 3</h3>
+                <p class="text-primary font-semibold text-sm mb-2">Designation / Role</p>
+                <p class="text-gray-600 text-sm mb-4">Brief profile description about the member's contribution to the samaj and their vision.</p>
+            </div>
+
+            <!-- Member 4 -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 text-center p-6">
+                <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary">
+                    <img src="assets/images/narendra jain.png\
+                    " alt="Member 4" class="w-full h-full object-cover">
+                </div>
+                <h3 class="font-bold text-xl text-dark">Member Name 4</h3>
+                <p class="text-primary font-semibold text-sm mb-2">Designation / Role</p>
+                <p class="text-gray-600 text-sm mb-4">Brief profile description about the member's contribution to the samaj and their vision.</p>
+            </div>
+
+            <!-- Member 5 -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 text-center p-6 lg:col-start-2">
+                <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary">
+                    <img src="assets/images/darshan jain.jpeg" alt="Member 5" class="w-full h-full object-cover">
+                </div>
+                <h3 class="font-bold text-xl text-dark">Member Name 5</h3>
+                <p class="text-primary font-semibold text-sm mb-2">Designation / Role</p>
+                <p class="text-gray-600 text-sm mb-4">Brief profile description about the member's contribution to the samaj and their vision.</p>
             </div>
         </div>
     </div>

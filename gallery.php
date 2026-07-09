@@ -39,7 +39,7 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php else: ?>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 <?php foreach ($photos as $photo): ?>
-                    <a href="<?= htmlspecialchars($photo['image_path']) ?>" target="_blank" class="group relative overflow-hidden rounded-xl shadow-md block h-64 border border-gray-100 bg-white" data-aos="zoom-in">
+                    <a href="<?= htmlspecialchars($photo['image_path']) ?>" data-fancybox="gallery" data-caption="<?= htmlspecialchars($photo['title']) ?>" class="group relative overflow-hidden rounded-xl shadow-md block h-64 border border-gray-100 bg-white" data-aos="zoom-in">
                         <img src="<?= htmlspecialchars($photo['image_path']) ?>" alt="<?= htmlspecialchars($photo['title']) ?>" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
                         <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                             <i class="fas fa-search-plus text-white text-3xl"></i>
@@ -55,5 +55,56 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endif; ?>
     </div>
 </section>
+
+<!-- YouTube Videos Section -->
+<section class="py-16 bg-white border-t border-gray-100">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-dark mb-3">Event Videos</h2>
+            <div class="w-16 h-1 bg-primary mx-auto"></div>
+            <p class="text-gray-600 mt-4">Watch highlights from our past events and programs.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Video Placeholder 1 -->
+            <div class="bg-light rounded-xl overflow-hidden shadow-md" data-aos="fade-up">
+                <div class="aspect-w-16 aspect-h-9 h-64">
+                    <iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-bold text-lg text-dark">Sample Event Video 1</h3>
+                </div>
+            </div>
+            <!-- Video Placeholder 2 -->
+            <div class="bg-light rounded-xl overflow-hidden shadow-md" data-aos="fade-up" data-aos-delay="100">
+                <div class="aspect-w-16 aspect-h-9 h-64">
+                    <iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-bold text-lg text-dark">Sample Event Video 2</h3>
+                </div>
+            </div>
+            <!-- Video Placeholder 3 -->
+            <div class="bg-light rounded-xl overflow-hidden shadow-md" data-aos="fade-up" data-aos-delay="200">
+                <div class="aspect-w-16 aspect-h-9 h-64">
+                    <iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="p-4">
+                    <h3 class="font-bold text-lg text-dark">Sample Event Video 3</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Fancybox Script and CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css" />
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        Fancybox.bind("[data-fancybox]", {
+            // Your custom options
+        });
+    });
+</script>
 
 <?php include 'includes/footer.php'; ?>

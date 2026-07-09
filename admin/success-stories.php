@@ -7,6 +7,18 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
 require_once '../includes/db.php';
 
+try {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS success_stories (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NULL,
+        couple_name VARCHAR(255) NOT NULL,
+        city VARCHAR(100) NOT NULL,
+        story TEXT NOT NULL,
+        photo VARCHAR(255) NULL,
+        status VARCHAR(50) DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )");
+} catch (Exception $e) {}
 $success_msg = '';
 $error_msg = '';
 

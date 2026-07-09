@@ -14,17 +14,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['use
         $stmtEmail->execute([$userId]);
         $user = $stmtEmail->fetch();
         if ($user && !empty($user['email'])) {
+            require_once '../includes/Mailer.php';
+            $mailer = new Mailer();
             $to = $user['email'];
             $subject = "Profile Approved - Digambar Samaj Matrimony";
-            $message = "Dear " . $user['full_name'] . ",
-
-Congrats! Your profile has been approved by the admin. You can now visit other profiles and write success stories.
-
-Best Regards,
-Digambar Samaj Matrimony Team";
-            $headers = "From: noreply@digambarsamaj.com
-";
-            @mail($to, $subject, $message, $headers);
+            $message = "<p>Dear " . htmlspecialchars($user['full_name']) . ",</p>
+<p>Congrats! Your profile has been approved by the admin. You can now visit other profiles and write success stories.</p>
+<br>
+<p>Best Regards,<br>Digambar Samaj Matrimony Team</p>";
+            $mailer->send($to, $subject, $message);
         }
 
     } elseif ($action === 'reject') {

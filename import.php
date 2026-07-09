@@ -22,20 +22,20 @@ if ($handle !== FALSE) {
     // skip first row (header)
     fgetcsv($handle);
     
-    $stmt = $pdo->prepare("INSERT INTO members (
-        full_name, country_code, mobile_number, birth_date, birth_time, birth_place, native, gotra, mama_gotra,
-        manglik, height_cm, weight_kg, gender, permanent_address, permanent_pin_code, current_address, email,
-        higher_education, hobbies, partner_preferences, monthly_income, widow_divorce, handicapped_physical_deficiency,
-        languages_known, occupation, company_name, designation, father_name, father_mobile, father_monthly_income,
-        father_occupation, mother_name, mother_mobile, mother_occupation, brothers_total, brothers_married,
-        brothers_unmarried, sisters_total, sisters_married, sisters_unmarried, profile_photo_path
+    $stmt = $pdo->prepare("INSERT INTO users (
+        full_name, country_code, mobile, birth_date, birth_time, birth_place, native_place, gotra, mama_gotra,
+        manglik, height, weight, gender, permanent_address, pin_code, current_address, email,
+        higher_education, hobbies, partner_preference, monthly_income, marital_status, handicapped,
+        languages, occupation, company_name, designation, father_name, father_mobile, father_income,
+        father_occupation, mother_name, mother_mobile, mother_occupation, brothers, brothers_married,
+        brothers_unmarried, sisters, sisters_married, sisters_unmarried, profile_photo, status
     ) VALUES (
         :full_name, :country_code, :mobile_number, :birth_date, :birth_time, :birth_place, :native, :gotra, :mama_gotra,
         :manglik, :height_cm, :weight_kg, :gender, :permanent_address, :permanent_pin_code, :current_address, :email,
         :higher_education, :hobbies, :partner_preferences, :monthly_income, :widow_divorce, :handicapped_physical_deficiency,
         :languages_known, :occupation, :company_name, :designation, :father_name, :father_mobile, :father_monthly_income,
         :father_occupation, :mother_name, :mother_mobile, :mother_occupation, :brothers_total, :brothers_married,
-        :brothers_unmarried, :sisters_total, :sisters_married, :sisters_unmarried, :profile_photo_path
+        :brothers_unmarried, :sisters_total, :sisters_married, :sisters_unmarried, :profile_photo_path, 'approved'
     )");
 
     $count = 0;

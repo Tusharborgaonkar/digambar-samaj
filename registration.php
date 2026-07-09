@@ -125,8 +125,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ref2_mobile = htmlspecialchars($_POST['ref2_mobile'] ?? '');
     $ref2_relation = htmlspecialchars($_POST['ref2_relation'] ?? '');
 
+    $filled_by = htmlspecialchars($_POST['filled_by'] ?? 'Candidate');
+    $id_proof_type = htmlspecialchars($_POST['id_proof_type'] ?? '');
+    $mandir_name = htmlspecialchars($_POST['mandir_name'] ?? '');
+    $mandir_address = htmlspecialchars($_POST['mandir_address'] ?? '');
+    $mandir_pincode = htmlspecialchars($_POST['mandir_pincode'] ?? '');
+
     $profile_photo_drive_url = htmlspecialchars($_POST['profile_photo_drive_url'] ?? '');
     $payment_proof_drive_url = htmlspecialchars($_POST['payment_proof_drive_url'] ?? '');
+
+    // Combine Birth Time if sent as array (hh, mm, ampm)
+    if (isset($_POST['birth_time_hh'], $_POST['birth_time_mm'], $_POST['birth_time_ampm'])) {
+        $birth_time = str_pad($_POST['birth_time_hh'], 2, '0', STR_PAD_LEFT) . ':' . 
+                      str_pad($_POST['birth_time_mm'], 2, '0', STR_PAD_LEFT) . ' ' . 
+                      $_POST['birth_time_ampm'];
+    }
 
     // PHP Validations
     if ($pin_code && !preg_match('/^[0-9]{4,6}$/', $pin_code)) {
@@ -170,6 +183,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $payment_screenshot = $upload_dir . time() . '_payment_' . basename($_FILES['payment_screenshot']['name']);
         move_uploaded_file($_FILES['payment_screenshot']['tmp_name'], $payment_screenshot);
     }
+    
+    $id_proof_path = '';
+    if (isset($_FILES['id_proof_path']) && $_FILES['id_proof_path']['error'] === UPLOAD_ERR_OK) {
+        $id_proof_path = $upload_dir . time() . '_idproof_' . basename($_FILES['id_proof_path']['name']);
+        move_uploaded_file($_FILES['id_proof_path']['tmp_name'], $id_proof_path);
+    }
 
     try {
         $stmt = $pdo->prepare("UPDATE users SET 
@@ -179,7 +198,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             father_mobile=?, father_income=?, father_occupation=?, mother_name=?, mother_mobile=?, mother_occupation=?,
             mother_occupation_details=?, brothers=?, brothers_married=?, brothers_unmarried=?, sisters=?, sisters_married=?,
             sisters_unmarried=?, subcast=?, custom_subcast=?, mandir=?, custom_mandir=?, ref1_name=?, ref1_mobile=?, ref1_relation=?,
-            ref2_name=?, ref2_mobile=?, ref2_relation=?, profile_photo=?, family_photo=?, payment_screenshot=?, profile_photo_drive_url=?, payment_proof_drive_url=?, status='pending'
+            ref2_name=?, ref2_mobile=?, ref2_relation=?, profile_photo=?, family_photo=?, payment_screenshot=?, profile_photo_drive_url=?, payment_proof_drive_url=?, status='pending',
+            filled_by=?, id_proof_type=?, id_proof_path=?, mandir_name=?, mandir_address=?, mandir_pincode=?
             WHERE id=?
         ");
 
@@ -190,7 +210,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $father_mobile, $father_income, $father_occupation, $mother_name, $mother_mobile, $mother_occupation,
             $mother_occupation_details, $brothers, $brothers_married, $brothers_unmarried, $sisters, $sisters_married,
             $sisters_unmarried, $subcast, $custom_subcast, $mandir, $custom_mandir, $ref1_name, $ref1_mobile, $ref1_relation,
-            $ref2_name, $ref2_mobile, $ref2_relation, $photo, $family_photo, $payment_screenshot, $profile_photo_drive_url, $payment_proof_drive_url, $user_id
+            $ref2_name, $ref2_mobile, $ref2_relation, $photo, $family_photo, $payment_screenshot, $profile_photo_drive_url, $payment_proof_drive_url,
+            $filled_by, $id_proof_type, $id_proof_path, $mandir_name, $mandir_address, $mandir_pincode,
+            $user_id
         ]);
 
         // Save Custom Fields
@@ -214,6 +236,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($value !== null) {
                 $stmtInsertCustom->execute([$user_id, $field['id'], $value]);
             }
+        }
+
+        // Send Email
+        require_once 'includes/Mailer.php';
+        $mailer = new Mailer();
+        $userEmail = $_SESSION['user_email'] ?? ''; // or fetch from db if not in session
+        if (!$userEmail) {
+            $stmtEmail = $pdo->prepare("SELECT email FROM users WHERE id = ?");
+            $stmtEmail->execute([$user_id]);
+            $userEmail = $stmtEmail->fetchColumn();
+        }
+        
+        if ($userEmail) {
+            $subject = "Profile Submitted for Approval";
+            $body = "<h2>Hello " . htmlspecialchars($full_name) . "</h2><p>Your profile has been successfully submitted and is currently pending approval by the admin. We will notify you once it is approved.</p>";
+            $mailer->send($userEmail, $subject, $body);
+            
+            // Notify Admin
+            $adminSubject = "New Profile Registration";
+            $adminBody = "<h2>New Profile Submitted</h2><p>A new profile for <b>" . htmlspecialchars($full_name) . "</b> has been submitted and is pending approval.</p>";
+            $mailer->send('help@digambarjainparichay.com', $adminSubject, $adminBody);
         }
 
         $success = "Registration successful! Your profile has been sent for approval.";
@@ -245,13 +288,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     
                     <!-- Are You Digambar Jain -->
                     <div class="mb-4">
-                        <label class="block text-gray-700 font-medium mb-2">Are You Digambar Jain? (परिचय सम्मेलन सिर्फ दिगम्बर जैन के लिये है) *</label>
+                        <label class="block text-gray-700 font-medium mb-2">Are You Digambar Jain? *</label>
                         <div class="flex gap-4">
                             <label class="inline-flex items-center"><input type="radio" name="is_digambar" value="yes" required class="mr-2"> Yes</label>
                             <label class="inline-flex items-center"><input type="radio" name="is_digambar" value="no" required class="mr-2"> No</label>
                         </div>
                     </div>
                     
+                    <!-- Who is Filling -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-2">Who is filling this form? *</label>
+                        <select name="filled_by" required class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white">
+                            <option value="">Select Option</option>
+                            <option value="Candidate">Candidate</option>
+                            <option value="Father">Father</option>
+                            <option value="Mother">Mother</option>
+                            <option value="Brother">Brother</option>
+                            <option value="Sister">Sister</option>
+                            <option value="Guardian">Guardian</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
                     <!-- Candidate Full Name -->
                     <div class="mb-4">
                         <label class="block text-gray-700 font-medium mb-2">Candidate Full Name (प्रत्याशी का नाम) *</label>
@@ -278,11 +336,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div><label class="block text-gray-700 font-medium mb-2">Birth Date *</label><input type="date" name="birth_date" required class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Birth Time *</label><input type="time" name="birth_time" required class="w-full border rounded-lg px-4 py-2"></div>
+                        
+                        <div><label class="block text-gray-700 font-medium mb-2">Birth Time *</label>
+                            <div class="flex gap-2">
+                                <select name="birth_time_hh" required class="w-1/3 border rounded-lg px-2 py-2">
+                                    <option value="">HH</option>
+                                    <?php for($i=1; $i<=12; $i++) echo "<option value='".str_pad($i, 2, '0', STR_PAD_LEFT)."'>".str_pad($i, 2, '0', STR_PAD_LEFT)."</option>"; ?>
+                                </select>
+                                <select name="birth_time_mm" required class="w-1/3 border rounded-lg px-2 py-2">
+                                    <option value="">MM</option>
+                                    <?php for($i=0; $i<=59; $i++) echo "<option value='".str_pad($i, 2, '0', STR_PAD_LEFT)."'>".str_pad($i, 2, '0', STR_PAD_LEFT)."</option>"; ?>
+                                </select>
+                                <select name="birth_time_ampm" required class="w-1/3 border rounded-lg px-2 py-2">
+                                    <option value="">AM/PM</option>
+                                    <option value="AM">AM</option>
+                                    <option value="PM">PM</option>
+                                </select>
+                            </div>
+                        </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Birth Place *</label><input type="text" name="birth_place" required class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Native (परिवार का मूल स्थान) *</label><input type="text" name="native" required class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Gotra (गोत्र) *</label><input type="text" name="gotra" required class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Mama Gotra (मामा का गोत्र) (Optional)</label><input type="text" name="mama_gotra" class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Mama Gotra (मामा का गोत्र) *</label><input type="text" name="mama_gotra" required class="w-full border rounded-lg px-4 py-2"></div>
                         
                         <!-- Manglik -->
                         <div><label class="block text-gray-700 font-medium mb-2">Manglik (मांगलिक) *</label>
@@ -405,17 +480,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                 </div>
                 
-                <?php /* ?>
                 <!-- Section 4: Mandir Verification Details -->
                 <div class="mb-8 pb-4 border-b border-gray-200">
                     <h2 class="text-xl font-bold text-primary mb-4">Section 4: Mandir Verification Details</h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Subcast Select -->
-                        <?php if (isset($coreFieldsSettings['subcast']) && $coreFieldsSettings['subcast']['is_visible']): ?>
-                        <div>
-                            <label class="block text-gray-700 font-medium mb-2">Subcast (उपजाति) <?= $coreFieldsSettings['subcast']['is_required'] ? '*' : '' ?></label>
-                            <select name="subcast" id="subcast" <?= $coreFieldsSettings['subcast']['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
+                        <!-- <div>
+                            <label class="block text-gray-700 font-medium mb-2">Subcast (उपजाति) *</label>
+                            <select name="subcast" id="subcast" required class="w-full border rounded-lg px-4 py-2">
                                 <option value="">Select Subcast</option>
                                 <?php 
                                 $subcasts = !empty($coreFieldsSettings['subcast']['field_options']) ? explode(',', $coreFieldsSettings['subcast']['field_options']) : [];
@@ -428,42 +501,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <option value="Other">Other Subcast (अन्य उपजाति)</option>
                             </select>
                             
-                            <!-- Custom Subcast Text Input (Hidden initially) -->
                             <div id="customSubcastContainer" class="mt-2 hidden">
                                 <label class="block text-xs text-gray-500 font-semibold mb-1">Please Specify Subcast *</label>
                                 <input type="text" name="custom_subcast" id="custom_subcast" class="w-full border rounded-lg px-4 py-2" placeholder="Enter your subcast">
                             </div>
-                        </div>
-                        <?php endif; ?>
+                        </div> -->
 
-                        <!-- Mandir Select -->
-                        <?php if (isset($coreFieldsSettings['mandir']) && $coreFieldsSettings['mandir']['is_visible']): ?>
+                        <!-- Mandir Details -->
                         <div>
-                            <label class="block text-gray-700 font-medium mb-2">Select Your Mandir (मंदिर) <?= $coreFieldsSettings['mandir']['is_required'] ? '*' : '' ?></label>
-                            <select name="mandir" id="mandir" <?= $coreFieldsSettings['mandir']['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
-                                <option value="">Select Mandir</option>
-                                <?php 
-                                $mandirs = !empty($coreFieldsSettings['mandir']['field_options']) ? explode(',', $coreFieldsSettings['mandir']['field_options']) : [];
-                                foreach ($mandirs as $m): 
-                                    $m = trim($m);
-                                    if(empty($m)) continue;
-                                ?>
-                                    <option value="<?= htmlspecialchars($m) ?>"><?= htmlspecialchars($m) ?></option>
-                                <?php endforeach; ?>
-                                <option value="Other Mandir">Other Mandir (अन्य मंदिर)</option>
-                            </select>
-
-                            <!-- Custom Mandir Text Input (Hidden initially) -->
-                            <div id="customMandirContainer" class="mt-2 hidden">
-                                <label class="block text-xs text-gray-500 font-semibold mb-1">Please Specify Mandir Name & Location *</label>
-                                <input type="text" name="custom_mandir" id="custom_mandir" class="w-full border rounded-lg px-4 py-2" placeholder="e.g., Shri Digambar Jain Mandir, Sector 4, Rohini, Delhi">
-                            </div>
+                            <label class="block text-gray-700 font-medium mb-2">Mandir Name (मंदिर का नाम) *</label>
+                            <input type="text" name="mandir_name" required class="w-full border rounded-lg px-4 py-2" placeholder="Shri Digambar Jain Mandir">
                         </div>
-                        <?php endif; ?>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Mandir Address *</label>
+                            <textarea name="mandir_address" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Mandir Pincode *</label>
+                            <input type="text" name="mandir_pincode" pattern="[0-9]{4,6}" maxlength="6" minlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border rounded-lg px-4 py-2">
+                        </div>
                     </div>
 
-                    <!-- Reference Persons (Hidden initially, dynamic slide down) -->
-                    <div id="referencePersonsContainer" class="mt-6 border-t border-dashed border-gray-200 pt-6 hidden opacity-0 transition-all duration-500 transform translate-y-2">
+                    <!-- Reference Persons (Always Visible Now) -->
+                    <div id="referencePersonsContainer" class="mt-6 border-t border-dashed border-gray-200 pt-6">
                         <div class="mb-4 bg-blue-50/50 p-4 rounded-lg border border-primary/10">
                             <h3 class="text-lg font-bold text-primary flex items-center gap-2">
                                 <i class="fas fa-users text-primary"></i> 2 Reference Persons from Same Mandir/Community
@@ -478,35 +538,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <span class="w-6 h-6 bg-primary text-white text-xs font-semibold rounded-full flex items-center justify-center">1</span>
                                     Reference Person 1
                                 </h4>
-                                
                                 <div class="space-y-3">
-                                    <?php if (isset($coreFieldsSettings['ref1_name']) && $coreFieldsSettings['ref1_name']['is_visible']): ?>
                                     <div>
-                                        <label class="block text-sm text-gray-700 font-medium mb-1">Full Name <?= $coreFieldsSettings['ref1_name']['is_required'] ? '*' : '' ?></label>
-                                        <input type="text" name="ref1_name" id="ref1_name" <?= $coreFieldsSettings['ref1_name']['is_required'] ? 'required' : '' ?> class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
+                                        <label class="block text-sm text-gray-700 font-medium mb-1">Full Name *</label>
+                                        <input type="text" name="ref1_name" required class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
                                     </div>
-                                    <?php endif; ?>
-                                    <?php if (isset($coreFieldsSettings['ref1_mobile']) && $coreFieldsSettings['ref1_mobile']['is_visible']): ?>
                                     <div>
-                                        <label class="block text-sm text-gray-700 font-medium mb-1">Mobile Number <?= $coreFieldsSettings['ref1_mobile']['is_required'] ? '*' : '' ?></label>
-                                        <input type="tel" name="ref1_mobile" id="ref1_mobile" <?= $coreFieldsSettings['ref1_mobile']['is_required'] ? 'required' : '' ?> pattern="[0-9]{10}" maxlength="10" minlength="10" title="Exactly 10 digit mobile number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
+                                        <label class="block text-sm text-gray-700 font-medium mb-1">Mobile Number *</label>
+                                        <input type="tel" name="ref1_mobile" required pattern="[0-9]{10}" maxlength="10" minlength="10" title="Exactly 10 digit mobile number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
                                     </div>
-                                    <?php endif; ?>
-                                    <?php if (isset($coreFieldsSettings['ref1_relation']) && $coreFieldsSettings['ref1_relation']['is_visible']): ?>
-                                    <div>
-                                        <label class="block text-sm text-gray-700 font-medium mb-1">Relationship <?= $coreFieldsSettings['ref1_relation']['is_required'] ? '*' : '(Optional)' ?></label>
-                                        <select name="ref1_relation" id="ref1_relation" <?= $coreFieldsSettings['ref1_relation']['is_required'] ? 'required' : '' ?> class="w-full border bg-white rounded-lg px-3 py-2 text-sm">
-                                            <option value="">Select Relationship</option>
-                                            <option value="Panditji / Temple Priest">Panditji / Temple Priest (पंडितजी)</option>
-                                            <option value="Mandir Trustee / Committee Member">Mandir Trustee / Committee Member (ट्रस्टी)</option>
-                                            <option value="Community Leader">Community Leader (समाज श्रेष्ठी)</option>
-                                            <option value="Family Friend">Family Friend (पारिवारिक मित्र)</option>
-                                            <option value="Relative">Relative (रिश्तेदार)</option>
-                                            <option value="Neighbor">Neighbor (पड़ोसी)</option>
-                                            <option value="Other">Other (अन्य)</option>
-                                        </select>
-                                    </div>
-                                    <?php endif; ?>
                                 </div>
                             </div>
 
@@ -516,35 +556,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <span class="w-6 h-6 bg-primary text-white text-xs font-semibold rounded-full flex items-center justify-center">2</span>
                                     Reference Person 2
                                 </h4>
-                                
                                 <div class="space-y-3">
-                                    <?php if (isset($coreFieldsSettings['ref2_name']) && $coreFieldsSettings['ref2_name']['is_visible']): ?>
                                     <div>
-                                        <label class="block text-sm text-gray-700 font-medium mb-1">Full Name <?= $coreFieldsSettings['ref2_name']['is_required'] ? '*' : '' ?></label>
-                                        <input type="text" name="ref2_name" id="ref2_name" <?= $coreFieldsSettings['ref2_name']['is_required'] ? 'required' : '' ?> class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
+                                        <label class="block text-sm text-gray-700 font-medium mb-1">Full Name *</label>
+                                        <input type="text" name="ref2_name" required class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
                                     </div>
-                                    <?php endif; ?>
-                                    <?php if (isset($coreFieldsSettings['ref2_mobile']) && $coreFieldsSettings['ref2_mobile']['is_visible']): ?>
                                     <div>
-                                        <label class="block text-sm text-gray-700 font-medium mb-1">Mobile Number <?= $coreFieldsSettings['ref2_mobile']['is_required'] ? '*' : '' ?></label>
-                                        <input type="tel" name="ref2_mobile" id="ref2_mobile" <?= $coreFieldsSettings['ref2_mobile']['is_required'] ? 'required' : '' ?> pattern="[0-9]{10}" maxlength="10" minlength="10" title="Exactly 10 digit mobile number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
+                                        <label class="block text-sm text-gray-700 font-medium mb-1">Mobile Number *</label>
+                                        <input type="tel" name="ref2_mobile" required pattern="[0-9]{10}" maxlength="10" minlength="10" title="Exactly 10 digit mobile number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
                                     </div>
-                                    <?php endif; ?>
-                                    <?php if (isset($coreFieldsSettings['ref2_relation']) && $coreFieldsSettings['ref2_relation']['is_visible']): ?>
-                                    <div>
-                                        <label class="block text-sm text-gray-700 font-medium mb-1">Relationship <?= $coreFieldsSettings['ref2_relation']['is_required'] ? '*' : '(Optional)' ?></label>
-                                        <select name="ref2_relation" id="ref2_relation" <?= $coreFieldsSettings['ref2_relation']['is_required'] ? 'required' : '' ?> class="w-full border bg-white rounded-lg px-3 py-2 text-sm">
-                                            <option value="">Select Relationship</option>
-                                            <option value="Panditji / Temple Priest">Panditji / Temple Priest (पंडितजी)</option>
-                                            <option value="Mandir Trustee / Committee Member">Mandir Trustee / Committee Member (ट्रस्टी)</option>
-                                            <option value="Community Leader">Community Leader (समाज श्रेष्ठी)</option>
-                                            <option value="Family Friend">Family Friend (पारिवारिक मित्र)</option>
-                                            <option value="Relative">Relative (रिश्तेदार)</option>
-                                            <option value="Neighbor">Neighbor (पड़ोसी)</option>
-                                            <option value="Other">Other (अन्य)</option>
-                                        </select>
-                                    </div>
-                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -587,6 +607,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <input type="url" name="profile_photo_drive_url" <?= $coreFieldsSettings['profile_photo_drive_url']['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
                             </div>
                             <?php endif; ?>
+
+                            <!-- ID Proof Upload -->
+                            <div class="col-span-1 md:col-span-2 border-t mt-4 pt-4">
+                                <h3 class="text-lg font-bold text-primary mb-2">ID Proof Verification</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-gray-700 font-medium mb-2">Select ID Proof Type *</label>
+                                        <select name="id_proof_type" required class="w-full border rounded-lg px-4 py-2">
+                                            <option value="">Select Option</option>
+                                            <option value="Aadhaar Card">Aadhaar Card</option>
+                                            <option value="PAN Card">PAN Card</option>
+                                            <option value="Voter ID">Voter ID</option>
+                                            <option value="Driving Licence">Driving Licence</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-gray-700 font-medium mb-2">Upload ID Proof * (Max 5MB)</label>
+                                        <input type="file" name="id_proof_path" accept="image/*,.pdf" required class="w-full border rounded-lg px-4 py-2">
+                                    </div>
+                                </div>
+                            </div>
+
                             <?php 
                             if (!empty($customFieldsByGroup['Photos'])) {
                                 foreach ($customFieldsByGroup['Photos'] as $f) echo renderCustomFieldHTML($f);
@@ -596,7 +638,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                     <?php endif; ?>
                 </div>
-                <?php */ ?>
+                </div>
                 
                 <!-- Documents & Payment -->
                 <?php if (
@@ -607,15 +649,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <h2 class="text-xl font-bold text-primary mb-4">Documents & Payment</h2>
                     <div class="grid grid-cols-1 gap-4">
                         <div class="text-center p-4 bg-light rounded-lg">
-                            <p class="font-semibold mb-2">Pay Rs. 1000/- (Candidate + 2 persons allowed)</p>
-                            <p class="text-sm text-gray-600">Kindly mention Mobile No. in Payment Remarks</p>
-                            <img src="https://via.placeholder.com/200x200?text=QR+Code" alt="Payment QR" class="mx-auto mt-2 w-48">
+                            <p class="font-semibold mb-2">Free Registration</p>
+                            <p class="text-sm text-gray-600 mb-4">If you want your photo printed in our matrimony book, a fee of Rs. 1000/- is required.</p>
+                            
+                            <div class="flex items-center justify-center gap-2 mb-4 bg-white p-3 rounded-md shadow-sm border border-gray-200 inline-block mx-auto">
+                                <input type="checkbox" name="book_print_optin" id="book_print_optin" value="yes" class="w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary">
+                                <label for="book_print_optin" class="font-medium text-dark cursor-pointer">I want my photo printed in the book (Rs. 1000/-)</label>
+                            </div>
+
+                            <div id="payment_details_container" class="hidden transition-all duration-300">
+                                <p class="text-sm text-gray-600">Kindly scan the QR code to pay Rs. 1000/- and mention Mobile No. in Payment Remarks.</p>
+                                <img src="https://via.placeholder.com/200x200?text=QR+Code" alt="Payment QR" class="mx-auto mt-2 w-48">
+                            </div>
                         </div>
                         
                         <?php if (isset($coreFieldsSettings['payment_screenshot']) && $coreFieldsSettings['payment_screenshot']['is_visible']): ?>
-                        <div>
-                            <label class="block text-gray-700 font-medium mb-2">Payment Screenshot (Transaction ID) <?= $coreFieldsSettings['payment_screenshot']['is_required'] ? '*' : '' ?></label>
-                            <input type="file" name="payment_screenshot" accept="image/*" <?= $coreFieldsSettings['payment_screenshot']['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
+                        <div id="payment_screenshot_container" class="hidden">
+                            <label class="block text-gray-700 font-medium mb-2">Payment Screenshot (Transaction ID) *</label>
+                            <input type="file" name="payment_screenshot" id="payment_screenshot" accept="image/*" class="w-full border rounded-lg px-4 py-2">
                         </div>
                         <?php endif; ?>
 
@@ -651,15 +702,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </section>
 
 <script>
-
 document.querySelectorAll('input[name="is_digambar"]').forEach(radio => {
     radio.addEventListener('change', function() {
         const formElements = document.querySelectorAll('#registrationForm input:not([name="is_digambar"]), #registrationForm select, #registrationForm textarea, #registrationForm button[type="submit"]');
         if (this.value === 'no') {
             Swal.fire({icon: 'warning', title: 'Attention', text: 'Sorry, this registration is strictly for Digambar Jains only.'});
             formElements.forEach(el => el.disabled = true);
-            
-            // visually dim the form to indicate it's disabled
             document.getElementById('registrationForm').classList.add('opacity-50');
         } else {
             formElements.forEach(el => el.disabled = false);
@@ -679,77 +727,6 @@ document.getElementById('mother_occupation')?.addEventListener('change', functio
         detailsInput.value = '';
     }
 });
-
-document.getElementById('subcast')?.addEventListener('change', function() {
-    const customSubcast = document.getElementById('customSubcastContainer');
-    const input = document.getElementById('custom_subcast');
-    if (this.value === 'Other') {
-        customSubcast.classList.remove('hidden');
-        input.required = true;
-    } else {
-        customSubcast.classList.add('hidden');
-        input.required = false;
-        input.value = '';
-    }
-    checkReferenceSection();
-});
-
-document.getElementById('mandir')?.addEventListener('change', function() {
-    const customMandir = document.getElementById('customMandirContainer');
-    const input = document.getElementById('custom_mandir');
-    if (this.value === 'Other Mandir') {
-        customMandir.classList.remove('hidden');
-        input.required = true;
-    } else {
-        customMandir.classList.add('hidden');
-        input.required = false;
-        input.value = '';
-    }
-    checkReferenceSection();
-});
-
-function checkReferenceSection() {
-    const subcastEl = document.getElementById('subcast');
-    const mandirEl = document.getElementById('mandir');
-    const refContainer = document.getElementById('referencePersonsContainer');
-    
-    if (!subcastEl || !mandirEl || !refContainer) return;
-
-    const subcast = subcastEl.value;
-    const mandir = mandirEl.value;
-    const refInputs = [
-        document.getElementById('ref1_name'),
-        document.getElementById('ref1_mobile'),
-        document.getElementById('ref2_name'),
-        document.getElementById('ref2_mobile')
-    ].filter(el => el !== null);
-
-    if (mandir) {
-        refContainer.classList.remove('hidden');
-        // Trigger reflow for transition
-        refContainer.offsetHeight;
-        refContainer.classList.remove('opacity-0', 'translate-y-2');
-        refContainer.classList.add('opacity-100', 'translate-y-0');
-        refInputs.forEach(el => el.required = true);
-    } else {
-        refContainer.classList.add('opacity-0', 'translate-y-2');
-        refContainer.classList.remove('opacity-100', 'translate-y-0');
-        // Hide after animation finishes
-        setTimeout(() => {
-            if (!mandirEl.value) {
-                refContainer.classList.add('hidden');
-            }
-        }, 500);
-        refInputs.forEach(el => {
-            el.required = false;
-            el.value = '';
-        });
-        const ref1Rel = document.getElementById('ref1_relation');
-        const ref2Rel = document.getElementById('ref2_relation');
-        if (ref1Rel) ref1Rel.value = '';
-        if (ref2Rel) ref2Rel.value = '';
-    }
-}
 
 document.getElementById('registrationForm')?.addEventListener('submit', function(e) {
     e.preventDefault();

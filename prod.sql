@@ -18,8 +18,10 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `u942738327_digambar`
+-- Database: `digambar`
 --
+CREATE DATABASE IF NOT EXISTS `digambar`;
+USE `digambar`;
 
 -- --------------------------------------------------------
 

@@ -19,6 +19,17 @@ if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) 
     $is_approved = true;
 }
 
+$liked_profiles = [];
+if ($is_logged_in && isset($_SESSION['user_id'])) {
+    try {
+        $stmt = $pdo->prepare("SELECT liked_user_id FROM user_likes WHERE user_id = ?");
+        $stmt->execute([$_SESSION['user_id']]);
+        $liked_profiles = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    } catch(PDOException $e) {
+        // user_likes table might not exist yet
+    }
+}
+
 // Redirect unauthorized users trying to access page > 1
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 if ($page < 1) $page = 1;
@@ -110,9 +121,24 @@ $countStmt->execute($params);
 $total_profiles = $countStmt->fetchColumn();
 $total_pages = ceil($total_profiles / $limit);
 
-$query = "SELECT * FROM users WHERE $whereClause ORDER BY id DESC LIMIT $limit OFFSET $offset";
+// Build the query with liked profiles on top
+$current_user_id = $_SESSION['user_id'] ?? 0;
+
+if ($is_logged_in && $current_user_id > 0) {
+    $query = "SELECT u.*, IF(ul.id IS NOT NULL, 1, 0) AS is_liked 
+              FROM users u 
+              LEFT JOIN user_likes ul ON ul.liked_user_id = u.id AND ul.user_id = ? 
+              WHERE $whereClause 
+              ORDER BY is_liked DESC, u.id DESC 
+              LIMIT $limit OFFSET $offset";
+    $stmtParams = array_merge([$current_user_id], $params);
+} else {
+    $query = "SELECT * FROM users WHERE $whereClause ORDER BY id DESC LIMIT $limit OFFSET $offset";
+    $stmtParams = $params;
+}
+
 $stmt = $pdo->prepare($query);
-$stmt->execute($params);
+$stmt->execute($stmtParams);
 $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
@@ -141,12 +167,16 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <?php endif; ?>
 
         <div class="flex flex-col md:flex-row gap-8">
-            <!-- Sidebar / Filters -->
+            <!-- Search Sidebar -->
             <div class="w-full md:w-1/4">
-                <form action="profiles.php" method="GET" class="bg-white border border-gray-200 rounded-sm shadow-sm">
-                    <!-- Advanced Search Header -->
-                    <div class="bg-primary text-white text-center py-3 font-semibold text-base rounded-t-sm">
-                        Advanced Search
+                
+                <button onclick="history.back()" class="w-full bg-white border border-gray-300 text-gray-700 font-semibold py-2.5 rounded-md hover:bg-gray-50 transition shadow-sm mb-4 flex items-center justify-center gap-2">
+                    <i class="fas fa-arrow-left"></i> Go Back
+                </button>
+
+                <form method="GET" action="profiles.php" class="bg-white border border-gray-200 rounded-sm shadow-sm">
+                    <div class="bg-primary text-white text-center font-bold text-lg py-3 rounded-t-sm">
+                        Find Your Match
                     </div>
                     
                     <!-- Sub Header -->
@@ -204,7 +234,7 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <!-- Manglik -->
                         <?php $selectedManglik = $_GET['manglik'] ?? ''; ?>
                         <select name="manglik" class="w-full border border-gray-300 rounded-md p-2.5 mb-4 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-white">
-                            <option value="" <?= $selectedManglik === '' ? 'selected' : '' ?>>Manglik All</option>
+                            <option value="" <?= $selectedManglik === '' ? 'selected' : '' ?>> All</option>
                             <option value="yes" <?= $selectedManglik === 'yes' ? 'selected' : '' ?>>Manglik</option>
                             <option value="no" <?= $selectedManglik === 'no' ? 'selected' : '' ?>>Non-Manglik</option>
                         </select>
@@ -307,6 +337,9 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <?php if (!$is_approved): ?><i class="fas fa-lock mr-2 text-xs"></i><?php endif; ?>
                                         View Full Profile
                                     </a>
+                                    <button class="<?= $is_logged_in ? 'like-btn' : 'login-to-like' ?> border border-primary text-primary px-4 py-2 rounded hover:bg-primary hover:text-white transition shadow-sm flex items-center justify-center <?= in_array($p['id'], $liked_profiles) ? 'bg-primary text-white' : '' ?>" data-id="<?= $p['id'] ?>" title="<?= in_array($p['id'], $liked_profiles) ? 'Remove from Wishlist' : 'Add to Wishlist' ?>">
+                                        <i class="<?= in_array($p['id'], $liked_profiles) ? 'fas' : 'far' ?> fa-heart"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -342,5 +375,50 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 </div>
+
+<script>
+document.querySelectorAll('.login-to-like').forEach(btn => {
+    btn.addEventListener('click', function() {
+        alert('Please login to add profiles to your wishlist.');
+        window.location.href = 'login.php';
+    });
+});
+
+document.querySelectorAll('.like-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const userId = this.getAttribute('data-id');
+        const icon = this.querySelector('i');
+        const isLiked = this.classList.contains('bg-primary');
+        
+        fetch('api_like.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'liked_user_id=' + userId + '&action=' + (isLiked ? 'unlike' : 'like')
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                if (data.action === 'liked') {
+                    this.classList.add('bg-primary', 'text-white');
+                    this.classList.remove('text-primary');
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                    this.setAttribute('title', 'Unlike');
+                } else {
+                    this.classList.remove('bg-primary', 'text-white');
+                    this.classList.add('text-primary');
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    this.setAttribute('title', 'Like');
+                }
+            } else {
+                Swal.fire('Error', data.message || 'Something went wrong', 'error');
+            }
+        });
+    });
+});
+</script>
 
 <?php include 'includes/footer.php'; ?>
