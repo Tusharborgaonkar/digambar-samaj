@@ -434,7 +434,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 <!-- Family Details Section -->
                 <div class="mb-8 pb-4 border-b border-gray-200">
-                    <h2 class="text-xl font-bold text-primary mb-4">Family Details</h2>
+                    <h2 class="text-xl font-bold text-primary mb-4">Section 3: Family Details</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div><label class="block text-gray-700 font-medium mb-2">Father Name *</label><input type="text" name="father_name" required class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Father Mobile Number *</label><input type="tel" name="father_mobile" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Please enter exactly 10 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border rounded-lg px-4 py-2"></div>
@@ -648,21 +648,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="mb-8 pb-4 border-b border-gray-200">
                     <h2 class="text-xl font-bold text-primary mb-4">Documents & Payment</h2>
                     <div class="grid grid-cols-1 gap-4">
-                        <div class="text-center p-4 bg-light rounded-lg">
-                            <p class="font-semibold mb-2">Free Registration</p>
-                            <p class="text-sm text-gray-600 mb-4">If you want your photo printed in our matrimony book, a fee of Rs. 1000/- is required.</p>
-                            
-                            <div class="flex items-center justify-center gap-2 mb-4 bg-white p-3 rounded-md shadow-sm border border-gray-200 inline-block mx-auto">
-                                <input type="checkbox" name="book_print_optin" id="book_print_optin" value="yes" class="w-5 h-5 text-primary rounded border-gray-300 focus:ring-primary">
-                                <label for="book_print_optin" class="font-medium text-dark cursor-pointer">I want my photo printed in the book (Rs. 1000/-)</label>
-                            </div>
 
-                            <div id="payment_details_container" class="hidden transition-all duration-300">
-                                <p class="text-sm text-gray-600">Kindly scan the QR code to pay Rs. 1000/- and mention Mobile No. in Payment Remarks.</p>
-                                <img src="https://via.placeholder.com/200x200?text=QR+Code" alt="Payment QR" class="mx-auto mt-2 w-48">
-                            </div>
-                        </div>
-                        
                         <?php if (isset($coreFieldsSettings['payment_screenshot']) && $coreFieldsSettings['payment_screenshot']['is_visible']): ?>
                         <div id="payment_screenshot_container" class="hidden">
                             <label class="block text-gray-700 font-medium mb-2">Payment Screenshot (Transaction ID) *</label>

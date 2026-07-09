@@ -1,7 +1,12 @@
 <?php
 require_once 'includes/db.php';
-$stmt = $pdo->query("SELECT setting_value FROM site_settings WHERE setting_key = 'about_us'");
-$dynamic_about = $stmt->fetchColumn();
+$dynamic_about = '';
+try {
+    $stmt = $pdo->query("SELECT setting_value FROM site_settings WHERE setting_key = 'about_us'");
+    if ($stmt) {
+        $dynamic_about = $stmt->fetchColumn();
+    }
+} catch (Exception $e) {}
 
 include 'includes/header.php';
 ?>

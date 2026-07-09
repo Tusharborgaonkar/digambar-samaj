@@ -318,7 +318,18 @@ CREATE TABLE IF NOT EXISTS import_images (
     file_size_bytes BIGINT
 );
 
--- 17. password_resets
+-- 17. otp_verifications
+CREATE TABLE IF NOT EXISTS otp_verifications (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    otp_code VARCHAR(6) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    verified BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_otp_email (email)
+);
+
+-- 18. password_resets
 CREATE TABLE IF NOT EXISTS `password_resets` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(255) NOT NULL,

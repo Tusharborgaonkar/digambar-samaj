@@ -1,5 +1,15 @@
 <?php
 require_once 'includes/db.php';
+
+// Fetch settings
+$settings = [];
+try {
+    $stmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
+    while ($row = $stmt->fetch()) {
+        $settings[$row['setting_key']] = $row['setting_value'];
+    }
+} catch (Exception $e) {}
+
 include 'includes/header.php';
 ?>
 
@@ -186,6 +196,29 @@ include 'includes/header.php';
         </div>
     </div>
 </section>
+
+<?php if (isset($settings['show_matrimony_book_fee']) && $settings['show_matrimony_book_fee'] == '1'): ?>
+<!-- Matrimony Book Notice Section -->
+<section class="bg-yellow-50 border-y border-yellow-200 py-6 mb-12">
+    <div class="container mx-auto px-4 text-center">
+        <h3 class="text-xl md:text-2xl font-bold text-yellow-800 mb-2">
+            <i class="fas fa-book-open mr-2"></i> Free Registration
+        </h3>
+        <p class="text-lg text-yellow-700">
+            If you want your photo printed in our matrimony book, a fee of Rs. 1000/- is required.
+        </p>
+        <p class="text-md text-yellow-600 mt-2 font-medium">
+            Kindly scan the QR code to pay Rs. 1000/- and mention your Mobile No. in Payment Remarks.
+        </p>
+        <div class="mt-4 flex justify-center">
+            <img src="assets/images/qr_code.jpg" alt="Payment QR" class="w-48 h-48 border border-yellow-300 rounded shadow-sm">
+        </div>
+        <div class="mt-6">
+            <a href="registration.php" class="inline-block bg-primary text-white px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold">Register Now</a>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
 
 <!-- Latest Profiles Section -->
 <section id="latest" class="py-16 bg-light">

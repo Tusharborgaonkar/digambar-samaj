@@ -62,6 +62,20 @@ $privacy = $settings['privacy_policy'] ?? '';
 
             <div class="flex items-center justify-between">
                 <div>
+                    <h5 class="font-bold text-gray-800">Show Matrimony Book Fee Notice (Home Page)</h5>
+                    <p class="text-xs text-gray-500 mt-1">Show a notice on the home page about the Rs. 1000/- fee for printing photos in the matrimony book.</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer ml-4">
+                    <input type="hidden" name="show_matrimony_book_fee" value="0">
+                    <input type="checkbox" name="show_matrimony_book_fee" value="1" <?= ($settings['show_matrimony_book_fee'] ?? '0') == '1' ? 'checked' : '' ?> class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+            </div>
+            
+            <hr class="border-gray-100">
+
+            <div class="flex items-center justify-between">
+                <div>
                     <h5 class="font-bold text-gray-800">Auto-Approve Profiles</h5>
                     <p class="text-xs text-gray-500 mt-1">Automatically approve new registrations without admin verification.</p>
                 </div>

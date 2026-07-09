@@ -1,0 +1,10 @@
+Array
+(
+    [0] => Array
+        (
+            [id] => 1
+            [setting_key] => show_matrimony_book_fee
+            [setting_value] => 1
+        )
+
+)

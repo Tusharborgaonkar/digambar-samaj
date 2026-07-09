@@ -3,79 +3,166 @@ ini_set('session.cookie_httponly', 1);
 ini_set('session.use_only_cookies', 1);
 session_start();
 include 'includes/db.php';
+include 'includes/Mailer.php';
 
-// Generate CSRF token if not exists
+// Create otp_verifications table if not exists
+$pdo->exec("CREATE TABLE IF NOT EXISTS otp_verifications (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    otp_code VARCHAR(6) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    verified BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_otp_email (email)
+)");
+
+// Handle reset before any output
+if (isset($_GET['reset'])) {
+    unset($_SESSION['otp_step'], $_SESSION['otp_email'], $_SESSION['reg_data']);
+    header('Location: pre-register.php');
+    exit;
+}
+
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 
-// Simple rate limiting logic
-if (!isset($_SESSION['register_attempts'])) {
-    $_SESSION['register_attempts'] = 0;
-}
-if (!isset($_SESSION['last_register_attempt'])) {
-    $_SESSION['last_register_attempt'] = time();
-}
+// Rate limiting
+if (!isset($_SESSION['register_attempts'])) $_SESSION['register_attempts'] = 0;
+if (!isset($_SESSION['last_register_attempt'])) $_SESSION['last_register_attempt'] = time();
 
 $is_rate_limited = false;
-$time_since_last_attempt = time() - $_SESSION['last_register_attempt'];
-if ($_SESSION['register_attempts'] >= 5 && $time_since_last_attempt < 300) {
+$time_since_last = time() - $_SESSION['last_register_attempt'];
+if ($_SESSION['register_attempts'] >= 5 && $time_since_last < 300) {
     $is_rate_limited = true;
-    $error = "Too many failed attempts. Please try again in " . ceil((300 - $time_since_last_attempt) / 60) . " minutes.";
-} elseif ($time_since_last_attempt >= 300) {
+    $error = "Too many failed attempts. Please try again in " . ceil((300 - $time_since_last) / 60) . " minutes.";
+} elseif ($time_since_last >= 300) {
     $_SESSION['register_attempts'] = 0;
 }
 
 $success = '';
-if (empty($error)) {
-    $error = '';
-}
+$error = $error ?? '';
+$step = $_SESSION['otp_step'] ?? 'form'; // 'form' | 'otp'
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && !$is_rate_limited) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$is_rate_limited) {
     if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
         $error = "Invalid request. Please refresh and try again.";
-    } else {
+    } elseif (isset($_POST['action']) && $_POST['action'] === 'send_otp') {
+        // Step 1: Validate form & send OTP
         $full_name = trim($_POST['full_name'] ?? '');
-        $mobile = ($_POST['country_code'] ?? '') . ($_POST['mobile'] ?? '');
-        $email = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
-        $password = $_POST['password'] ?? '';
+        $email     = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
+        $mobile    = $_POST['mobile'] ?? '';
+        $country_code = $_POST['country_code'] ?? '+91';
+        $password  = $_POST['password'] ?? '';
         $confirm_password = $_POST['confirm_password'] ?? '';
 
         if ($password !== $confirm_password) {
             $error = "Passwords do not match.";
-            $_SESSION['register_attempts']++;
-            $_SESSION['last_register_attempt'] = time();
-        } elseif (!preg_match('/^[0-9]{10}$/', $_POST['mobile'] ?? '')) {
+        } elseif (!preg_match('/^[0-9]{10}$/', $mobile)) {
             $error = "Mobile number must be exactly 10 digits.";
-            $_SESSION['register_attempts']++;
-            $_SESSION['last_register_attempt'] = time();
         } elseif (empty($full_name) || empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = "Please provide valid details.";
-            $_SESSION['register_attempts']++;
-            $_SESSION['last_register_attempt'] = time();
         } else {
-            $password_hash = password_hash($password, PASSWORD_DEFAULT);
+            // Check duplicate
+            $chk = $pdo->prepare("SELECT id FROM users WHERE email = ? OR mobile = ? LIMIT 1");
+            $chk->execute([$email, $country_code . $mobile]);
+            if ($chk->fetch()) {
+                $error = "An account with this email or mobile already exists.";
+            } else {
+                // Generate OTP
+                $otp = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+                $expires = date('Y-m-d H:i:s', time() + 600); // 10 min
 
-            try {
-                $stmt = $pdo->prepare("INSERT INTO users (
-                    full_name, mobile, email, password_hash, status
-                ) VALUES (?, ?, ?, ?, 'account_approved')");
+                // Delete old OTPs for this email
+                $pdo->prepare("DELETE FROM otp_verifications WHERE email = ?")->execute([$email]);
 
-                $stmt->execute([
-                    $full_name, $mobile, $email, $password_hash
-                ]);
+                // Insert new OTP
+                $pdo->prepare("INSERT INTO otp_verifications (email, otp_code, expires_at) VALUES (?, ?, ?)")
+                    ->execute([$email, $otp, $expires]);
 
-                $success = "Your account has been created successfully. You can now login to complete your registration.";
-                $_SESSION['register_attempts'] = 0;
-            } catch (PDOException $e) {
-                if ($e->getCode() == 23000) {
-                    $error = "An account with this email or mobile already exists.";
+                // Send OTP email
+                $mailer = new Mailer();
+                $html = "
+                <div style='font-family:Arial,sans-serif;max-width:480px;margin:auto;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden'>
+                  <div style='background:#7c3aed;padding:20px;text-align:center'>
+                    <h2 style='color:#fff;margin:0'>Digambar Jain Matrimony</h2>
+                  </div>
+                  <div style='padding:30px'>
+                    <p style='font-size:16px'>Hello <strong>" . htmlspecialchars($full_name) . "</strong>,</p>
+                    <p>Your OTP for account registration is:</p>
+                    <div style='text-align:center;margin:24px 0'>
+                      <span style='font-size:36px;font-weight:bold;letter-spacing:10px;color:#7c3aed'>{$otp}</span>
+                    </div>
+                    <p style='color:#6b7280;font-size:13px'>This OTP is valid for <strong>10 minutes</strong>. Do not share it with anyone.</p>
+                  </div>
+                </div>";
+
+                $sent = $mailer->send($email, "Your OTP - Digambar Jain Matrimony", $html);
+
+                if ($sent) {
+                    // Store form data in session for step 2
+                    $_SESSION['otp_step']     = 'otp';
+                    $_SESSION['otp_email']    = $email;
+                    $_SESSION['reg_data']     = compact('full_name', 'email', 'mobile', 'country_code', 'password');
+                    $step = 'otp';
+                    $success = "OTP sent to <strong>{$email}</strong>. Please check your inbox.";
                 } else {
-                    error_log("Registration failed: " . $e->getMessage());
-                    $error = "Registration failed. Please try again later.";
+                    $error = "Failed to send OTP. Please try again.";
+                    $_SESSION['register_attempts']++;
+                    $_SESSION['last_register_attempt'] = time();
                 }
+            }
+        }
+
+    } elseif (isset($_POST['action']) && $_POST['action'] === 'verify_otp') {
+        // Step 2: Verify OTP & create account
+        $entered_otp = trim($_POST['otp'] ?? '');
+        $email = $_SESSION['otp_email'] ?? '';
+        $reg   = $_SESSION['reg_data'] ?? [];
+
+        if (empty($email) || empty($reg)) {
+            $error = "Session expired. Please start again.";
+            unset($_SESSION['otp_step'], $_SESSION['otp_email'], $_SESSION['reg_data']);
+            $step = 'form';
+        } else {
+            $stmt = $pdo->prepare("SELECT * FROM otp_verifications WHERE email = ? AND verified = 0 ORDER BY id DESC LIMIT 1");
+            $stmt->execute([$email]);
+            $row = $stmt->fetch();
+
+            if (!$row) {
+                $error = "No OTP found. Please request a new one.";
+                $step = 'otp';
+            } elseif (strtotime($row['expires_at']) < time()) {
+                $error = "OTP has expired. Please go back and request a new one.";
+                $step = 'otp';
+            } elseif ($row['otp_code'] !== $entered_otp) {
+                $error = "Invalid OTP. Please try again.";
                 $_SESSION['register_attempts']++;
                 $_SESSION['last_register_attempt'] = time();
+                $step = 'otp';
+            } else {
+                // Mark OTP as verified
+                $pdo->prepare("UPDATE otp_verifications SET verified = 1 WHERE id = ?")->execute([$row['id']]);
+
+                // Create account
+                $password_hash = password_hash($reg['password'], PASSWORD_DEFAULT);
+                try {
+                    $ins = $pdo->prepare("INSERT INTO users (full_name, mobile, email, password_hash, status) VALUES (?, ?, ?, ?, 'account_approved')");
+                    $ins->execute([$reg['full_name'], $reg['country_code'] . $reg['mobile'], $reg['email'], $password_hash]);
+
+                    unset($_SESSION['otp_step'], $_SESSION['otp_email'], $_SESSION['reg_data']);
+                    $_SESSION['register_attempts'] = 0;
+                    $step = 'done';
+                    $success = "Your account has been created successfully. You can now login to complete your registration.";
+                } catch (PDOException $e) {
+                    if ($e->getCode() == 23000) {
+                        $error = "An account with this email or mobile already exists.";
+                    } else {
+                        error_log("Registration failed: " . $e->getMessage());
+                        $error = "Registration failed. Please try again later.";
+                    }
+                    $step = 'otp';
+                }
             }
         }
     }
@@ -96,40 +183,65 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$is_rate_limited) {
 
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md" data-aos="fade-up" data-aos-delay="200">
             <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-100">
-                <?php if ($success): ?>
+
+                <?php if ($step === 'done'): ?>
                     <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6">
                         <div class="flex">
-                            <div class="flex-shrink-0">
-                                <i class="fas fa-check-circle text-green-500"></i>
-                            </div>
-                            <div class="ml-3">
-                                <p class="text-sm text-green-700 font-medium">
-                                    <?= $success ?>
-                                </p>
-                            </div>
+                            <i class="fas fa-check-circle text-green-500 mt-0.5"></i>
+                            <p class="ml-3 text-sm text-green-700 font-medium"><?= $success ?></p>
                         </div>
                     </div>
                     <div class="text-center">
                         <a href="login.php" class="text-primary hover:underline font-semibold">Return to Login</a>
                     </div>
+
+                <?php elseif ($step === 'otp'): ?>
+                    <?php if ($success): ?>
+                        <div class="bg-green-50 border-l-4 border-green-500 p-4 mb-6">
+                            <p class="text-sm text-green-700 font-medium"><?= $success ?></p>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($error): ?>
+                        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+                            <p class="text-sm text-red-700 font-medium"><?= htmlspecialchars($error) ?></p>
+                        </div>
+                    <?php endif; ?>
+
+                    <p class="text-sm text-gray-600 mb-4">Enter the 6-digit OTP sent to <strong><?= htmlspecialchars($_SESSION['otp_email'] ?? '') ?></strong></p>
+
+                    <form method="POST" class="space-y-6">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                        <input type="hidden" name="action" value="verify_otp">
+                        <div>
+                            <label for="otp" class="block text-sm font-medium text-gray-700">OTP Code *</label>
+                            <div class="mt-1">
+                                <input id="otp" name="otp" type="text" maxlength="6" pattern="[0-9]{6}" inputmode="numeric"
+                                    required autocomplete="one-time-code"
+                                    class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-center text-2xl tracking-widest focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-gray-50">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-primary hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
+                            Verify OTP & Create Account
+                        </button>
+                    </form>
+                    <div class="mt-4 text-center text-sm">
+                        <a href="pre-register.php?reset=1" class="text-primary hover:underline">Go back & resend OTP</a>
+                    </div>
+
                 <?php else: ?>
                     <?php if ($error): ?>
                         <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
                             <div class="flex">
-                                <div class="flex-shrink-0">
-                                    <i class="fas fa-exclamation-circle text-red-500"></i>
-                                </div>
-                                <div class="ml-3">
-                                    <p class="text-sm text-red-700 font-medium">
-                                        <?= $error ?>
-                                    </p>
-                                </div>
+                                <i class="fas fa-exclamation-circle text-red-500 mt-0.5"></i>
+                                <p class="ml-3 text-sm text-red-700 font-medium"><?= htmlspecialchars($error) ?></p>
                             </div>
                         </div>
                     <?php endif; ?>
 
                     <form class="space-y-6" action="" method="POST">
                         <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($_SESSION['csrf_token']) ?>">
+                        <input type="hidden" name="action" value="send_otp">
+
                         <div>
                             <label for="full_name" class="block text-sm font-medium text-gray-700">Full Name *</label>
                             <div class="mt-1 relative rounded-md shadow-sm">
@@ -159,7 +271,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$is_rate_limited) {
                                     <option value="+44">+44</option>
                                     <option value="+61">+61</option>
                                 </select>
-                                <input type="tel" name="mobile" pattern="[0-9]{10}" maxlength="10" minlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-gray-50" placeholder="10-digit mobile number">
+                                <input type="tel" name="mobile" pattern="[0-9]{10}" maxlength="10" minlength="10"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')" required
+                                    class="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md border border-gray-300 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm bg-gray-50"
+                                    placeholder="10-digit mobile number">
                             </div>
                         </div>
 
@@ -191,16 +306,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$is_rate_limited) {
 
                         <div>
                             <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-primary hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition">
-                                Request Account
+                                Send OTP to Email
                             </button>
                         </div>
                     </form>
-                    
+
                     <div class="mt-4 text-center text-sm">
-                        Already have an account? 
-                        <a href="login.php" class="font-bold text-primary hover:underline">
-                            Sign in here
-                        </a>
+                        Already have an account?
+                        <a href="login.php" class="font-bold text-primary hover:underline">Sign in here</a>
                     </div>
                 <?php endif; ?>
             </div>
@@ -208,19 +321,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && !$is_rate_limited) {
     </div>
 </section>
 
+
+
 <script>
 function togglePassword(inputId, iconId) {
-    const passwordInput = document.getElementById(inputId);
-    const toggleIcon = document.getElementById(iconId);
-    
-    if (passwordInput.type === 'password') {
-        passwordInput.type = 'text';
-        toggleIcon.classList.remove('fa-eye');
-        toggleIcon.classList.add('fa-eye-slash');
+    const input = document.getElementById(inputId);
+    const icon  = document.getElementById(iconId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
     } else {
-        passwordInput.type = 'password';
-        toggleIcon.classList.remove('fa-eye-slash');
-        toggleIcon.classList.add('fa-eye');
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
     }
 }
 </script>
