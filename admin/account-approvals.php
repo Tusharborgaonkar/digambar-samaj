@@ -9,7 +9,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['use
     
     if ($action === 'approve') {
         $stmt = $pdo->prepare("UPDATE users SET status = 'account_approved' WHERE id = ?");
-        $stmt->execute([$userId]);        
+        $stmt->execute([$userId]);
+
+        // Send approval email
+        $uStmt = $pdo->prepare("SELECT full_name, email FROM users WHERE id = ?");
+        $uStmt->execute([$userId]);
+        $u = $uStmt->fetch();
+        if ($u && !empty($u['email'])) {
+            require_once '../includes/Mailer.php';
+            $mailer = new Mailer();
+            $html = "
+            <div style='font-family:Arial,sans-serif;max-width:500px;margin:auto;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden'>
+              <div style='background:#7c3aed;padding:20px;text-align:center'>
+                <h2 style='color:#fff;margin:0'>Digambar Jain Matrimony</h2>
+              </div>
+              <div style='padding:30px'>
+                <h3 style='color:#16a34a;margin:0 0 12px'>&#127881; Congratulations, " . htmlspecialchars($u['full_name']) . "!</h3>
+                <p style='font-size:15px;color:#374151;'>Your account has been <strong>successfully approved</strong> by the admin.</p>
+                <p style='font-size:14px;color:#6b7280;'>You can now log in and complete your matrimonial profile.</p>
+                <div style='text-align:center;margin:24px 0'>
+                  <a href='http://" . $_SERVER['HTTP_HOST'] . "/digambar-samaj/login.php' style='background:#7c3aed;color:#fff;padding:12px 28px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:15px;'>Login Now</a>
+                </div>
+                <p style='font-size:12px;color:#9ca3af;text-align:center;margin-top:20px;'>Digambar Jain Matrimony &mdash; Trusted Community Platform</p>
+              </div>
+            </div>";
+            $mailer->send($u['email'], 'Account Approved - Digambar Jain Matrimony', $html);
+        }
     } elseif ($action === 'reject') {
         $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
         $stmt->execute([$userId]);

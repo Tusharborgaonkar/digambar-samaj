@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 session_start();
 require_once 'includes/db.php';
 
@@ -357,23 +357,112 @@ include 'includes/header.php';
     </div>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+<!-- Hidden PDF Card Template -->
+<div id="pdf-content" style="display:none;font-family:Arial,sans-serif;width:680px;background:#fff;padding:0;margin:0;">
+  <?php
+  $gc    = (strtolower($member['gender'] ?? '') === 'female') ? 'F' : 'M';
+  $pnum  = $memberId ? preg_replace('/[^0-9]/', '', $memberId) : $id;
+  $bm    = $member['brothers_married']   ?? 0;
+  $bu    = $member['brothers_unmarried'] ?? 0;
+  $sm    = $member['sisters_married']    ?? 0;
+  $su    = $member['sisters_unmarried']  ?? 0;
+  $dob_f = !empty($member['birth_date']) ? date('d-m-y', strtotime($member['birth_date'])) : 'N/A';
+  $bt_f  = !empty($member['birth_time']) ? date('h:i:s A', strtotime($member['birth_time'])) : 'N/A';
+  $psrc  = (!empty($member['profile_photo']) && file_exists($member['profile_photo']))
+      ? 'http://'.$_SERVER['HTTP_HOST'].'/digambar-samaj/image.php?file='.urlencode($member['profile_photo'])
+      : 'https://ui-avatars.com/api/?name='.urlencode($member['full_name'] ?? 'User').'&size=200&background=1a1a6e&color=fff';
+  ?>
+  <table style="width:100%;border-collapse:collapse;border:2px solid #1a1a6e;">
 
-<!-- html2pdf for generating PDF -->
+    <!-- ID Badge Row -->
+    <tr>
+      <td colspan="2" style="text-align:center;padding:6px 0;background:#fff;border-bottom:1px solid #1a1a6e;">
+        <span style="display:inline-block;border:2px solid #1a1a6e;border-radius:3px;padding:1px 16px;font-size:14px;font-weight:bold;color:#1a1a6e;letter-spacing:1px;"><?= $gc ?>-<?= $pnum ?></span>
+      </td>
+    </tr>
+
+    <!-- Name Bar Row -->
+    <tr>
+      <td colspan="2" style="background:#1a1a6e;padding:8px 12px;border-bottom:1px solid #1a1a6e;">
+        <span style="color:#fff;font-size:17px;font-weight:bold;"><?= $fullName ?></span>
+      </td>
+    </tr>
+
+    <!-- Main Body Row -->
+    <tr>
+      <!-- Left: Info rows -->
+      <td style="vertical-align:top;padding:8px 12px;font-size:12px;border-right:1px solid #ccc;width:62%;">
+        <?php
+        $lrows = [
+          ['Education',           htmlspecialchars($member['higher_education'] ?? 'N/A')],
+          ['Occu. / Firm',        htmlspecialchars($member['occupation'] ?? 'N/A').(!empty($member['company_name']) ? ' - '.htmlspecialchars($member['company_name']) : '')],
+          ['Designation',         htmlspecialchars($member['designation'] ?? '')],
+          ['Monthly Income',      !empty($member['monthly_income']) ? number_format((float)$member['monthly_income']) : 'N/A'],
+          ['Mobile',              htmlspecialchars($member['mobile'] ?? 'N/A')],
+          ['Hobbies',             htmlspecialchars($member['hobbies'] ?? 'N/A')],
+          ['Father',              htmlspecialchars($member['father_name'] ?? 'N/A')],
+          ["Father's Occupation", htmlspecialchars($member['father_occupation'] ?? 'N/A')],
+          ["Parent's M. No.",     htmlspecialchars($member['father_mobile'] ?? 'N/A').(!empty($member['mother_mobile']) ? ' / '.htmlspecialchars($member['mother_mobile']) : '')],
+          ['Mother',              htmlspecialchars($member['mother_name'] ?? 'N/A')],
+          ['Brothers',            'Married '.$bm.'&nbsp;&nbsp;Unmarried '.$bu],
+          ['Sisters',             'Married '.$sm.'&nbsp;&nbsp;Unmarried '.$su],
+          ['Address',             htmlspecialchars($member['permanent_address'] ?? 'N/A').(!empty($member['pin_code']) ? '-'.htmlspecialchars($member['pin_code']) : '')],
+        ];
+        foreach ($lrows as $r)
+          echo '<div style="padding:1px 0;line-height:1.75;"><strong>'.$r[0].'</strong> &nbsp;: &nbsp;'.$r[1].'</div>';
+        ?>
+      </td>
+
+      <!-- Right: Photo on top, then DOB/info below -->
+      <td style="vertical-align:top;padding:8px 10px;font-size:12px;width:38%;">
+        <div style="text-align:center;margin-bottom:6px;">
+          <img src="<?= $psrc ?>" style="width:140px;height:160px;object-fit:cover;border:2px solid #1a1a6e;" crossorigin="anonymous">
+        </div>
+        <?php
+        $rrows = [
+          ['DOB',      $dob_f],
+          ['B. Time',  $bt_f],
+          ['B. Place', htmlspecialchars($member['birth_place'] ?? 'N/A')],
+          ['Height',   htmlspecialchars($member['height'] ?? 'N/A')],
+          ['Weight',   !empty($member['weight']) ? htmlspecialchars($member['weight']) : 'N/A'],
+          ['Native',   htmlspecialchars($member['native_place'] ?? 'N/A')],
+          ['Gotra',    htmlspecialchars($member['gotra'] ?? 'N/A')],
+          ['Manglik',  ucfirst(htmlspecialchars($member['manglik'] ?? 'N/A')).' ?'],
+        ];
+        foreach ($rrows as $r)
+          echo '<div style="padding:1px 0;line-height:1.75;"><strong>'.$r[0].'</strong> &nbsp;: &nbsp;'.$r[1].'</div>';
+        ?>
+      </td>
+    </tr>
+
+    <!-- Bottom Row -->
+    <tr>
+      <td colspan="2" style="border-top:1px solid #ccc;padding:7px 12px;font-size:12px;">
+        <div style="padding:1px 0;line-height:1.75;"><strong>Current Address</strong> &nbsp;: &nbsp;<?= htmlspecialchars($member['current_address'] ?? 'N/A') ?></div>
+        <div style="padding:1px 0;line-height:1.75;"><strong>Specific Partner Choice</strong> &nbsp;: &nbsp;<?= htmlspecialchars($member['partner_preference'] ?? 'Not specified') ?></div>
+        <div style="padding:1px 0;line-height:1.75;"><strong>Language Known</strong> &nbsp;: &nbsp;<?= htmlspecialchars($member['languages'] ?? 'N/A') ?></div>
+        <div style="padding:1px 0;line-height:1.75;"><strong>Other Info.</strong> &nbsp;: &nbsp;<?= htmlspecialchars($member['handicapped'] ?? 'Not Applicable') ?> / <?= htmlspecialchars($member['marital_status'] ?? 'N/A') ?></div>
+      </td>
+    </tr>
+
+  </table>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 function downloadPDF() {
-    // We can target the main content block to download
-    const element = document.querySelector('.bg-gray-50 .container');
+    const element = document.getElementById('pdf-content');
+    element.style.display = 'block';
     const opt = {
-      margin:       10,
-      filename:     'Profile_<?= $memberId ?>.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2, useCORS: true },
-      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      margin: 8,
+      filename: 'Profile_<?= $memberId ?>.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false, allowTaint: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-
-    html2pdf().set(opt).from(element).save();
+    html2pdf().set(opt).from(element).save().then(function() {
+        element.style.display = 'none';
+    });
 }
 
 // Like Button logic
@@ -382,12 +471,9 @@ document.querySelectorAll('.like-btn').forEach(btn => {
         const userId = this.getAttribute('data-id');
         const icon = this.querySelector('i');
         const isLiked = this.classList.contains('bg-primary');
-        
         fetch('api_like.php', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: 'liked_user_id=' + userId + '&action=' + (isLiked ? 'unlike' : 'like')
         })
         .then(res => res.json())
@@ -396,14 +482,12 @@ document.querySelectorAll('.like-btn').forEach(btn => {
                 if (data.action === 'liked') {
                     this.classList.add('bg-primary', 'text-white');
                     this.classList.remove('text-primary');
-                    icon.classList.remove('far');
-                    icon.classList.add('fas');
+                    icon.classList.replace('far', 'fas');
                     this.setAttribute('title', 'Unlike');
                 } else {
                     this.classList.remove('bg-primary', 'text-white');
                     this.classList.add('text-primary');
-                    icon.classList.remove('fas');
-                    icon.classList.add('far');
+                    icon.classList.replace('fas', 'far');
                     this.setAttribute('title', 'Like');
                 }
             } else {
@@ -413,3 +497,5 @@ document.querySelectorAll('.like-btn').forEach(btn => {
     });
 });
 </script>
+
+<?php include 'includes/footer.php'; ?>
