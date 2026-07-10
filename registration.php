@@ -13,7 +13,7 @@ $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$user_id]);
 $current_user = $stmt->fetch();
 
-$full_name = $current_user['full_name'] ?? '';
+$full_name = '';
 
 if (!$current_user || $current_user['status'] !== 'account_approved') {
     if ($current_user && ($current_user['status'] === 'account_pending' || $current_user['status'] === 'pending')) {
@@ -89,16 +89,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $height = htmlspecialchars($_POST['height'] ?? '');
     $weight = htmlspecialchars($_POST['weight'] ?? '');
     $gender = $_POST['gender'] ?? '';
+    $full_name = htmlspecialchars($_POST['full_name'] ?? '');
+    $mobile = htmlspecialchars($_POST['mobile'] ?? '');
+    $email = htmlspecialchars($_POST['email'] ?? '');
     $permanent_address = htmlspecialchars($_POST['permanent_address'] ?? '');
     $pin_code = htmlspecialchars($_POST['pin_code'] ?? '');
     $current_address = htmlspecialchars($_POST['current_address'] ?? '');
+    // If "same as permanent" checkbox was checked, copy permanent address
+    if (isset($_POST['same_as_permanent']) && $_POST['same_as_permanent'] === '1') {
+        $current_address = $permanent_address;
+    }
     $education = htmlspecialchars($_POST['education'] ?? '');
     $hobbies = htmlspecialchars($_POST['hobbies'] ?? '');
     $partner_preference = htmlspecialchars($_POST['partner_preference'] ?? '');
-    $monthly_income = htmlspecialchars($_POST['monthly_income'] ?? '');
+    $monthly_income = htmlspecialchars($_POST['annual_income'] ?? '');
     $marital_status = htmlspecialchars($_POST['marital_status'] ?? '');
     $handicapped = $_POST['handicapped'] ?? '';
-    $languages = isset($_POST['languages']) ? implode(',', $_POST['languages']) : '';
+    
+    $languages_arr = $_POST['languages'] ?? [];
+    if (in_array('Other', $languages_arr) && !empty($_POST['other_language'])) {
+        $languages_arr[] = htmlspecialchars($_POST['other_language']);
+    }
+    $languages = !empty($languages_arr) ? implode(',', $languages_arr) : '';
+    
     $occupation = $_POST['occupation'] ?? '';
     $company_name = htmlspecialchars($_POST['company_name'] ?? '');
     $designation = htmlspecialchars($_POST['designation'] ?? '');
@@ -148,9 +161,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($pin_code && !preg_match('/^[0-9]{4,6}$/', $pin_code)) {
         $error = "Pin code must be 4 to 6 digits.";
     } elseif ($monthly_income !== '' && (!is_numeric($monthly_income) || $monthly_income < 0)) {
-        $error = "Candidate monthly income must be a valid positive amount.";
+        $error = "Candidate annual income must be a valid positive amount.";
     } elseif ($father_income !== '' && (!is_numeric($father_income) || $father_income < 0)) {
-        $error = "Father monthly income must be a valid positive amount.";
+        $error = "Father income must be a valid positive amount.";
     } elseif ($father_mobile && !preg_match('/^[0-9]{10}$/', $father_mobile)) {
         $error = "Father mobile number must be exactly 10 digits.";
     } elseif ($mother_mobile && !preg_match('/^[0-9]{10}$/', $mother_mobile)) {
@@ -195,7 +208,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     try {
         $stmt = $pdo->prepare("UPDATE users SET 
-            `cast`=?, birth_date=?, birth_time=?, birth_place=?, native_place=?, gotra=?, mama_gotra=?, manglik=?,
+            full_name=?, mobile=?, email=?, `cast`=?, birth_date=?, birth_time=?, birth_place=?, native_place=?, gotra=?, mama_gotra=?, manglik=?,
             height=?, weight=?, gender=?, permanent_address=?, pin_code=?, current_address=?, higher_education=?, hobbies=?, partner_preference=?,
             monthly_income=?, marital_status=?, handicapped=?, languages=?, occupation=?, company_name=?, designation=?, father_name=?,
             father_mobile=?, father_income=?, father_occupation=?, mother_name=?, mother_mobile=?, mother_occupation=?,
@@ -207,7 +220,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ");
 
         $stmt->execute([
-            $cast, $birth_date, $birth_time, $birth_place, $native, $gotra, $mama_gotra, $manglik,
+            $full_name, $mobile, $email, $cast, $birth_date, $birth_time, $birth_place, $native, $gotra, $mama_gotra, $manglik,
             $height, $weight, $gender, $permanent_address, $pin_code, $current_address, $education, $hobbies, $partner_preference,
             $monthly_income, $marital_status, $handicapped, $languages, $occupation, $company_name, $designation, $father_name,
             $father_mobile, $father_income, $father_occupation, $mother_name, $mother_mobile, $mother_occupation,
@@ -298,37 +311,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                     </div>
                     
-                    <!-- Who is Filling -->
+                    <!-- Who is Filling This Form -->
                     <div class="mb-4">
-                        <label class="block text-gray-700 font-medium mb-2">Who is filling this form? *</label>
+                        <label class="block text-gray-700 font-medium mb-2">Who is filling this form? (यह फॉर्म कौन भर रहा है?) *</label>
                         <select name="filled_by" required class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-white">
                             <option value="">Select Option</option>
-                            <option value="Candidate">Candidate</option>
-                            <option value="Father">Father</option>
-                            <option value="Mother">Mother</option>
-                            <option value="Brother">Brother</option>
-                            <option value="Sister">Sister</option>
-                            <option value="Guardian">Guardian</option>
-                            <option value="Other">Other</option>
+                            <option value="Candidate">Candidate (स्वयं प्रत्याशी)</option>
+                            <option value="Father">Father (पिता)</option>
+                            <option value="Mother">Mother (माता)</option>
+                            <option value="Brother">Brother (भाई)</option>
+                            <option value="Sister">Sister (बहन)</option>
+                            <option value="Guardian">Guardian (अभिभावक)</option>
+                            <option value="Other">Other (अन्य)</option>
                         </select>
                     </div>
 
-                    <!-- Candidate Full Name -->
-                    <?php if (!isset($coreFieldsSettings['full_name']) || $coreFieldsSettings['full_name']['is_visible']): ?>
+                    <!-- Gender (moved BEFORE candidate name) -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-2">Gender (लिंग) *</label>
+                        <div class="flex gap-4">
+                            <label class="inline-flex items-center"><input type="radio" name="gender" value="male" required class="mr-2"> Male (पुरुष)</label>
+                            <label class="inline-flex items-center"><input type="radio" name="gender" value="female" class="mr-2"> Female (महिला)</label>
+                        </div>
+                    </div>
+
+                    <!-- Candidate Full Name (editable, user must type the name) -->
                     <div class="mb-4">
                         <label class="block text-gray-700 font-medium mb-2">Candidate Full Name (प्रत्याशी का नाम) *</label>
-                        <input type="text" name="full_name" value="<?= htmlspecialchars($current_user['full_name']) ?>" readonly class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed">
+                        <input type="text" name="full_name" value="" required placeholder="Enter candidate's full name" class="w-full border border-gray-300 rounded-lg px-4 py-2">
                     </div>
-                    <?php endif; ?>
                     
                     <!-- Country Code & Mobile -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <?php if (!isset($coreFieldsSettings['mobile']) || $coreFieldsSettings['mobile']['is_visible']): ?>
                         <div>
-                            <label class="block text-gray-700 font-medium mb-2">Mobile Number</label>
-                            <input type="tel" name="mobile" value="<?= htmlspecialchars($current_user['mobile']) ?>" readonly class="w-full border border-gray-300 rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed">
+                            <label class="block text-gray-700 font-medium mb-2">Mobile Number *</label>
+                            <input type="tel" name="mobile" value="<?= htmlspecialchars($current_user['mobile']) ?>" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
                         </div>
                         <?php endif; ?>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Email *</label>
+                            <input type="email" name="email" value="<?= htmlspecialchars($current_user['email']) ?>" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                        </div>
                         <?php 
                         if (!empty($customFieldsByGroup['Section 1: Basic Information'])) {
                             foreach ($customFieldsByGroup['Section 1: Basic Information'] as $f) echo renderCustomFieldHTML($f);
@@ -417,20 +441,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </select>
                         </div>
                         
-                        <!-- Gender -->
-                        <div><label class="block text-gray-700 font-medium mb-2">Gender *</label>
-                            <div class="flex gap-4"><label><input type="radio" name="gender" value="male" required> Male</label><label><input type="radio" name="gender" value="female"> Female</label></div>
-                        </div>
-                        
-                        <div><label class="block text-gray-700 font-medium mb-2">Permanent Full Address *</label><textarea name="permanent_address" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea></div>
+                        <!-- Permanent Address -->
+                        <div><label class="block text-gray-700 font-medium mb-2">Permanent Full Address (स्थायी पता) *</label><textarea name="permanent_address" id="permanent_address" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Pin Code of Permanent Address *</label><input type="text" name="pin_code" pattern="[0-9]{4,6}" maxlength="6" minlength="4" title="Please enter a valid 4 to 6 digit pin code" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Candidate Current Address *</label><textarea name="current_address" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Email *</label><input type="email" name="email" value="<?= htmlspecialchars($current_user['email']) ?>" readonly class="w-full border rounded-lg px-4 py-2 bg-gray-100 cursor-not-allowed"></div>
+                        
+                        <!-- Same as Permanent Address Checkbox -->
+                        <div class="col-span-1 md:col-span-2">
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="same_as_permanent" name="same_as_permanent" value="1" class="mr-2 rounded border-gray-300 text-primary focus:ring-primary">
+                                <span class="text-gray-700 font-medium">Current Address is same as Permanent Address (वर्तमान पता स्थायी पता जैसा ही है)</span>
+                            </label>
+                        </div>
+                        <div id="current_address_container"><label class="block text-gray-700 font-medium mb-2">Candidate Current Address (वर्तमान पता) *</label><textarea name="current_address" id="current_address" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea></div>
 
                         <div><label class="block text-gray-700 font-medium mb-2">Higher Education *</label><input type="text" name="education" required class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Hobbies *</label><textarea name="hobbies" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Your Specific Preference for the Partner *</label><textarea name="partner_preference" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Candidate Monthly Income *</label><input type="number" name="monthly_income" min="0" step="1" required placeholder="Only Amount (e.g., 100000)" class="w-full border rounded-lg px-4 py-2"></div>
                         
                         <!-- Widow/Divorce -->
                         <div><label class="block text-gray-700 font-medium mb-2">Widow / Divorce *</label>
@@ -446,14 +472,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         
                         <!-- Language Known -->
                         <div><label class="block text-gray-700 font-medium mb-2">Language Known *</label>
-                            <div class="grid grid-cols-2 gap-2"><label><input type="checkbox" name="languages[]" value="Gujarati"> Gujarati</label><label><input type="checkbox" name="languages[]" value="Hindi"> Hindi</label><label><input type="checkbox" name="languages[]" value="English"> English</label><label><input type="checkbox" name="languages[]" value="Other"> Other</label></div>
+                            <div class="grid grid-cols-2 gap-2"><label><input type="checkbox" name="languages[]" value="Gujarati"> Gujarati</label><label><input type="checkbox" name="languages[]" value="Hindi"> Hindi</label><label><input type="checkbox" name="languages[]" value="English"> English</label><label><input type="checkbox" name="languages[]" id="language_other_checkbox" value="Other"> Other</label></div>
+                            <input type="text" name="other_language" id="other_language_input" placeholder="Specify other language" class="w-full border rounded-lg px-4 py-2 mt-2 hidden">
                         </div>
                         
-                        <!-- Occupation -->
-                        <div><label class="block text-gray-700 font-medium mb-2">Candidate Occupation *</label>
+                        <!-- Occupation, Income, Company, Designation grouped together -->
+                        <div class="col-span-1 md:col-span-2 border-t border-dashed border-gray-200 pt-4 mt-2">
+                            <h3 class="text-lg font-bold text-primary mb-3"><i class="fas fa-briefcase mr-2"></i>Candidate Occupation & Income Details</h3>
+                        </div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Candidate Occupation (व्यवसाय) *</label>
                             <div class="flex gap-4"><label><input type="radio" name="occupation" value="Job" required> Job</label><label><input type="radio" name="occupation" value="Business"> Business</label><label><input type="radio" name="occupation" value="Other"> Other</label></div>
                         </div>
-                        
+                        <div><label class="block text-gray-700 font-medium mb-2">Candidate Annual Income (वार्षिक आय) *</label><input type="number" name="annual_income" min="0" step="1" required placeholder="Yearly income amount (e.g., 500000)" class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Company/Firm Name (Optional)</label><input type="text" name="company_name" class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Designation (Optional)</label><input type="text" name="designation" class="w-full border rounded-lg px-4 py-2"></div>
                         <?php 
@@ -470,7 +500,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div><label class="block text-gray-700 font-medium mb-2">Father Name *</label><input type="text" name="father_name" required class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Father Mobile Number *</label><input type="tel" name="father_mobile" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Please enter exactly 10 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Father Monthly Income *</label><input type="number" name="father_income" min="0" step="1" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Father Income (Optional)</label><input type="number" name="father_income" min="0" step="1" placeholder="Optional" class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Father Occupation *</label>
                             <select name="father_occupation" required class="w-full border rounded-lg px-4 py-2">
                                 <option>Job</option><option>Business</option><option>Retired</option><option>Other</option>
@@ -512,9 +542,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
                 </div>
                 
-                <!-- Section 4: Mandir Verification Details -->
+                <!-- Section 4: Temple Association Details -->
                 <div class="mb-8 pb-4 border-b border-gray-200">
-                    <h2 class="text-xl font-bold text-primary mb-4">Section 4: Mandir Verification Details</h2>
+                    <h2 class="text-xl font-bold text-primary mb-4">Section 4: Which Digambar Jain temple are you associated with? (आप किस दिगम्बर जैन मंदिर से जुड़े है?)</h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- Subcast Select -->
@@ -541,15 +571,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                         <!-- Mandir Details -->
                         <div>
-                            <label class="block text-gray-700 font-medium mb-2">Mandir Name (मंदिर का नाम) *</label>
+                            <label class="block text-gray-700 font-medium mb-2">Temple Name (मंदिर का नाम) *</label>
                             <input type="text" name="mandir_name" required class="w-full border rounded-lg px-4 py-2" placeholder="Shri Digambar Jain Mandir">
                         </div>
                         <div>
-                            <label class="block text-gray-700 font-medium mb-2">Mandir Address *</label>
+                            <label class="block text-gray-700 font-medium mb-2">Temple Address (मंदिर का पता) *</label>
                             <textarea name="mandir_address" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea>
                         </div>
                         <div>
-                            <label class="block text-gray-700 font-medium mb-2">Mandir Pincode *</label>
+                            <label class="block text-gray-700 font-medium mb-2">Temple Pincode (मंदिर का पिनकोड) *</label>
                             <input type="text" name="mandir_pincode" pattern="[0-9]{4,6}" maxlength="6" minlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border rounded-lg px-4 py-2">
                         </div>
                     </div>
@@ -611,31 +641,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
 
                     <!-- Photos Section (Now part of Section 4) -->
-                    <?php if (
-                        (isset($coreFieldsSettings['profile_photo']) && $coreFieldsSettings['profile_photo']['is_visible']) || 
-                        (isset($coreFieldsSettings['family_photo']) && $coreFieldsSettings['family_photo']['is_visible']) || 
-                        (isset($coreFieldsSettings['profile_photo_drive_url']) && $coreFieldsSettings['profile_photo_drive_url']['is_visible'])
-                    ): ?>
                     <div class="mt-6 border-t border-dashed border-gray-200 pt-6">
                         <h3 class="text-lg font-bold text-primary mb-4">Photos</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <?php if (isset($coreFieldsSettings['profile_photo']) && $coreFieldsSettings['profile_photo']['is_visible']): ?>
+                            <!-- Candidate Photo is ALWAYS required -->
                             <div>
-                                <label class="block text-gray-700 font-medium mb-2">Candidate Photo <?= $coreFieldsSettings['profile_photo']['is_required'] ? '*' : '' ?> (Passport size photo, max 10MB)</label>
-                                <input type="file" name="photo" accept="image/*" <?= $coreFieldsSettings['profile_photo']['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
+                                <label class="block text-gray-700 font-medium mb-2">Candidate Photo * (Passport size photo, max 10MB)</label>
+                                <input type="file" name="photo" accept="image/*" required class="w-full border rounded-lg px-4 py-2">
                             </div>
-                            <?php endif; ?>
                             
-                            <?php if (isset($coreFieldsSettings['family_photo']) && $coreFieldsSettings['family_photo']['is_visible']): ?>
+                            <?php if (!isset($coreFieldsSettings['family_photo']) || $coreFieldsSettings['family_photo']['is_visible']): ?>
                             <div>
-                                <label class="block text-gray-700 font-medium mb-2">Family Photo <?= $coreFieldsSettings['family_photo']['is_required'] ? '*' : '' ?> (Max 10MB)</label>
-                                <input type="file" name="family_photo" accept="image/*" <?= $coreFieldsSettings['family_photo']['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
+                                <label class="block text-gray-700 font-medium mb-2">Family Photo <?= (isset($coreFieldsSettings['family_photo']) && $coreFieldsSettings['family_photo']['is_required']) ? '*' : '(Optional)' ?> (Max 10MB)</label>
+                                <input type="file" name="family_photo" accept="image/*" <?= (isset($coreFieldsSettings['family_photo']) && $coreFieldsSettings['family_photo']['is_required']) ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
                             </div>
                             <?php endif; ?>
 
                             <?php if (isset($coreFieldsSettings['profile_photo_drive_url']) && $coreFieldsSettings['profile_photo_drive_url']['is_visible']): ?>
                             <div>
-                                <label class="block text-gray-700 font-medium mb-2">Profile Photo Drive URL <?= $coreFieldsSettings['profile_photo_drive_url']['is_required'] ? '*' : '' ?></label>
+                                <label class="block text-gray-700 font-medium mb-2">Profile Photo Drive URL <?= $coreFieldsSettings['profile_photo_drive_url']['is_required'] ? '*' : '(Optional)' ?></label>
                                 <input type="url" name="profile_photo_drive_url" <?= $coreFieldsSettings['profile_photo_drive_url']['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
                             </div>
                             <?php endif; ?>
@@ -668,7 +692,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             ?>
                         </div>
                     </div>
-                    <?php endif; ?>
                 </div>
                 </div>
                 
@@ -733,6 +756,42 @@ document.querySelectorAll('input[name="is_digambar"]').forEach(radio => {
         }
     });
 });
+
+// Same as Permanent Address checkbox handler
+document.getElementById('same_as_permanent')?.addEventListener('change', function() {
+    const currentAddressContainer = document.getElementById('current_address_container');
+    const currentAddressField = document.getElementById('current_address');
+    const permanentAddressField = document.getElementById('permanent_address');
+    
+    if (this.checked) {
+        // Copy permanent address to current address
+        currentAddressField.value = permanentAddressField.value;
+    } else {
+        // Clear current address
+        currentAddressField.value = '';
+    }
+});
+
+// Keep current address in sync if permanent address changes while checkbox is checked
+document.getElementById('permanent_address')?.addEventListener('input', function() {
+    const sameCheckbox = document.getElementById('same_as_permanent');
+    if (sameCheckbox && sameCheckbox.checked) {
+        document.getElementById('current_address').value = this.value;
+    }
+});
+
+document.getElementById('language_other_checkbox')?.addEventListener('change', function() {
+    const otherLangInput = document.getElementById('other_language_input');
+    if (this.checked) {
+        otherLangInput.classList.remove('hidden');
+        otherLangInput.required = true;
+    } else {
+        otherLangInput.classList.add('hidden');
+        otherLangInput.required = false;
+        otherLangInput.value = '';
+    }
+});
+
 
 document.getElementById('subcast')?.addEventListener('change', function() {
     const custom = document.getElementById('custom_subcast');
