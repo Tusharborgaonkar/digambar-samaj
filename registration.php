@@ -130,6 +130,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sisters_married = (int)($_POST['sisters_married'] ?? 0);
     $sisters_unmarried = (int)($_POST['sisters_unmarried'] ?? 0);
     $cast = htmlspecialchars($_POST['cast'] ?? '');
+    if ($cast === 'Other' && !empty($_POST['custom_cast'])) {
+        $cast = htmlspecialchars($_POST['custom_cast']);
+    }
     $subcast = htmlspecialchars($_POST['subcast'] ?? '');
     $custom_subcast = htmlspecialchars($_POST['custom_subcast'] ?? '');
     $mandir = htmlspecialchars($_POST['mandir'] ?? '');
@@ -389,11 +392,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div><label class="block text-gray-700 font-medium mb-2">Native (परिवार का मूल स्थान) *</label><input type="text" name="native" required class="w-full border rounded-lg px-4 py-2"></div>
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Cast (जाति) *</label>
-                            <select name="cast" required class="w-full border rounded-lg px-4 py-2">
+                            <select name="cast" id="cast" required class="w-full border rounded-lg px-4 py-2">
                                 <option value="">Select Cast</option>
                                 <option value="Digambar Jain">Digambar Jain</option>
                                 <option value="Other">Other</option>
                             </select>
+                            <input type="text" name="custom_cast" id="custom_cast" placeholder="Please specify cast" class="w-full border rounded-lg px-4 py-2 mt-2 hidden">
                         </div>
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Sub-Cast (उपजाति)</label>
@@ -789,6 +793,18 @@ document.getElementById('language_other_checkbox')?.addEventListener('change', f
         otherLangInput.classList.add('hidden');
         otherLangInput.required = false;
         otherLangInput.value = '';
+    }
+});
+
+document.getElementById('cast')?.addEventListener('change', function() {
+    const custom = document.getElementById('custom_cast');
+    if (this.value === 'Other') {
+        custom.classList.remove('hidden');
+        custom.required = true;
+    } else {
+        custom.classList.add('hidden');
+        custom.required = false;
+        custom.value = '';
     }
 });
 
