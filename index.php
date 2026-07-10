@@ -13,6 +13,23 @@ try {
     }
 } catch (Exception $e) {}
 
+$is_logged_in = false;
+$is_approved = false;
+if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) {
+    $is_logged_in = true;
+    try {
+        $stmt = $pdo->prepare("SELECT status FROM users WHERE id = ?");
+        $stmt->execute([$_SESSION['user_id']]);
+        $user_status = $stmt->fetchColumn();
+        if (in_array($user_status, ['approved', 'account_approved'])) {
+            $is_approved = true;
+        }
+    } catch(PDOException $e) {}
+} else if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+    $is_logged_in = true;
+    $is_approved = true;
+}
+
 include 'includes/header.php';
 ?>
 
@@ -70,17 +87,17 @@ include 'includes/header.php';
 
 <!-- Hero Section -->
 <section
-    class="relative min-h-[100vw] md:min-h-[85vh] flex flex-col justify-center items-center overflow-hidden bg-gray-900">
+    class="relative min-h-[100vw] md:min-h-[85vh] flex flex-col justify-start items-start overflow-hidden bg-gray-900">
     <!-- Solid Background instead of image -->
     <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-primary/20 z-0"></div>
 
-    <div class="container mx-auto px-4 relative z-20 w-full pt-20 pb-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center" data-aos="fade-up">
+    <div class="container mx-auto px-4 relative z-20 w-full pt-32 pb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start" data-aos="fade-up">
             <!-- Left Side: Content -->
-            <div class="text-center md:text-left">
+            <div class="text-left">
                 <h1 class="text-4xl md:text-6xl md:text-[4.5rem] font-bold text-white mb-6 leading-tight">दिगंबर जैन युवक-युवती परिचय</h1>
                 <p class="text-2xl md:text-3xl text-yellow-400 font-bold mb-6 drop-shadow-lg tracking-wide">The most trusted matrimony service for Digambar Jain!</p>
-                <p class="text-lg md:text-xl text-gray-200 leading-relaxed max-w-xl mx-auto md:mx-0">This website is created only for the Digambar Jain community to help eligible young men and women of the entire Digambar Jain society find their suitable life partner.</p>
+                <p class="text-lg md:text-xl text-gray-200 leading-relaxed max-w-xl md:mx-0">This website is created only for the Digambar Jain community to help eligible young men and women of the entire Digambar Jain society find their suitable life partner.</p>
             </div>
             
             <!-- Right Side: Image -->
@@ -99,103 +116,115 @@ include 'includes/header.php';
             data-aos="fade-up" data-aos-delay="200">
             <h3 class="text-xl font-bold text-dark mb-4 border-b pb-2"><i
                     class="fas fa-search text-primary mr-2"></i>Quick Search</h3>
-            <form action="profiles.php" method="GET">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <!-- Looking For -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Looking For</label>
-                        <select name="gender"
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
-                            <option value="bride">Bride</option>
-                            <option value="groom">Groom</option>
-                        </select>
-                    </div>
-                    <!-- Age Group -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Age Group</label>
-                        <div class="flex items-center space-x-2">
-                            <input type="number" name="age_from" placeholder="From"
-                                class="w-1/2 border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50"
-                                min="18" max="70">
-                            <span class="text-gray-500 font-medium">to</span>
-                            <input type="number" name="age_to" placeholder="To"
-                                class="w-1/2 border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50"
-                                min="18" max="70">
+            <?php if (!$is_logged_in): ?>
+                <div class="text-center py-6">
+                    <p class="text-lg text-gray-700 mb-4">Please login or register to search profiles.</p>
+                    <a href="login.php" class="inline-block bg-primary text-white px-8 py-3 rounded-md font-bold shadow-md hover:bg-opacity-90 transition"><i class="fas fa-sign-in-alt mr-2"></i>Login to Search</a>
+                </div>
+            <?php elseif (!$is_approved): ?>
+                <div class="text-center py-6">
+                    <p class="text-xl text-yellow-600 font-bold mb-2"><i class="fas fa-clock mr-2"></i>Profile Pending Approval</p>
+                    <p class="text-gray-700">Your profile is pending approval. Search will be available after admin approval.</p>
+                </div>
+            <?php else: ?>
+                <form action="profiles.php" method="GET">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <!-- Looking For -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Looking For</label>
+                            <select name="gender"
+                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
+                                <option value="bride">Bride</option>
+                                <option value="groom">Groom</option>
+                            </select>
+                        </div>
+                        <!-- Age Group -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Age Group</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="number" name="age_from" placeholder="From"
+                                    class="w-1/2 border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50"
+                                    min="18" max="70">
+                                <span class="text-gray-500 font-medium">to</span>
+                                <input type="number" name="age_to" placeholder="To"
+                                    class="w-1/2 border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50"
+                                    min="18" max="70">
+                            </div>
+                        </div>
+                        <!-- Marital Status -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Marital Status</label>
+                            <select name="marital_status"
+                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
+                                <option value="">Any</option>
+                                <option value="never_married">Never Married</option>
+                                <option value="widow">Widow / Widower</option>
+                                <option value="divorcee">Divorcee</option>
+                            </select>
+                        </div>
+                        <!-- Manglik -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Manglik Status</label>
+                            <select name="manglik"
+                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
+                                <option value="">Any</option>
+                                <option value="manglik">Manglik</option>
+                                <option value="non_manglik">Non-Manglik</option>
+                                <option value="anshik_manglik">Anshik Manglik</option>
+                            </select>
+                        </div>
+                        <!-- State -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">State</label>
+                            <select name="state"
+                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
+                                <option value="">Any State</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="Rajasthan">Rajasthan</option>
+                                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                            </select>
+                        </div>
+                        <!-- City -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">City</label>
+                            <input type="text" name="city" placeholder="Enter City Name"
+                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
+                        </div>
+                        <!-- Education -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Education</label>
+                            <select name="education"
+                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
+                                <option value="">Any Education</option>
+                                <option value="Bachelors">Bachelors</option>
+                                <option value="Masters">Masters</option>
+                                <option value="Doctorate">Doctorate</option>
+                                <option value="Diploma">Diploma</option>
+                            </select>
+                        </div>
+                        <!-- Profession -->
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Profession</label>
+                            <select name="profession"
+                                class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
+                                <option value="">Any Profession</option>
+                                <option value="Doctor">Doctor</option>
+                                <option value="Engineer">Engineer</option>
+                                <option value="CA/CS">CA / CS</option>
+                                <option value="Business">Business</option>
+                                <option value="Service">Service</option>
+                            </select>
                         </div>
                     </div>
-                    <!-- Marital Status -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Marital Status</label>
-                        <select name="marital_status"
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
-                            <option value="">Any</option>
-                            <option value="never_married">Never Married</option>
-                            <option value="widow">Widow / Widower</option>
-                            <option value="divorcee">Divorcee</option>
-                        </select>
+                    <div class="mt-6 text-center">
+                        <button type="submit"
+                            class="bg-primary text-white px-10 py-3 rounded-md text-lg font-bold hover:bg-opacity-90 transition shadow-lg w-full md:w-auto"><i
+                                class="fas fa-search mr-2"></i>Search Profiles</button>
                     </div>
-                    <!-- Manglik -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Manglik Status</label>
-                        <select name="manglik"
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
-                            <option value="">Any</option>
-                            <option value="manglik">Manglik</option>
-                            <option value="non_manglik">Non-Manglik</option>
-                            <option value="anshik_manglik">Anshik Manglik</option>
-                        </select>
-                    </div>
-                    <!-- State -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">State</label>
-                        <select name="state"
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
-                            <option value="">Any State</option>
-                            <option value="Delhi">Delhi</option>
-                            <option value="Maharashtra">Maharashtra</option>
-                            <option value="Gujarat">Gujarat</option>
-                            <option value="Rajasthan">Rajasthan</option>
-                            <option value="Madhya Pradesh">Madhya Pradesh</option>
-                        </select>
-                    </div>
-                    <!-- City -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">City</label>
-                        <input type="text" name="city" placeholder="Enter City Name"
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
-                    </div>
-                    <!-- Education -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Education</label>
-                        <select name="education"
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
-                            <option value="">Any Education</option>
-                            <option value="Bachelors">Bachelors</option>
-                            <option value="Masters">Masters</option>
-                            <option value="Doctorate">Doctorate</option>
-                            <option value="Diploma">Diploma</option>
-                        </select>
-                    </div>
-                    <!-- Profession -->
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-1">Profession</label>
-                        <select name="profession"
-                            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
-                            <option value="">Any Profession</option>
-                            <option value="Doctor">Doctor</option>
-                            <option value="Engineer">Engineer</option>
-                            <option value="CA/CS">CA / CS</option>
-                            <option value="Business">Business</option>
-                            <option value="Service">Service</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="mt-6 text-center">
-                    <button type="submit"
-                        class="bg-primary text-white px-10 py-3 rounded-md text-lg font-bold hover:bg-opacity-90 transition shadow-lg w-full md:w-auto"><i
-                            class="fas fa-search mr-2"></i>Search Profiles</button>
-                </div>
-            </form>
+                </form>
+            <?php endif; ?>
         </div>
     </div>
 </section>
@@ -353,7 +382,7 @@ include 'includes/header.php';
             <?php endforeach; ?>
         </div>
         <div class="text-center mt-10">
-            <a href="profiles.php"
+            <a href="profiles.php?gender=<?= urlencode($latest_gender) ?>"
                 class="inline-block bg-primary text-white px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold text-lg"><i
                     class="fas fa-users mr-2"></i>View All Profiles</a>
         </div>
@@ -491,61 +520,13 @@ include 'includes/header.php';
                 </div>
 
                 <div class="space-y-4">
-                    <div
-                        class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:border-primary transition group cursor-pointer">
-                        <div class="flex items-start">
-                            <div class="bg-primary text-white rounded-lg text-center p-2 min-w-[65px] mr-4 shadow">
-                                <div class="text-2xl font-bold leading-none">15</div>
-                                <div class="text-xs uppercase font-medium mt-1">Oct</div>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-lg text-dark mb-1 group-hover:text-primary transition">All
-                                    India Jain Parichay Sammelan 2026</h4>
-                                <p class="text-sm text-gray-600 line-clamp-2">Join us for the mega Parichay Sammelan
-                                    organized by Digambar Jain Mahasabha in New Delhi.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div
-                        class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:border-primary transition group cursor-pointer">
-                        <div class="flex items-start">
-                            <div class="bg-primary text-white rounded-lg text-center p-2 min-w-[65px] mr-4 shadow">
-                                <div class="text-2xl font-bold leading-none">05</div>
-                                <div class="text-xs uppercase font-medium mt-1">Nov</div>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-lg text-dark mb-1 group-hover:text-primary transition">New
-                                    Branch Opening in Ahmedabad</h4>
-                                <p class="text-sm text-gray-600 line-clamp-2">We are glad to announce our new regional
-                                    office in Ahmedabad for better offline support.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div
-                        class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:border-primary transition group cursor-pointer">
-                        <div class="flex items-start">
-                            <div class="bg-primary text-white rounded-lg text-center p-2 min-w-[65px] mr-4 shadow">
-                                <div class="text-2xl font-bold leading-none">22</div>
-                                <div class="text-xs uppercase font-medium mt-1">Nov</div>
-                            </div>
-                            <div>
-                                <h4 class="font-bold text-lg text-dark mb-1 group-hover:text-primary transition">Jain
-                                    Community Medical Camp</h4>
-                                <p class="text-sm text-gray-600 line-clamp-2">Free health checkup camp for all community
-                                    members organized by Seva Samiti.</p>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- News items will be loaded dynamically from admin panel -->
                 </div>
             </div>
 
             <!-- Stats section -->
             <div class="bg-light p-8 rounded-2xl border border-gray-100" data-aos="fade-left">
-                <h2 class="text-3xl font-bold text-dark mb-4 text-center lg:text-left">Trusted by Millions</h2>
-                <p class="text-gray-600 mb-8 text-center lg:text-left">We have been serving the Jain community for over
-                    a decade, helping thousands of individuals find their soulmates through our trusted platform.</p>
+                <h2 class="text-3xl font-bold text-dark mb-4 text-center lg:text-left">Trusted by Thousands of Digambar Jain Samaj since 5 years</h2>
 
                 <div class="grid grid-cols-2 gap-6">
                     <div
@@ -591,117 +572,5 @@ include 'includes/header.php';
     </div>
 </section>
 
-<!-- Photo Gallery Section -->
-<section class="py-16 bg-dark text-white">
-    <div class="container mx-auto px-4">
-        <div class="text-center mb-10" data-aos="fade-up">
-            <h2 class="text-3xl md:text-4xl font-bold mb-3 relative inline-block">Photo Gallery
-                <span class="absolute bottom-0 left-1/4 w-1/2 h-1 bg-primary rounded-full -mb-2"></span>
-            </h2>
-            <p class="text-gray-400 mt-4">Glimpses of our events, programs, and community gatherings</p>
-        </div>
-
-
-        <!-- Gallery Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            <!-- Manoj Jain -->
-            <a href="gallery.php" class="group relative overflow-hidden rounded-xl shadow-lg block h-64" data-aos="zoom-in"
-                data-aos-delay="100">
-                <img src="assets/images/manoj jain.jpeg" alt="Manoj Jain"
-                    class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-700">
-                <div
-                    class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-90 transition duration-300">
-                </div>
-                <div
-                    class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
-                    <div class="bg-primary/90 text-white rounded-full p-3 shadow-lg">
-                        <i class="fas fa-search-plus text-xl"></i>
-                    </div>
-                </div>
-                <div class="absolute bottom-0 left-0 w-full p-4 text-center">
-                    <p class="text-white text-lg font-bold">Manoj Jain</p>
-                </div>
-            </a>
-            <!-- Naresh Jain / Narendra Jain -->
-            <a href="gallery.php" class="group relative overflow-hidden rounded-xl shadow-lg block h-64" data-aos="zoom-in"
-                data-aos-delay="200">
-                <img src="assets/images/narendra jain.png" alt="Naresh Jain"
-                    class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-700">
-                <div
-                    class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-90 transition duration-300">
-                </div>
-                <div
-                    class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
-                    <div class="bg-primary/90 text-white rounded-full p-3 shadow-lg">
-                        <i class="fas fa-search-plus text-xl"></i>
-                    </div>
-                </div>
-                <div class="absolute bottom-0 left-0 w-full p-4 text-center">
-                    <p class="text-white text-lg font-bold">Naresh Jain</p>
-                </div>
-            </a>
-            <!-- Jitendra Shah -->
-            <a href="gallery.php" class="group relative overflow-hidden rounded-xl shadow-lg block h-64" data-aos="zoom-in"
-                data-aos-delay="300">
-                <img src="assets/images/Jitendra Shah.png" alt="Jitendra Shah"
-                    class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-700">
-                <div
-                    class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-90 transition duration-300">
-                </div>
-                <div
-                    class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
-                    <div class="bg-primary/90 text-white rounded-full p-3 shadow-lg">
-                        <i class="fas fa-search-plus text-xl"></i>
-                    </div>
-                </div>
-                <div class="absolute bottom-0 left-0 w-full p-4 text-center">
-                    <p class="text-white text-lg font-bold">Jitendra Shah</p>
-                </div>
-            </a>
-            <!-- Milesh K Doshi -->
-            <a href="gallery.php" class="group relative overflow-hidden rounded-xl shadow-lg block h-64" data-aos="zoom-in"
-                data-aos-delay="400">
-                <img src="assets/images/milesh k doshi.png" alt="Milesh K Doshi"
-                    class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-700">
-                <div
-                    class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-90 transition duration-300">
-                </div>
-                <div
-                    class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
-                    <div class="bg-primary/90 text-white rounded-full p-3 shadow-lg">
-                        <i class="fas fa-search-plus text-xl"></i>
-                    </div>
-                </div>
-                <div class="absolute bottom-0 left-0 w-full p-4 text-center">
-                    <p class="text-white text-lg font-bold">Milesh K Doshi</p>
-                </div>
-            </a>
-            <!-- Darshan Jain -->
-            <a href="gallery.php" class="group relative overflow-hidden rounded-xl shadow-lg block h-64" data-aos="zoom-in"
-                data-aos-delay="500">
-                <img src="assets/images/darshan jain.jpeg" alt="Darshan Jain"
-                    class="w-full h-full object-cover object-top group-hover:scale-110 transition duration-700">
-                <div
-                    class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-70 group-hover:opacity-90 transition duration-300">
-                </div>
-                <div
-                    class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300 transform group-hover:scale-110">
-                    <div class="bg-primary/90 text-white rounded-full p-3 shadow-lg">
-                        <i class="fas fa-search-plus text-xl"></i>
-                    </div>
-                </div>
-                <div class="absolute bottom-0 left-0 w-full p-4 text-center">
-                    <p class="text-white text-lg font-bold">Darshan Jain</p>
-                </div>
-            </a>
-        </div>
-
-        <div class="text-center mt-12">
-            <a href="gallery.php"
-                class="inline-block bg-white text-dark px-8 py-3 rounded-md hover:bg-gray-100 transition font-bold text-lg shadow-lg"><i
-                    class="fas fa-images mr-2"></i>View Complete Gallery</a>
-        </div>
-    </div>
-</section>
 
 <?php include 'includes/footer.php'; ?>

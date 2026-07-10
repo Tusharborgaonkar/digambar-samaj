@@ -46,23 +46,23 @@ include 'includes/header.php';
                 </div>
             <?php else: ?>
                 <!-- Hindi Content -->
-                <div id="aboutContentHi" class="text-gray-600 leading-relaxed text-lg space-y-4">
-                    <p>धर्म, समाज, संस्क्रति और राष्ट्र की प्रतिष्ठा को बनाये रखने मे विवाह की महत्वपूर्ण भूमिका रहती
-                        है। विवाह न केवल दो व्यक्तियों का मिलन है बल्कि आगामी पीढियो के निर्माण मे महत्वपूर्ण भूमिका का
-                        निर्वाह करता है | यदि उचित समय पर सही वर वधु का चयन होकर विवाह सम्पन्न हो जावे तो निश्चित ही
-                        समाज और देश के लिये एक स्वस्थ वन सकेगा|</p>
-                    <p>हमारी संस्था द्वारा विगत 5 वर्षो से समग्र दिगम्बर जैन समाज के युवक युवतियो के परिचय सम्मेलन का
-                        आयोजन बहुत ही सफलता पूर्वक अहमदाबाद मे किया जा रहा है गुजरात राज्य का यह सबसे सफल आयोजन होता है|
-                        आज समाज मे योग्य वर वधु का चयन बहुत ही जटिल और कठिन हो गया है इसी को ध्यान मे रखकर समिति द्वारा
-                        यह कार्यक्रम आयोजित किया जाता है। उसी श्रंखला मे हमारी संस्था द्वारा एक और कदम आगे बदकर इस
-                        वेबसाईट का निर्माण किया गया है जिससे कि समाज को युवक – युवतियों के लिये सुयोग्य जीवनसाथी हमेशा
-                        उपलब्ध हो सकें हमे पूर्ण विश्वास है कि इस वेबसाईट के माध्यम से हम आपकी आकांछाओ को पूर्ण करने मे
-                        सफल होंगे |</p>
-                    <p>मे इस वेबसाईट पर रजिस्टर होने वाले सभी अभिभावक और स्नेहिल युवक-युवतियो के उज्ज्वल भविष्य के प्रति
-                        मंगल कामनाये प्रेषित करता हूँ और आशा करता हूँ कि सभी के जीवन साथी की तलाश इस वेबसाईट के माध्यम
-                        से जरूर पूर्ण हो |</p>
-                    <p>हमारा मुख्य उद्देश्य यही है कि जैन की शादी जैन मे हो और हमारे वच्चो मे जैन धर्म के संस्कार बने
-                        रहें</p>
+                <div id="aboutContentHi" class="text-gray-600 leading-relaxed text-lg space-y-4 text-justify">
+                    <p class="font-bold text-xl text-primary">सादर जय जिनेंद्र,</p>
+                    <p>धर्म, समाज, संस्कृति और राष्ट्र की प्रतिष्ठा को अक्षुण्ण बनाए रखने में विवाह की अत्यंत महत्वपूर्ण भूमिका होती है। विवाह न केवल दो व्यक्तियों का मिलन है, बल्कि यह आगामी पीढ़ियों के निर्माण और सुदृढ़ीकरण का मुख्य आधार है। यदि उचित समय पर सही वर-वधू का चयन कर विवाह संपन्न हो, तो निश्चित ही समाज और राष्ट्र को एक स्वस्थ और सुसंस्कृत स्वरूप प्राप्त होगा।</p>
+                    <p>हमारी संस्था द्वारा विगत 5 वर्षों से समग्र दिगंबर जैन समाज के योग्य युवक-युवतियों के लिए 'परिचय सम्मेलन' का आयोजन अहमदाबाद में अत्यंत सफलतापूर्वक किया जा रहा है। यह गुजरात राज्य का सबसे सफल और प्रतिष्ठित आयोजन माना जाता है। आज के आधुनिक परिवेश में योग्य वर-वधू का चयन बेहद जटिल और कठिन कार्य हो गया है, इसी बात को ध्यान में रखकर समिति निरंतर इस दिशा में कार्यरत है।</p>
+                    <p>इसी श्रृंखला में एक कदम और आगे बढ़ाते हुए हमारी संस्था ने इस आधुनिक वेबसाइट का निर्माण किया है, ताकि समाज के युवक-युवतियों के लिए सुयोग्य जीवनसाथी की खोज हर समय सुलभ और आसान हो सके। हमें पूर्ण विश्वास है कि इस डिजिटल माध्यम से हम आपकी आकांक्षाओं को पूर्ण करने में पूरी तरह सफल होंगे।</p>
+                    <p>मैं इस वेबसाइट पर पंजीकृत होने वाले सभी अभिभावकों और स्नेही युवक-युवतियों के उज्ज्वल भविष्य के लिए अपनी मंगलकामनाएं प्रेषित करता हूँ। आशा है कि सुयोग्य जीवनसाथी की आपकी तलाश इस मंच के माध्यम से अवश्य पूर्ण होगी।</p>
+                    <p class="font-semibold text-primary">हमारा मुख्य उद्देश्य और संकल्प यही है कि— "जैन की शादी जैन में ही हो" ताकि हमारी आने वाली पीढ़ी में जैन धर्म के मूल संस्कार और संस्कृति जीवंत बनी रहे।</p>
+                    <p class="font-bold mt-4">शुभकामनाओं सहित,</p>
+                    <p class="font-bold text-primary">दिगम्बर जैन परिचय सम्मेलन समिति अहमदाबाद</p>
+                    
+                    <hr class="my-8 border-gray-200">
+                    
+                    <p>हमारी वेबसाइट “दिगम्बर जैन परिचय” केवल एक वैवाहिक परिचय का मंच नहीं है, बल्कि दिगम्बर जैन समाज की समृद्ध सांस्कृतिक विरासत एवं आध्यात्मिक मूल्यों पर आधारित एक विश्वसनीय परिवार है। हमारा मानना है कि विवाह केवल जीवनसाथी की खोज नहीं, बल्कि ऐसे दो व्यक्तित्वों का पवित्र मिलन है जिनके जीवन के लक्ष्य, संस्कार, मूल्य और विचार समान हों।</p>
+                    <p>सार्थक एवं दीर्घकालिक वैवाहिक संबंध स्थापित करने की हमारी प्रतिबद्धता हमारी प्रत्येक सेवा में दिखाई देती है। सत्यापित एवं विस्तृत प्रोफ़ाइल डेटाबेस तथा पारदर्शी प्रक्रिया के माध्यम से हम आपको आपके लिए उपयुक्त जीवनसाथी खोजने के लिये एक माध्यम प्रदान कर रहे हैं। यह सिर्फ दिगम्बर जैन समाज के विवाह योग्य बच्चों के सम्बंध खोजने के लिये एकमात्र वेबसाइट है।</p>
+                    <p>जीवनसाथी का चयन जीवन के सबसे महत्वपूर्ण निर्णयों में से एक है। “दिगम्बर जैन परिचय” वेबसाइट इस महत्वपूर्ण यात्रा के प्रत्येक चरण में आपके साथ खड़ी है। हम आपको 100% सत्यापित एवं विस्तृत प्रोफ़ाइल और डेटाबेस अपने समाज के विवाह योग्य बच्चो के इस माध्यम से उपलब्ध कराते हैं, जिनकी सहायता से आप ऐसा जीवनसाथी चुन सकें जो आपके मूल्यों, जीवन-दृष्टि और भविष्य के सपनों के अनुरूप हो। हमारा मुख्य उद्देश्य यही है कि जैन की शादी जैन मे हो और हमारे बच्चो मे दिगम्बर जैन परम्परा के संस्कार बने रहें और अक्षुण बनी रहे।</p>
+                    <p>वर्तमान समय की परिस्थितियों एवं बदलते परिवेश में मनुष्य के पास समय का अभाव है। वह दिन-रात अपने परिवार के खुशहाल जीवन यापन एवं उनके भविष्य को उज्जवल बनाने के लिए प्रयासरत रहता है। जीवन की इसी भागदौड़ में वह यह भी भूल जाता है कि उसके बच्चे बड़े एवं विवाह योग्य हो गए हैं। जब उसे इस बात का ध्यान आता है বিন্দু तो वह अच्छे संबंध की तलाश करना शुरु करता है और यही से उसकी परेशानी शुरू होती है। आज का समय पहले जैसा नही रहा कि अपने परिचित / रिश्तेदार ही सम्बंध बता देते थे अब किसी का भी सहयोग इस कार्य मे नही के बराबर हो गया है।</p>
+                    <p>हमारी संस्था ने सकल दिगम्बर जैन समाज के लिये ही यह बीड़ा उठाया है। हमारी संस्था का उद्देश्य केवल यही है कि समाज के बच्चों का विवाह समाज मे ही समय पर हो जाये, हमारी संस्था विगत 5 वर्षो से अहमदाबाद मे सकल दिगम्बर जैन समाज के विवाह योग्य युवक युवतियो का परिचय सम्मेलन बहुत ही सफलता पूर्वक आयोजित कर रही है। संस्था का उद्देश्य कभी भी पैसा कमाना नही रहा। समिति के सभी सद्स्य अपना अमूल्य समय देकर इस कार्य को समाज हित मे कर रहे हैं।</p>
                 </div>
 
                 <!-- English Content -->
@@ -251,59 +251,59 @@ include 'includes/header.php';
         <div class="text-center mb-12">
             <h2 class="text-3xl font-bold text-dark mb-3">Committee Members</h2>
             <div class="w-16 h-1 bg-primary mx-auto"></div>
-            <p class="text-gray-600 mt-4">The dedicated individuals working tirelessly for the community.</p>
+            <p class="text-gray-600 mt-6 max-w-4xl mx-auto italic text-lg leading-relaxed font-medium">"स्थापना काल से ही समिति के पाँचों सदस्य इस संस्था को आगे ले जाने में जुटे हुए हैं। सभी सदस्यों के सामूहिक प्रयासों और आपसी तालमेल का ही परिणाम है कि संस्था आज इस गौरवशाली मुकाम पर खड़ी है। यह पारस्परिक सामंजस्य ही हमारी संस्था का मुख्य आधार स्तंभ है।"</p>
+            <p class="text-primary font-bold mt-2">- दिगम्बर जैन परिचय सम्मेलन समिति अहमदाबाद</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Member 1 -->
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 text-center p-6">
-                <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary">
-                    <img src="assets/images/Jitendra Shah.png" alt="Member 1" class="w-full h-full object-cover">
+        <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-8">
+            <!-- Member Narendra Jain -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 text-center p-6 flex flex-col h-full md:col-span-2 lg:col-span-2">
+                <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary shrink-0">
+                    <img src="assets/images/narendra jain.png" alt="Narendra Jain" class="w-full h-full object-cover">
                 </div>
-                <h3 class="font-bold text-xl text-dark">Member Name 1</h3>
-                <p class="text-primary font-semibold text-sm mb-2">Designation / Role</p>
-                <p class="text-gray-600 text-sm mb-4">Brief profile description about the member's contribution to the samaj and their vision.</p>
+                <h3 class="font-bold text-xl text-dark">नरेन्द्र जैन</h3>
+                <p class="text-primary font-semibold text-sm mb-2">Committee Member</p>
+                <p class="text-gray-600 text-sm mb-4 grow text-justify">केमीकल के सफल व्यवसायी, धार्मिक और बहुत सारी संस्थाओं से सम्बंधित श्री नरेंद्र जी जैन इस संस्था के बहुत ही मजबूत स्तम्भ मे से एक है इस संस्था के प्रारम्भ से ही वह अपना योगदान दे रहे हैं|</p>
             </div>
             
-            <!-- Member 2 -->
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 text-center p-6">
-                <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary">
-                    <img src="assets/images/manoj jain.jpeg" alt="Member 2" class="w-full h-full object-cover">
+            <!-- Member Manoj Jain -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 text-center p-6 flex flex-col h-full md:col-span-2 lg:col-span-2">
+                <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary shrink-0">
+                    <img src="assets/images/manoj jain.jpeg" alt="Manoj Jain" class="w-full h-full object-cover">
                 </div>
-                <h3 class="font-bold text-xl text-dark">Member Name 2</h3>
-                <p class="text-primary font-semibold text-sm mb-2">Designation / Role</p>
-                <p class="text-gray-600 text-sm mb-4">Brief profile description about the member's contribution to the samaj and their vision.</p>
+                <h3 class="font-bold text-xl text-dark">मनोज जैन <span class="text-xs font-normal text-gray-500 block mt-1">(M. COM, LLB, ACS)</span></h3>
+                <p class="text-primary font-semibold text-sm mb-2">Committee Member</p>
+                <p class="text-gray-600 text-sm mb-4 grow text-justify">श्री मनोज जैन जी 30 वर्षों का अनुभव रखने वाले वरिष्ठ कंपनी सेक्रेटरी हैं, जो अहमदाबाद की एक रियल एस्टेट कंपनी में CFO और CS के रूप में कार्यरत हैं। सामाजिक कार्यों के प्रति समर्पित, श्री जैन इस संस्था से इसके शुरुआती दिनों से ही जुड़े हुए हैं। संस्था द्वारा दी गई हर जिम्मेदारी को उन्होंने हमेशा समय पर और सफलतापूर्वक पूरा किया है।</p>
             </div>
 
-            <!-- Member 3 -->
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 text-center p-6">
-                <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary">
-                    <img src="assets/images/milesh k doshi.png" alt="Member 3" class="w-full h-full object-cover">
+            <!-- Member Darshan Jain -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 text-center p-6 flex flex-col h-full md:col-span-2 lg:col-span-2">
+                <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary shrink-0">
+                    <img src="assets/images/darshan jain.jpeg" alt="Darshan Jain Vakharia" class="w-full h-full object-cover">
                 </div>
-                <h3 class="font-bold text-xl text-dark">Member Name 3</h3>
-                <p class="text-primary font-semibold text-sm mb-2">Designation / Role</p>
-                <p class="text-gray-600 text-sm mb-4">Brief profile description about the member's contribution to the samaj and their vision.</p>
+                <h3 class="font-bold text-xl text-dark">श्री दर्शन जैन वखारिया</h3>
+                <p class="text-primary font-semibold text-sm mb-2">Committee Member</p>
+                <p class="text-gray-600 text-sm mb-4 grow text-justify">श्री दर्शन जी इमीग्रेशन वीसा कंसल्टेंट है और साथ मे बहुत ही सामजिक और धार्मिक व्यक्ति है वह बहुत सारी संस्थाओं से जुड़ें हुये है दिगम्बर जैन समाज के परिचय सम्मेलन का सपना उनका ही था जिसको यह संस्था उनके साथ प्रारम्भ से कर रही है</p>
             </div>
 
-            <!-- Member 4 -->
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 text-center p-6">
-                <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary">
-                    <img src="assets/images/narendra jain.png\
-                    " alt="Member 4" class="w-full h-full object-cover">
+            <!-- Member Milesh Doshi -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 text-center p-6 flex flex-col h-full md:col-span-2 lg:col-start-2 lg:col-span-2">
+                <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary shrink-0">
+                    <img src="assets/images/milesh.png" alt="Milesh Doshi" class="w-full h-full object-cover">
                 </div>
-                <h3 class="font-bold text-xl text-dark">Member Name 4</h3>
-                <p class="text-primary font-semibold text-sm mb-2">Designation / Role</p>
-                <p class="text-gray-600 text-sm mb-4">Brief profile description about the member's contribution to the samaj and their vision.</p>
+                <h3 class="font-bold text-xl text-dark">मिलेश दोशी</h3>
+                <p class="text-primary font-semibold text-sm mb-2">Committee Member</p>
+                <p class="text-gray-600 text-sm mb-4 grow text-justify">श्री मिलेशभाई कम्पुटर सोफ्ट्वेयर और हार्डवेयर व्यवसायी है, सभी धार्मिक कार्यो और मुनि भक्ति मे सबसे अग्रणी रहते है इस संस्था के प्रारम्भ से ही वह अपना योगदान दे रहे हैं|</p>
             </div>
 
-            <!-- Member 5 -->
-            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 text-center p-6 lg:col-start-2">
-                <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary">
-                    <img src="assets/images/darshan jain.jpeg" alt="Member 5" class="w-full h-full object-cover">
+            <!-- Member Jitendra Shah -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 text-center p-6 flex flex-col h-full md:col-start-2 md:col-span-2 lg:col-start-4 lg:col-span-2">
+                <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary shrink-0">
+                    <img src="assets/images/Jitendra Shah.png" alt="Jitendra Shah" class="w-full h-full object-cover">
                 </div>
-                <h3 class="font-bold text-xl text-dark">Member Name 5</h3>
-                <p class="text-primary font-semibold text-sm mb-2">Designation / Role</p>
-                <p class="text-gray-600 text-sm mb-4">Brief profile description about the member's contribution to the samaj and their vision.</p>
+                <h3 class="font-bold text-xl text-dark">जितेंद्र शाह</h3>
+                <p class="text-primary font-semibold text-sm mb-2">Committee Member</p>
+                <p class="text-gray-600 text-sm mb-4 grow text-justify">श्री जितेंद्र जी का प्रिंटिंग का बहुत ही बड़ा कार्य है, सभी सामजिक और धार्मिक कार्यो मे हमेशा अपना योगदान देते है इस संस्था के प्रारम्भ से ही वह अपना योगदान दे रहे हैं|</p>
             </div>
         </div>
     </div>

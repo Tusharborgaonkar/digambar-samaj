@@ -31,16 +31,24 @@ if ($is_logged_in && isset($_SESSION['user_id'])) {
     }
 }
 
-// Redirect unauthorized users trying to access page > 1
-$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-if ($page < 1) $page = 1;
-
-if (!$is_logged_in && $page > 1) {
-    header("Location: registration.php");
+// Strict Search Access Control
+if (!$is_logged_in) {
+    header("Location: login.php");
     exit;
 }
 
 include 'includes/header.php'; 
+
+if (!$is_approved) {
+    echo '<div class="container mx-auto px-4 py-20 text-center min-h-[60vh] flex flex-col justify-center items-center">
+            <i class="fas fa-user-clock text-6xl text-yellow-500 mb-6"></i>
+            <h2 class="text-3xl font-bold text-dark mb-4">Pending Approval</h2>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">Your profile is pending approval. Search will be available after admin approval.</p>
+            <a href="index.php" class="mt-8 bg-primary text-white px-8 py-3 rounded-md font-bold shadow-md hover:bg-opacity-90 transition">Return to Home</a>
+          </div>';
+    include 'includes/footer.php';
+    exit;
+}
 
 // Build Dynamic Query
 // Show 'approved' + 'pending' profiles (pending = form submitted, awaiting admin profile approval)
@@ -115,7 +123,8 @@ $filterQueryString = http_build_query($filterParams);
 
 // Pagination
 $limit = $is_logged_in ? 10 : 8;
-// $page is already initialized at the top
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($page < 1) $page = 1;
 $offset = ($page - 1) * $limit;
 
 $countStmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE $whereClause");
@@ -357,14 +366,28 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <!-- Pagination -->
                 <?php if ($total_pages > 1): ?>
                 <div class="mt-10 flex justify-center">
-                    <nav class="flex items-center gap-1">
+                    <nav class="flex flex-wrap items-center justify-center gap-1">
                         <?php if ($page > 1): ?>
                             <a href="?page=<?= $page - 1 ?>&<?= $filterQueryString ?>" class="px-4 py-2 bg-white border border-gray-200 text-gray-500 rounded hover:bg-gray-50 transition"><i class="fas fa-chevron-left text-xs"></i></a>
                         <?php endif; ?>
 
-                        <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+                        <?php 
+                        $adjacents = 2;
+                        $show_ellipsis = false;
+                        for ($i = 1; $i <= $total_pages; $i++): 
+                            if ($i == 1 || $i == $total_pages || ($i >= $page - $adjacents && $i <= $page + $adjacents)):
+                                $show_ellipsis = true;
+                        ?>
                             <a href="?page=<?= $i ?>&<?= $filterQueryString ?>" class="px-4 py-2 <?= $i === $page ? 'bg-primary text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50' ?> rounded font-medium transition"><?= $i ?></a>
-                        <?php endfor; ?>
+                        <?php 
+                            else: 
+                                if ($show_ellipsis): 
+                                    echo '<span class="px-3 py-2 text-gray-500 font-bold">...</span>';
+                                    $show_ellipsis = false;
+                                endif;
+                            endif;
+                        endfor; 
+                        ?>
 
                         <?php if ($page < $total_pages): ?>
                             <a href="?page=<?= $page + 1 ?>&<?= $filterQueryString ?>" class="px-4 py-2 bg-white border border-gray-200 text-gray-500 rounded hover:bg-gray-50 transition"><i class="fas fa-chevron-right text-xs"></i></a>
