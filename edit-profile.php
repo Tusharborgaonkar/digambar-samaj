@@ -189,9 +189,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mkdir($upload_dir, 0777, true);
     }
 
-    $photo = '';
-    $family_photo = '';
-    $payment_screenshot = '';
+    $photo = $current_user['profile_photo'] ?? '';
+    $family_photo = $current_user['family_photo'] ?? '';
+    $payment_screenshot = $current_user['payment_screenshot'] ?? '';
 
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
         $photo = $upload_dir . time() . '_photo_' . basename($_FILES['photo']['name']);
@@ -206,7 +206,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         move_uploaded_file($_FILES['payment_screenshot']['tmp_name'], $payment_screenshot);
     }
     
-    $id_proof_path = '';
+    $id_proof_path = $current_user['id_proof_path'] ?? '';
     if (isset($_FILES['id_proof_path']) && $_FILES['id_proof_path']['error'] === UPLOAD_ERR_OK) {
         $id_proof_path = $upload_dir . time() . '_idproof_' . basename($_FILES['id_proof_path']['name']);
         move_uploaded_file($_FILES['id_proof_path']['tmp_name'], $id_proof_path);
@@ -358,7 +358,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <!-- Candidate Full Name (editable, user must type the name) -->
                     <div class="mb-4">
                         <label class="block text-gray-700 font-medium mb-2">Candidate Full Name (प्रत्याशी का नाम) *</label>
-                        <input type="text" name="full_name" value="" required placeholder="Enter candidate's full name" class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                        <input type="text" name="full_name" value="<?= htmlspecialchars($current_user['full_name'] ?? '') ?>" value="<?= htmlspecialchars($current_user['full_name'] ?? '') ?>" value="" required placeholder="Enter candidate's full name" class="w-full border border-gray-300 rounded-lg px-4 py-2">
                     </div>
                     
                     <!-- Country Code & Mobile -->
@@ -366,12 +366,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <?php if (!isset($coreFieldsSettings['mobile']) || $coreFieldsSettings['mobile']['is_visible']): ?>
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Mobile Number *</label>
-                            <input type="tel" name="mobile" value="<?= htmlspecialchars($current_user['mobile']) ?>" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                            <input type="tel" name="mobile" value="<?= htmlspecialchars($current_user['mobile'] ?? '') ?>" value="<?= htmlspecialchars($current_user['mobile'] ?? '') ?>" value="<?= htmlspecialchars($current_user['mobile']) ?>" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
                         </div>
                         <?php endif; ?>
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Email *</label>
-                            <input type="email" name="email" value="<?= htmlspecialchars($current_user['email']) ?>" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                            <input type="email" name="email" value="<?= htmlspecialchars($current_user['email'] ?? '') ?>" value="<?= htmlspecialchars($current_user['email'] ?? '') ?>" value="<?= htmlspecialchars($current_user['email']) ?>" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
                         </div>
                         <?php 
                         if (!empty($customFieldsByGroup['Section 1: Basic Information'])) {
@@ -386,7 +386,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <h2 class="text-xl font-bold text-primary mb-4">Section 2: Personal Details</h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label class="block text-gray-700 font-medium mb-2">Birth Date *</label><input type="date" name="birth_date" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Birth Date *</label><input type="date" name="birth_date" value="<?= htmlspecialchars($current_user['birth_date'] ?? '') ?>" value="<?= htmlspecialchars($current_user['birth_date'] ?? '') ?>" required class="w-full border rounded-lg px-4 py-2"></div>
                         
                         <div><label class="block text-gray-700 font-medium mb-2">Birth Time *</label>
                             <div class="flex gap-2">
@@ -405,8 +405,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </select>
                             </div>
                         </div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Birth Place *</label><input type="text" name="birth_place" required class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Native (परिवार का मूल स्थान) *</label><input type="text" name="native" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Birth Place *</label><input type="text" name="birth_place" value="<?= htmlspecialchars($current_user['birth_place'] ?? '') ?>" value="<?= htmlspecialchars($current_user['birth_place'] ?? '') ?>" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Native (परिवार का मूल स्थान) *</label><input type="text" name="native" value="<?= htmlspecialchars($current_user['native_place'] ?? '') ?>" value="<?= htmlspecialchars($current_user['native_place'] ?? '') ?>" required class="w-full border rounded-lg px-4 py-2"></div>
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Cast (जाति) *</label>
                             <select name="cast" id="cast" required class="w-full border rounded-lg px-4 py-2">
@@ -433,8 +433,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </select>
                             <input type="text" name="custom_subcast" id="custom_subcast" placeholder="Please specify sub-cast" class="w-full border rounded-lg px-4 py-2 mt-2 hidden">
                         </div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Gotra (गोत्र) *</label><input type="text" name="gotra" required class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Mama Gotra (मामा का गोत्र) *</label><input type="text" name="mama_gotra" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Gotra (गोत्र) *</label><input type="text" name="gotra" value="<?= htmlspecialchars($current_user['gotra'] ?? '') ?>" value="<?= htmlspecialchars($current_user['gotra'] ?? '') ?>" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Mama Gotra (मामा का गोत्र) *</label><input type="text" name="mama_gotra" value="<?= htmlspecialchars($current_user['mama_gotra'] ?? '') ?>" value="<?= htmlspecialchars($current_user['mama_gotra'] ?? '') ?>" required class="w-full border rounded-lg px-4 py-2"></div>
                         
                         <!-- Manglik -->
                         <div><label class="block text-gray-700 font-medium mb-2">Manglik (मांगलिक) *</label>
@@ -463,8 +463,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                         
                         <!-- Permanent Address -->
-                        <div><label class="block text-gray-700 font-medium mb-2">Permanent Full Address (स्थायी पता) *</label><textarea name="permanent_address" id="permanent_address" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Pin Code of Permanent Address *</label><input type="text" name="pin_code" pattern="[0-9]{4,6}" maxlength="6" minlength="4" title="Please enter a valid 4 to 6 digit pin code" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Permanent Full Address (स्थायी पता) *</label><textarea name="permanent_address" id="permanent_address" required rows="2" class="w-full border rounded-lg px-4 py-2"><?= htmlspecialchars($current_user['permanent_address'] ?? '') ?></textarea></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Pin Code of Permanent Address *</label><input type="text" name="pin_code" value="<?= htmlspecialchars($current_user['pin_code'] ?? '') ?>" value="<?= htmlspecialchars($current_user['pin_code'] ?? '') ?>" pattern="[0-9]{4,6}" maxlength="6" minlength="4" title="Please enter a valid 4 to 6 digit pin code" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border rounded-lg px-4 py-2"></div>
                         
                         <!-- Same as Permanent Address Checkbox -->
                         <div class="col-span-1 md:col-span-2">
@@ -473,11 +473,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <span class="text-gray-700 font-medium">Current Address is same as Permanent Address (वर्तमान पता स्थायी पता जैसा ही है)</span>
                             </label>
                         </div>
-                        <div id="current_address_container"><label class="block text-gray-700 font-medium mb-2">Candidate Current Address (वर्तमान पता) *</label><textarea name="current_address" id="current_address" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea></div>
+                        <div id="current_address_container"><label class="block text-gray-700 font-medium mb-2">Candidate Current Address (वर्तमान पता) *</label><textarea name="current_address" id="current_address" required rows="2" class="w-full border rounded-lg px-4 py-2"><?= htmlspecialchars($current_user['current_address'] ?? '') ?></textarea></div>
 
-                        <div><label class="block text-gray-700 font-medium mb-2">Higher Education *</label><input type="text" name="education" required class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Hobbies *</label><textarea name="hobbies" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Your Specific Preference for the Partner *</label><textarea name="partner_preference" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Higher Education *</label><input type="text" name="education" value="<?= htmlspecialchars($current_user['higher_education'] ?? '') ?>" value="<?= htmlspecialchars($current_user['higher_education'] ?? '') ?>" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Hobbies *</label><textarea name="hobbies" required rows="2" class="w-full border rounded-lg px-4 py-2"><?= htmlspecialchars($current_user['hobbies'] ?? '') ?></textarea></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Your Specific Preference for the Partner *</label><textarea name="partner_preference" required rows="2" class="w-full border rounded-lg px-4 py-2"><?= htmlspecialchars($current_user['partner_preference'] ?? '') ?></textarea></div>
                         
                         <!-- Widow/Divorce -->
                         <div><label class="block text-gray-700 font-medium mb-2">Widow / Divorce *</label>
@@ -504,9 +504,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div><label class="block text-gray-700 font-medium mb-2">Candidate Occupation (व्यवसाय) *</label>
                             <div class="flex gap-4"><label><input type="radio" name="occupation" value="Job" required> Job</label><label><input type="radio" name="occupation" value="Business"> Business</label><label><input type="radio" name="occupation" value="Other"> Other</label></div>
                         </div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Candidate Annual Income (वार्षिक आय) *</label><input type="number" name="annual_income" min="0" step="1" required placeholder="Yearly income amount (e.g., 500000)" class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Company/Firm Name (Optional)</label><input type="text" name="company_name" class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Designation (Optional)</label><input type="text" name="designation" class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Candidate Annual Income (वार्षिक आय) *</label><input type="number" name="annual_income" value="<?= htmlspecialchars($current_user['monthly_income'] ?? '') ?>" value="<?= htmlspecialchars($current_user['monthly_income'] ?? '') ?>" min="0" step="1" required placeholder="Yearly income amount (e.g., 500000)" class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Company/Firm Name (Optional)</label><input type="text" name="company_name" value="<?= htmlspecialchars($current_user['company_name'] ?? '') ?>" value="<?= htmlspecialchars($current_user['company_name'] ?? '') ?>" class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Designation (Optional)</label><input type="text" name="designation" value="<?= htmlspecialchars($current_user['designation'] ?? '') ?>" value="<?= htmlspecialchars($current_user['designation'] ?? '') ?>" class="w-full border rounded-lg px-4 py-2"></div>
                         <?php 
                         if (!empty($customFieldsByGroup['Section 2: Personal Details'])) {
                             foreach ($customFieldsByGroup['Section 2: Personal Details'] as $f) echo renderCustomFieldHTML($f);
@@ -519,21 +519,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="mb-8 pb-4 border-b border-gray-200">
                     <h2 class="text-xl font-bold text-primary mb-4">Section 3: Family Details</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label class="block text-gray-700 font-medium mb-2">Father Name *</label><input type="text" name="father_name" required class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Father Mobile Number *</label><input type="tel" name="father_mobile" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Please enter exactly 10 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Father Income (Optional)</label><input type="number" name="father_income" min="0" step="1" placeholder="Optional" class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Father Name *</label><input type="text" name="father_name" value="<?= htmlspecialchars($current_user['father_name'] ?? '') ?>" value="<?= htmlspecialchars($current_user['father_name'] ?? '') ?>" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Father Mobile Number *</label><input type="tel" name="father_mobile" value="<?= htmlspecialchars($current_user['father_mobile'] ?? '') ?>" value="<?= htmlspecialchars($current_user['father_mobile'] ?? '') ?>" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Please enter exactly 10 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Father Income (Optional)</label><input type="number" name="father_income" value="<?= htmlspecialchars($current_user['father_income'] ?? '') ?>" value="<?= htmlspecialchars($current_user['father_income'] ?? '') ?>" min="0" step="1" placeholder="Optional" class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Father Occupation *</label>
                             <select name="father_occupation" required class="w-full border rounded-lg px-4 py-2">
                                 <option>Job</option><option>Business</option><option>Retired</option><option>Other</option>
                             </select>
                         </div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Mother Name *</label><input type="text" name="mother_name" required class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Mother Mobile Number (Optional)</label><input type="tel" name="mother_mobile" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Please enter exactly 10 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Mother Name *</label><input type="text" name="mother_name" value="<?= htmlspecialchars($current_user['mother_name'] ?? '') ?>" value="<?= htmlspecialchars($current_user['mother_name'] ?? '') ?>" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Mother Mobile Number (Optional)</label><input type="tel" name="mother_mobile" value="<?= htmlspecialchars($current_user['mother_mobile'] ?? '') ?>" value="<?= htmlspecialchars($current_user['mother_mobile'] ?? '') ?>" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Please enter exactly 10 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Mother Occupation (Optional)</label>
                             <select name="mother_occupation" id="mother_occupation" class="w-full border rounded-lg px-4 py-2">
                                 <option value="House Wife">House Wife</option><option value="Job">Job</option><option value="Business">Business</option><option value="Other">Other</option>
                             </select>
-                            <input type="text" name="mother_occupation_details" id="mother_occupation_details" placeholder="Please specify details" class="w-full border rounded-lg px-4 py-2 mt-2 hidden">
+                            <input type="text" name="mother_occupation_details" value="<?= htmlspecialchars($current_user['mother_occupation_details'] ?? '') ?>" value="<?= htmlspecialchars($current_user['mother_occupation_details'] ?? '') ?>" id="mother_occupation_details" placeholder="Please specify details" class="w-full border rounded-lg px-4 py-2 mt-2 hidden">
                         </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Brothers *</label>
                             <select name="brothers" required class="w-full border rounded-lg px-4 py-2">
@@ -593,15 +593,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <!-- Mandir Details -->
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Temple Name (मंदिर का नाम) *</label>
-                            <input type="text" name="mandir_name" required class="w-full border rounded-lg px-4 py-2" placeholder="Shri Digambar Jain Mandir">
+                            <input type="text" name="mandir_name" value="<?= htmlspecialchars($current_user['mandir_name'] ?? '') ?>" value="<?= htmlspecialchars($current_user['mandir_name'] ?? '') ?>" required class="w-full border rounded-lg px-4 py-2" placeholder="Shri Digambar Jain Mandir">
                         </div>
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Temple Address (मंदिर का पता) *</label>
-                            <textarea name="mandir_address" required rows="2" class="w-full border rounded-lg px-4 py-2"></textarea>
+                            <textarea name="mandir_address" required rows="2" class="w-full border rounded-lg px-4 py-2"><?= htmlspecialchars($current_user['mandir_address'] ?? '') ?></textarea>
                         </div>
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Temple Pincode (मंदिर का पिनकोड) *</label>
-                            <input type="text" name="mandir_pincode" pattern="[0-9]{4,6}" maxlength="6" minlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border rounded-lg px-4 py-2">
+                            <input type="text" name="mandir_pincode" value="<?= htmlspecialchars($current_user['mandir_pincode'] ?? '') ?>" value="<?= htmlspecialchars($current_user['mandir_pincode'] ?? '') ?>" pattern="[0-9]{4,6}" maxlength="6" minlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border rounded-lg px-4 py-2">
                         </div>
                     </div>
 
@@ -624,11 +624,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <div class="space-y-3">
                                     <div>
                                         <label class="block text-sm text-gray-700 font-medium mb-1">Full Name *</label>
-                                        <input type="text" name="ref1_name" required class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
+                                        <input type="text" name="ref1_name" value="<?= htmlspecialchars($current_user['ref1_name'] ?? '') ?>" value="<?= htmlspecialchars($current_user['ref1_name'] ?? '') ?>" required class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
                                     </div>
                                     <div>
                                         <label class="block text-sm text-gray-700 font-medium mb-1">Mobile Number *</label>
-                                        <input type="tel" name="ref1_mobile" required pattern="[0-9]{10}" maxlength="10" minlength="10" title="Exactly 10 digit mobile number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
+                                        <input type="tel" name="ref1_mobile" value="<?= htmlspecialchars($current_user['ref1_mobile'] ?? '') ?>" value="<?= htmlspecialchars($current_user['ref1_mobile'] ?? '') ?>" required pattern="[0-9]{10}" maxlength="10" minlength="10" title="Exactly 10 digit mobile number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
                                     </div>
                                 </div>
                             </div>
@@ -642,11 +642,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <div class="space-y-3">
                                     <div>
                                         <label class="block text-sm text-gray-700 font-medium mb-1">Full Name *</label>
-                                        <input type="text" name="ref2_name" required class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
+                                        <input type="text" name="ref2_name" value="<?= htmlspecialchars($current_user['ref2_name'] ?? '') ?>" value="<?= htmlspecialchars($current_user['ref2_name'] ?? '') ?>" required class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
                                     </div>
                                     <div>
                                         <label class="block text-sm text-gray-700 font-medium mb-1">Mobile Number *</label>
-                                        <input type="tel" name="ref2_mobile" required pattern="[0-9]{10}" maxlength="10" minlength="10" title="Exactly 10 digit mobile number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
+                                        <input type="tel" name="ref2_mobile" value="<?= htmlspecialchars($current_user['ref2_mobile'] ?? '') ?>" value="<?= htmlspecialchars($current_user['ref2_mobile'] ?? '') ?>" required pattern="[0-9]{10}" maxlength="10" minlength="10" title="Exactly 10 digit mobile number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
                                     </div>
                                 </div>
                             </div>
@@ -971,24 +971,116 @@ document.addEventListener("DOMContentLoaded", function() {
     const currentName = "<?= addslashes($current_user['full_name']) ?>";
     const currentMobile = "<?= addslashes($current_user['mobile']) ?>";
 
-    // Clear saved data if it belongs to a different user
-    if (savedData) {
-        try {
-            const parsed = JSON.parse(savedData);
-            if (parsed['full_name'] !== currentName || parsed['mobile'] !== currentMobile) {
-                sessionStorage.removeItem("registrationFormData");
-            }
-        } catch(e) {
-            sessionStorage.removeItem("registrationFormData");
+    <?php 
+    $dbData = [
+        'is_digambar' => 'yes',
+        'filled_by' => $current_user['filled_by'] ?? '',
+        'gender' => $current_user['gender'] ?? '',
+        'full_name' => $current_user['full_name'] ?? '',
+        'mobile' => $current_user['mobile'] ?? '',
+        'email' => $current_user['email'] ?? '',
+        'birth_date' => $current_user['birth_date'] ?? '',
+        'birth_place' => $current_user['birth_place'] ?? '',
+        'native' => $current_user['native_place'] ?? '',
+        'gotra' => $current_user['gotra'] ?? '',
+        'mama_gotra' => $current_user['mama_gotra'] ?? '',
+        'manglik' => $current_user['manglik'] ?? '',
+        'height' => $current_user['height'] ?? '',
+        'weight' => $current_user['weight'] ?? '',
+        'permanent_address' => $current_user['permanent_address'] ?? '',
+        'pin_code' => $current_user['pin_code'] ?? '',
+        'current_address' => $current_user['current_address'] ?? '',
+        'education' => $current_user['higher_education'] ?? '',
+        'hobbies' => $current_user['hobbies'] ?? '',
+        'partner_preference' => $current_user['partner_preference'] ?? '',
+        'marital_status' => $current_user['marital_status'] ?? '',
+        'handicapped' => $current_user['handicapped'] ?? '',
+        'languages' => explode(',', $current_user['languages'] ?? ''),
+        'occupation' => $current_user['occupation'] ?? '',
+        'annual_income' => $current_user['monthly_income'] ?? '',
+        'company_name' => $current_user['company_name'] ?? '',
+        'designation' => $current_user['designation'] ?? '',
+        'father_name' => $current_user['father_name'] ?? '',
+        'father_mobile' => $current_user['father_mobile'] ?? '',
+        'father_income' => $current_user['father_income'] ?? '',
+        'father_occupation' => $current_user['father_occupation'] ?? '',
+        'mother_name' => $current_user['mother_name'] ?? '',
+        'mother_mobile' => $current_user['mother_mobile'] ?? '',
+        'mother_occupation' => $current_user['mother_occupation'] ?? '',
+        'mother_occupation_details' => $current_user['mother_occupation_details'] ?? '',
+        'brothers' => $current_user['brothers'] ?? '',
+        'brothers_married' => $current_user['brothers_married'] ?? '',
+        'brothers_unmarried' => $current_user['brothers_unmarried'] ?? '',
+        'sisters' => $current_user['sisters'] ?? '',
+        'sisters_married' => $current_user['sisters_married'] ?? '',
+        'sisters_unmarried' => $current_user['sisters_unmarried'] ?? '',
+        'mandir_name' => $current_user['mandir_name'] ?? '',
+        'mandir_address' => $current_user['mandir_address'] ?? '',
+        'mandir_pincode' => $current_user['mandir_pincode'] ?? '',
+        'ref1_name' => $current_user['ref1_name'] ?? '',
+        'ref1_mobile' => $current_user['ref1_mobile'] ?? '',
+        'ref2_name' => $current_user['ref2_name'] ?? '',
+        'ref2_mobile' => $current_user['ref2_mobile'] ?? '',
+        'profile_photo_drive_url' => $current_user['profile_photo_drive_url'] ?? '',
+        'payment_proof_drive_url' => $current_user['payment_proof_drive_url'] ?? '',
+        'id_proof_type' => $current_user['id_proof_type'] ?? '',
+    ];
+
+    if(!empty($current_user['birth_time'])) {
+        $bt_parts = explode(':', $current_user['birth_time']);
+        if(count($bt_parts) >= 2) {
+            $dbData['birth_time_hh'] = $bt_parts[0];
+            $bt_rest = explode(' ', $bt_parts[1]);
+            $dbData['birth_time_mm'] = $bt_rest[0];
+            $dbData['birth_time_ampm'] = isset($bt_rest[1]) ? $bt_rest[1] : '';
         }
     }
 
-    const freshData = sessionStorage.getItem("registrationFormData");
-    if (freshData) {
+    $cast = $current_user['cast'] ?? '';
+    if (in_array($cast, ['Digambar Jain'])) {
+        $dbData['cast'] = $cast;
+    } else {
+        $dbData['cast'] = 'Other';
+        $dbData['custom_cast'] = $cast;
+    }
+
+    $subcast = $current_user['subcast'] ?? '';
+    if (in_array($subcast, ['Khandelwal', 'Agrawal', 'Oswal', 'Porwal', 'Golalare', 'Humad', 'Bagherwal', 'Chaturth', 'Pancham'])) {
+        $dbData['subcast'] = $subcast;
+    } else if (!empty($subcast)) {
+        $dbData['subcast'] = 'Other';
+        $dbData['custom_subcast'] = $subcast;
+    }
+
+    // Languages: extract 'Other' languages
+    $standard_langs = ['Gujarati', 'Hindi', 'English'];
+    $other_langs = [];
+    $langs_known = explode(',', $current_user['languages'] ?? '');
+    foreach($langs_known as $l) {
+        $l = trim($l);
+        if(!empty($l) && !in_array($l, $standard_langs)) {
+            $other_langs[] = $l;
+        }
+    }
+    if(count($other_langs) > 0) {
+        $dbData['languages'][] = 'Other';
+        $dbData['other_language'] = implode(', ', $other_langs);
+    }
+    ?>
+
+    // Directly populate the form with DB data on load
+    const dbData = <?= json_encode($dbData, JSON_INVALID_UTF8_SUBSTITUTE | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?: '{}' ?>;
+    
+    if (dbData) {
         try {
-            const data = JSON.parse(freshData);
+            const data = dbData;
             Object.keys(data).forEach(key => {
-                const input = form.elements[key];
+                // Handle array names (e.g. languages[])
+                let input = form.elements[key];
+                if (!input && Array.isArray(data[key])) {
+                    input = form.elements[key + '[]'];
+                }
+                
                 if (input) {
                     // Skip readonly fields — always use server value
                     if (input.readOnly || input.hasAttribute('readonly')) return;
