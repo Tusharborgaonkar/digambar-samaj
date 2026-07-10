@@ -1,4 +1,7 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require_once 'includes/db.php';
 
 // Fetch settings
@@ -256,7 +259,8 @@ include 'includes/header.php';
                 $stmt = $pdo->prepare("SELECT status FROM users WHERE id = ?");
                 $stmt->execute([$_SESSION['user_id']]);
                 $user_status = $stmt->fetchColumn();
-                if ($user_status === 'approved') {
+                // 'approved' = profile publicly visible; 'account_approved' = account verified, can view photos
+                if (in_array($user_status, ['approved', 'account_approved'])) {
                     $is_approved = true;
                 }
             } else if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
@@ -264,10 +268,11 @@ include 'includes/header.php';
                 $is_approved = true;
             }
 
-            // Fetch 4 latest approved profiles based on selected gender
-            // Map UI labels to actual DB enum values: Bride->Female, Groom->Male
+            // Fetch 4 latest profiles based on selected gender
+            // Show 'approved' profiles + 'pending' (form submitted, awaiting profile approval)
+            // Cards show as blurred/locked for non-logged-in visitors
             $gender_db = ($latest_gender === 'Bride') ? 'Female' : 'Male';
-            $stmt = $pdo->prepare("SELECT * FROM users WHERE status = 'approved' AND gender = ? ORDER BY id DESC LIMIT 4");
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE status IN ('approved', 'pending') AND gender = ? ORDER BY id DESC LIMIT 4");
             $stmt->execute([$gender_db]);
             $index_profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

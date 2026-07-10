@@ -11,7 +11,8 @@ if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) 
     $stmt = $pdo->prepare("SELECT status FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     $user_status = $stmt->fetchColumn();
-    if ($user_status === 'approved') {
+    // 'approved' = profile publicly visible; 'account_approved' = account verified, can view photos
+    if (in_array($user_status, ['approved', 'account_approved'])) {
         $is_approved = true;
     }
 } else if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
@@ -42,7 +43,8 @@ if (!$is_logged_in && $page > 1) {
 include 'includes/header.php'; 
 
 // Build Dynamic Query
-$where = ["status = 'approved'", "is_public = 1"];
+// Show 'approved' + 'pending' profiles (pending = form submitted, awaiting admin profile approval)
+$where = ["status IN ('approved', 'pending')", "is_public = 1"];
 $params = [];
 
 $genderFilter = $_GET['gender'] ?? 'Bride';
