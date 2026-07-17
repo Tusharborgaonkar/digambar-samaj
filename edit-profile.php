@@ -626,13 +626,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <input type="text" name="mother_occupation_details" value="<?= htmlspecialchars($current_user['mother_occupation_details'] ?? '') ?>" id="mother_occupation_details" placeholder="Please specify details" class="w-full border rounded-lg px-4 py-2 mt-2 <?= $isOtherMOcc ? '' : 'hidden' ?>">
                         </div>
                         
-                        <?php $bros = $current_user['brothers'] ?? ''; ?>
-                        <div><label class="block text-gray-700 font-medium mb-2">Brothers *</label>
-                            <select name="brothers" required class="w-full border rounded-lg px-4 py-2">
-                                <?php for($i=0;$i<=5;$i++) echo "<option" . ($bros == $i && $bros !== '' ? ' selected' : '') . ">$i</option>"; ?>
-                            </select>
-                        </div>
-                        
                         <?php $brosM = $current_user['brothers_married'] ?? ''; ?>
                         <div><label class="block text-gray-700 font-medium mb-2">Brothers Married Count (Optional)</label>
                             <select name="brothers_married" class="w-full border rounded-lg px-4 py-2">
@@ -646,11 +639,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <?php for($i=0;$i<=5;$i++) echo "<option" . ($brosU == $i && $brosU !== '' ? ' selected' : '') . ">$i</option>"; ?>
                             </select>
                         </div>
-                        
-                        <?php $sis = $current_user['sisters'] ?? ''; ?>
-                        <div><label class="block text-gray-700 font-medium mb-2">Sisters *</label>
-                            <select name="sisters" required class="w-full border rounded-lg px-4 py-2">
-                                <?php for($i=0;$i<=5;$i++) echo "<option" . ($sis == $i && $sis !== '' ? ' selected' : '') . ">$i</option>"; ?>
+
+                        <?php $bros = $current_user['brothers'] ?? ''; ?>
+                        <div><label class="block text-gray-700 font-medium mb-2">Total Brothers *</label>
+                            <select name="brothers" required class="w-full border rounded-lg px-4 py-2">
+                                <?php for($i=0;$i<=5;$i++) echo "<option" . ($bros == $i && $bros !== '' ? ' selected' : '') . ">$i</option>"; ?>
                             </select>
                         </div>
                         
@@ -665,6 +658,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div><label class="block text-gray-700 font-medium mb-2">Sisters Unmarried Count (Optional)</label>
                             <select name="sisters_unmarried" class="w-full border rounded-lg px-4 py-2">
                                 <?php for($i=0;$i<=5;$i++) echo "<option" . ($sisU == $i && $sisU !== '' ? ' selected' : '') . ">$i</option>"; ?>
+                            </select>
+                        </div>
+
+                        <?php $sis = $current_user['sisters'] ?? ''; ?>
+                        <div><label class="block text-gray-700 font-medium mb-2">Total Sisters *</label>
+                            <select name="sisters" required class="w-full border rounded-lg px-4 py-2">
+                                <?php for($i=0;$i<=5;$i++) echo "<option" . ($sis == $i && $sis !== '' ? ' selected' : '') . ">$i</option>"; ?>
                             </select>
                         </div>
                         <?php 

@@ -536,25 +536,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </select>
                             <input type="text" name="mother_occupation_details" id="mother_occupation_details" placeholder="Please specify details" class="w-full border rounded-lg px-4 py-2 mt-2 hidden">
                         </div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Brothers *</label>
-                            <select name="brothers" required class="w-full border rounded-lg px-4 py-2">
-                                <?php for($i=0;$i<=5;$i++) echo "<option>$i</option>"; ?>
-                            </select>
-                        </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Brothers Married Count (Optional)</label>
                             <select name="brothers_married" class="w-full border rounded-lg px-4 py-2"><option>0</option><?php for($i=1;$i<=5;$i++) echo "<option>$i</option>"; ?></select>
                         </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Brothers Unmarried Count (Optional)</label>
                             <select name="brothers_unmarried" class="w-full border rounded-lg px-4 py-2"><option>0</option><?php for($i=1;$i<=5;$i++) echo "<option>$i</option>"; ?></select>
                         </div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Sisters *</label>
-                            <select name="sisters" required class="w-full border rounded-lg px-4 py-2"><?php for($i=0;$i<=5;$i++) echo "<option>$i</option>"; ?></select>
+                        <div><label class="block text-gray-700 font-medium mb-2">Total Brothers *</label>
+                            <select name="brothers" required class="w-full border rounded-lg px-4 py-2">
+                                <?php for($i=0;$i<=5;$i++) echo "<option>$i</option>"; ?>
+                            </select>
                         </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Sisters Married Count (Optional)</label>
                             <select name="sisters_married" class="w-full border rounded-lg px-4 py-2"><option>0</option><?php for($i=1;$i<=5;$i++) echo "<option>$i</option>"; ?></select>
                         </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Sisters Unmarried Count (Optional)</label>
                             <select name="sisters_unmarried" class="w-full border rounded-lg px-4 py-2"><option>0</option><?php for($i=1;$i<=5;$i++) echo "<option>$i</option>"; ?></select>
+                        </div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Total Sisters *</label>
+                            <select name="sisters" required class="w-full border rounded-lg px-4 py-2"><?php for($i=0;$i<=5;$i++) echo "<option>$i</option>"; ?></select>
                         </div>
                         <?php 
                         if (!empty($customFieldsByGroup['Family Details'])) {
