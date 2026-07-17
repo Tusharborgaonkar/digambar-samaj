@@ -779,14 +779,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <!-- Candidate Photo is ALWAYS required -->
                             <div>
-                                <label class="block text-gray-700 font-medium mb-2">Candidate Photo * (Passport size photo, max 10MB)</label>
-                                <input type="file" name="photo" accept="image/*" required class="w-full border rounded-lg px-4 py-2">
+                                <label class="block text-gray-700 font-medium mb-2">Candidate Photo <?= $is_edit ? '' : '*' ?> (Passport size photo, max 10MB)</label>
+                                <?php if ($is_edit && !empty($current_user['profile_photo'])): ?>
+                                    <div class="mb-2">
+                                        <img src="<?= htmlspecialchars($current_user['profile_photo']) ?>" class="w-24 h-24 object-cover border rounded" alt="Profile Photo">
+                                    </div>
+                                <?php endif; ?>
+                                <input type="file" name="photo" accept="image/*" <?= $is_edit ? '' : 'required' ?> class="w-full border rounded-lg px-4 py-2">
                             </div>
                             
                             <?php if (!isset($coreFieldsSettings['family_photo']) || $coreFieldsSettings['family_photo']['is_visible']): ?>
                             <div>
-                                <label class="block text-gray-700 font-medium mb-2">Family Photo <?= (isset($coreFieldsSettings['family_photo']) && $coreFieldsSettings['family_photo']['is_required']) ? '*' : '(Optional)' ?> (Max 10MB)</label>
-                                <input type="file" name="family_photo" accept="image/*" <?= (isset($coreFieldsSettings['family_photo']) && $coreFieldsSettings['family_photo']['is_required']) ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
+                                <label class="block text-gray-700 font-medium mb-2">Family Photo <?= (isset($coreFieldsSettings['family_photo']) && $coreFieldsSettings['family_photo']['is_required'] && !$is_edit) ? '*' : '(Optional)' ?> (Max 10MB)</label>
+                                <?php if ($is_edit && !empty($current_user['family_photo'])): ?>
+                                    <div class="mb-2">
+                                        <img src="<?= htmlspecialchars($current_user['family_photo']) ?>" class="w-32 h-24 object-cover border rounded" alt="Family Photo">
+                                    </div>
+                                <?php endif; ?>
+                                <input type="file" name="family_photo" accept="image/*" <?= (isset($coreFieldsSettings['family_photo']) && $coreFieldsSettings['family_photo']['is_required'] && !$is_edit) ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
                             </div>
                             <?php endif; ?>
 
@@ -813,8 +823,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-gray-700 font-medium mb-2">Upload ID Proof * (Max 5MB)</label>
-                                        <input type="file" name="id_proof_path" accept="image/*,.pdf" required class="w-full border rounded-lg px-4 py-2">
+                                        <label class="block text-gray-700 font-medium mb-2">Upload ID Proof <?= $is_edit ? '' : '*' ?> (Max 5MB)</label>
+                                        <?php if ($is_edit && !empty($current_user['id_proof_path'])): ?>
+                                            <div class="mb-2">
+                                                <a href="<?= htmlspecialchars($current_user['id_proof_path']) ?>" target="_blank" class="text-blue-500 underline text-sm">View Current ID Proof</a>
+                                            </div>
+                                        <?php endif; ?>
+                                        <input type="file" name="id_proof_path" accept="image/*,.pdf" <?= $is_edit ? '' : 'required' ?> class="w-full border rounded-lg px-4 py-2">
                                     </div>
                                 </div>
                             </div>
@@ -839,8 +854,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="grid grid-cols-1 gap-4">
 
                         <?php if (isset($coreFieldsSettings['payment_screenshot']) && $coreFieldsSettings['payment_screenshot']['is_visible']): ?>
-                        <div id="payment_screenshot_container" class="hidden">
-                            <label class="block text-gray-700 font-medium mb-2">Payment Screenshot (Transaction ID) *</label>
+                        <div id="payment_screenshot_container" class="<?= ($is_edit && !empty($current_user['payment_screenshot'])) ? '' : 'hidden' ?>">
+                            <label class="block text-gray-700 font-medium mb-2">Payment Screenshot (Transaction ID) <?= $is_edit ? '' : '*' ?></label>
+                            <?php if ($is_edit && !empty($current_user['payment_screenshot'])): ?>
+                                <div class="mb-2">
+                                    <a href="<?= htmlspecialchars($current_user['payment_screenshot']) ?>" target="_blank" class="text-blue-500 underline text-sm">View Current Payment Screenshot</a>
+                                </div>
+                            <?php endif; ?>
                             <input type="file" name="payment_screenshot" id="payment_screenshot" accept="image/*" class="w-full border rounded-lg px-4 py-2">
                         </div>
                         <?php endif; ?>
