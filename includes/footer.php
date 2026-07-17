@@ -29,7 +29,6 @@ $whatsapp_number = preg_replace('/[^0-9]/', '', $contact_phone);
                     <ul class="space-y-2">
                         <li><a href="about.php" class="text-gray-300 hover:text-accent transition">About Us</a></li>
                         <li><a href="community.php" class="text-gray-300 hover:text-accent transition">Community</a></li>
-                        <li><a href="pre-register.php" class="text-gray-300 hover:text-accent transition">Registration</a></li>
                         <li><a href="success-stories.php" class="text-gray-300 hover:text-accent transition">Success Stories</a></li>
                     </ul>
                 </div>
@@ -122,9 +121,9 @@ $whatsapp_number = preg_replace('/[^0-9]/', '', $contact_phone);
                 });
             }
             
-            // Initialize Swiper
-            if(document.querySelector('.swiper')) {
-                new Swiper('.swiper', {
+            // Initialize General Swiper (e.g. for Profiles)
+            if(document.querySelector('.swiper:not(.hero-ad-swiper)')) {
+                new Swiper('.swiper:not(.hero-ad-swiper)', {
                     slidesPerView: 1,
                     spaceBetween: 30,
                     loop: true,
@@ -140,6 +139,27 @@ $whatsapp_number = preg_replace('/[^0-9]/', '', $contact_phone);
                         768: { slidesPerView: 2 },
                         1024: { slidesPerView: 3 },
                     }
+                });
+            }
+            
+            // Initialize Hero Ad Swiper
+            if(document.querySelector('.hero-ad-swiper')) {
+                new Swiper('.hero-ad-swiper', {
+                    slidesPerView: 1,
+                    spaceBetween: 0,
+                    loop: true,
+                    autoplay: {
+                        delay: 4000,
+                        disableOnInteraction: false,
+                    },
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true,
+                    },
+                    navigation: {
+                        nextEl: '.swiper-button-next',
+                        prevEl: '.swiper-button-prev',
+                    },
                 });
             }
             

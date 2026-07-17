@@ -1091,6 +1091,25 @@ document.getElementById('registrationForm')?.addEventListener('submit', function
         return;
     }
 
+    // Validate 10-digit mobile numbers
+    let isValid = true;
+    const phoneFields = ['mobile', 'father_mobile', 'mother_mobile', 'ref1_mobile', 'ref2_mobile'];
+    phoneFields.forEach(name => {
+        const field = document.querySelector(`input[name="${name}"]`);
+        if (field && field.value && field.value.length !== 10) {
+            isValid = false;
+            field.classList.add('border-red-500');
+        } else if (field) {
+            field.classList.remove('border-red-500');
+        }
+    });
+    
+    if (!isValid) {
+        e.preventDefault();
+        Swal.fire({icon: 'error', title: 'Invalid Mobile', text: 'Please ensure all mobile numbers are exactly 10 digits.'});
+        return false;
+    }
+
     // Prevent multiple submissions
     const submitBtn = this.querySelector('button[type="submit"]');
     if (submitBtn) {
@@ -1303,6 +1322,38 @@ document.addEventListener("DOMContentLoaded", function() {
             this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
         });
     }
+
+    // Dynamic Brothers and Sisters Count
+    function updateSiblingTotal(type) {
+        const marriedSelect = document.querySelector(`select[name="${type}_married"]`);
+        const unmarriedSelect = document.querySelector(`select[name="${type}_unmarried"]`);
+        const totalSelect = document.querySelector(`select[name="${type}"]`);
+        
+        if (marriedSelect && unmarriedSelect && totalSelect) {
+            const married = parseInt(marriedSelect.value) || 0;
+            const unmarried = parseInt(unmarriedSelect.value) || 0;
+            let total = married + unmarried;
+            if (total > 5) total = 5; // Max limit as per options
+            totalSelect.value = total;
+            totalSelect.setAttribute('readonly', true);
+            totalSelect.classList.add('bg-gray-100'); // Make it look disabled
+        }
+    }
+    
+    ['brothers', 'sisters'].forEach(type => {
+        const married = document.querySelector(`select[name="${type}_married"]`);
+        const unmarried = document.querySelector(`select[name="${type}_unmarried"]`);
+        if (married) married.addEventListener('change', () => updateSiblingTotal(type));
+        if (unmarried) unmarried.addEventListener('change', () => updateSiblingTotal(type));
+        
+        // Disable manual change on total if JS is active
+        const total = document.querySelector(`select[name="${type}"]`);
+        if(total) {
+            total.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+            });
+        }
+    });
 });
 </script>
 

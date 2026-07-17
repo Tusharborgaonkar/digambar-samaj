@@ -65,71 +65,18 @@ try {
     $error_msg = "Failed to fetch stories: " . $e->getMessage();
     $stories = [];
 }
+$current_page = 'success-stories.php';
+include 'includes/header.php';
+include 'includes/sidebar.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manage Success Stories - Admin Panel</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <?php if (!empty($success_msg)): ?>
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: '<?= htmlspecialchars(addslashes($success_msg)) ?>',
-                    timer: 3000,
-                    showConfirmButton: false
-                });
-            });
-        </script>
-    <?php endif; ?>
-    <?php if (!empty($error_msg)): ?>
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: '<?= htmlspecialchars(addslashes($error_msg)) ?>'
-                });
-            });
-        </script>
-    <?php endif; ?>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#E53E3E',
-                        secondary: '#ED8936',
-                        dark: '#2D3748',
-                        light: '#F7FAFC',
-                        admin_sidebar: '#1E293B',
-                        accent: '#F6E05E',
-                    }
-                }
-            }
-        }
-    </script>
-</head>
-<body class="bg-gray-100 font-sans flex h-screen overflow-hidden">
-    <?php include 'includes/sidebar.php'; ?>
 
-    <div class="flex-1 flex flex-col h-screen overflow-hidden pt-16 md:pt-0">
-        <!-- Header placeholder if sidebar doesn't include it fully, though sidebar.php includes header structure, we close the wrapper at the bottom. -->
-        <!-- Since sidebar.php includes `<main class="flex-1 overflow-x-hidden overflow-y-auto bg-light p-6">`, we just write content here -->
-        
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold text-gray-800">Manage Success Stories</h1>
-        </div>
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Manage Success Stories</h1>
+</div>
 
-        <div class="bg-white rounded-xl shadow-md overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
+<div class="bg-white rounded-xl shadow-md overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Photo</th>
@@ -203,9 +150,6 @@ try {
                     </tbody>
                 </table>
             </div>
-        </div>
-
-</main>
 </div>
 
 <!-- Story Modal -->
@@ -247,14 +191,6 @@ try {
             closeModal();
         }
     });
-
-    document.getElementById('mobileMenuBtn')?.addEventListener('click', function() {
-        const sidebar = document.querySelector('aside');
-        sidebar.classList.toggle('hidden');
-        sidebar.classList.toggle('absolute');
-        sidebar.classList.toggle('z-40');
-        sidebar.classList.toggle('h-full');
-    });
 </script>
-</body>
-</html>
+
+<?php include 'includes/footer.php'; ?>

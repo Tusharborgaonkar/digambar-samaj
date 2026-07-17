@@ -79,7 +79,7 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <!-- Upload Form -->
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
     <h4 class="font-bold text-gray-800 mb-4"><i class="fas fa-upload mr-2 text-primary"></i> Upload New Photo</h4>
-    <form action="" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row gap-4 items-end">
+    <form id="galleryUploadForm" action="" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row gap-4 items-end">
         <div class="flex-1 w-full">
             <label class="block text-sm font-medium text-gray-700 mb-1">Select Photo</label>
             <input type="file" name="photo" required accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg">
@@ -105,6 +105,16 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </form>
 </div>
+
+<script>
+    document.getElementById('galleryUploadForm').addEventListener('submit', function() {
+        const btn = this.querySelector('button[type="submit"]');
+        if(btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Uploading...';
+        }
+    });
+</script>
 
 <!-- Photos Grid -->
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">

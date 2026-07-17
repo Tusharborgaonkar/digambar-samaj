@@ -14,7 +14,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     </div>
 
     <!-- Navigation Menu -->
-    <div class="flex-1 overflow-y-auto sidebar-scroll py-4">
+    <div class="flex-1 overflow-y-auto sidebar-scroll py-4" id="adminSidebarScroll">
         <nav class="space-y-1 px-3">
             
             <a href="dashboard.php" class="flex items-center px-3 py-2.5 rounded-md transition-colors <?= $current_page == 'dashboard.php' ? 'bg-primary text-white font-semibold' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
@@ -112,6 +112,24 @@ $current_page = basename($_SERVER['PHP_SELF']);
         </nav>
     </div>
 </aside>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const sidebarScroll = document.getElementById('adminSidebarScroll');
+        if (sidebarScroll) {
+            // Restore scroll position
+            const scrollPos = sessionStorage.getItem('adminSidebarScrollPos');
+            if (scrollPos) {
+                sidebarScroll.scrollTop = parseInt(scrollPos, 10);
+            }
+            
+            // Save scroll position on scroll
+            sidebarScroll.addEventListener('scroll', function() {
+                sessionStorage.setItem('adminSidebarScrollPos', sidebarScroll.scrollTop);
+            });
+        }
+    });
+</script>
 
 <!-- Mobile Header / Hamburger -->
 <div class="md:hidden bg-admin_sidebar text-white h-16 flex items-center justify-between px-4 fixed w-full z-30">

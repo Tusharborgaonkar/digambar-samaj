@@ -4,18 +4,24 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 require_once 'includes/db.php';
 
-// Ensure user is logged in
-if (!isset($_SESSION['user_logged_in']) && !isset($_SESSION['admin_logged_in'])) {
-    header("HTTP/1.1 403 Forbidden");
-    exit('Access Denied');
-}
-
 // Get the requested file
 $file = $_GET['file'] ?? '';
 
 if (empty($file)) {
     header("HTTP/1.1 400 Bad Request");
     exit('File not specified');
+}
+
+// Allow public access to specific directories without login
+$is_public = false;
+if (strpos($file, 'uploads/advertisements') === 0 || strpos($file, 'uploads/gallery') === 0) {
+    $is_public = true;
+}
+
+// Ensure user is logged in for protected files
+if (!$is_public && !isset($_SESSION['user_logged_in']) && !isset($_SESSION['admin_logged_in'])) {
+    header("HTTP/1.1 403 Forbidden");
+    exit('Access Denied');
 }
 
 // Ensure the path is within allowed directories (uploads/ or imports/)

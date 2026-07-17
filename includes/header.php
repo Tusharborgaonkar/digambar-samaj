@@ -298,7 +298,7 @@ if ($is_logged_in && isset($_SESSION['user_id'])) {
             <a href="success-stories.php" class="<?= $current_page == 'success-stories.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">Success Story</a>
             <a href="profiles.php" class="<?= $current_page == 'profiles.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">Find Your Match</a>
             <a href="gallery.php" class="<?= $current_page == 'gallery.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">Gallery</a>
-            <a href="news.php" class="<?= $current_page == 'news.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">News & Updates</a>
+            <!-- <a href="news.php" class="<?= $current_page == 'news.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">News & Updates</a> -->
             
             <?php if ($is_logged_in): ?>
                 <a href="my-profile.php" class="<?= $current_page == 'my-profile.php' || $current_page == 'registration.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">My Profile</a>
@@ -335,7 +335,7 @@ if ($is_logged_in && isset($_SESSION['user_id'])) {
                     <a href="success-stories.php" class="<?= $current_page == 'success-stories.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Success Story</a>
                     <a href="profiles.php" class="<?= $current_page == 'profiles.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Find Your Match</a>
                     <a href="gallery.php" class="<?= $current_page == 'gallery.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Gallery</a>
-                    <a href="news.php" class="<?= $current_page == 'news.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">News & Updates</a>
+                    <!-- <a href="news.php" class="<?= $current_page == 'news.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">News & Updates</a> -->
                     
                     <?php if ($is_logged_in): ?>
                         <a href="my-profile.php" class="<?= $current_page == 'my-profile.php' || $current_page == 'registration.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">My Profile</a>

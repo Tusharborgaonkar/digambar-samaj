@@ -110,9 +110,34 @@ include 'includes/header.php';
                 <p class="text-lg md:text-xl text-gray-200 leading-relaxed max-w-xl md:mx-0">This website is created only for the Digambar Jain community to help eligible young men and women of the entire Digambar Jain society find their suitable life partner.</p>
             </div>
             
-            <!-- Right Side: Image -->
-            <div class="flex justify-center md:justify-end mt-12 md:mt-0">
-                <img src="assets/images/gallery/TEMP1.jpg" alt="Matrimony Couple" class="w-full max-w-[650px] h-auto rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/30 transform hover:scale-[1.02] transition duration-500">
+            <!-- Right Side: Image / Advertisements -->
+            <div class="flex justify-center md:justify-end mt-12 md:mt-0 relative w-full max-w-[650px] mx-auto md:ml-auto md:mr-0">
+                <?php if (!empty($home_top_ads)): ?>
+                    <!-- Swiper Slider for Hero Advertisements -->
+                    <div class="swiper hero-ad-swiper w-full h-auto rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/30 transform hover:scale-[1.02] transition duration-500 overflow-hidden">
+                        <div class="swiper-wrapper">
+                            <?php foreach ($home_top_ads as $ad): 
+                                $adPath = ltrim(str_replace('../', '', $ad['image_path']), '/');
+                                $imgSrc = 'image.php?file=' . urlencode($adPath);
+                            ?>
+                                <div class="swiper-slide cursor-pointer" <?php if(!empty($ad['link_url'])): ?>onclick="window.open('<?= htmlspecialchars($ad['link_url']) ?>', '_blank')"<?php endif; ?>>
+                                    <img src="<?= $imgSrc ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-auto object-cover aspect-video md:aspect-[4/3]">
+                                    <?php if (!empty($ad['title'])): ?>
+                                        <div class="absolute bottom-0 left-0 w-full bg-black/60 p-3 text-white text-center">
+                                            <h4 class="font-bold text-lg"><?= htmlspecialchars($ad['title']) ?></h4>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                        <!-- Navigation arrows -->
+                        <div class="swiper-button-prev !text-white after:!text-xl drop-shadow-md"></div>
+                        <div class="swiper-button-next !text-white after:!text-xl drop-shadow-md"></div>
+                    </div>
+                <?php else: ?>
+                    <img src="assets/images/gallery/TEMP1.jpg" alt="Matrimony Couple" class="w-full h-auto rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/30 transform hover:scale-[1.02] transition duration-500">
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -539,9 +564,9 @@ include 'includes/header.php';
 <!-- News & Updates / Stats Section -->
 <section class="py-16 bg-white">
     <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div class="grid grid-cols-1 gap-12 items-center">
 
-            <!-- News & Updates -->
+            <!-- News & Updates (Commented out)
             <div data-aos="fade-right">
                 <div class="flex justify-between items-center mb-6 border-b pb-2">
                     <h2 class="text-3xl font-bold text-dark flex items-center"><i
@@ -552,9 +577,10 @@ include 'includes/header.php';
                 </div>
 
                 <div class="space-y-4">
-                    <!-- News items will be loaded dynamically from admin panel -->
+                    
                 </div>
             </div>
+            -->
 
             <!-- Stats section -->
             <div class="bg-light p-8 rounded-2xl border border-gray-100" data-aos="fade-left">

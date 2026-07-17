@@ -1098,6 +1098,66 @@ document.addEventListener("DOMContentLoaded", function() {
             this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
         });
     }
+
+    // Dynamic Brothers and Sisters Count
+    function updateSiblingTotal(type) {
+        const marriedSelect = document.querySelector(`select[name="${type}_married"]`);
+        const unmarriedSelect = document.querySelector(`select[name="${type}_unmarried"]`);
+        const totalSelect = document.querySelector(`select[name="${type}"]`);
+        
+        if (marriedSelect && unmarriedSelect && totalSelect) {
+            const married = parseInt(marriedSelect.value) || 0;
+            const unmarried = parseInt(unmarriedSelect.value) || 0;
+            let total = married + unmarried;
+            if (total > 5) total = 5; // Max limit as per options
+            totalSelect.value = total;
+            totalSelect.setAttribute('readonly', true);
+            totalSelect.classList.add('bg-gray-100'); // Make it look disabled
+        }
+    }
+    
+    ['brothers', 'sisters'].forEach(type => {
+        const married = document.querySelector(`select[name="${type}_married"]`);
+        const unmarried = document.querySelector(`select[name="${type}_unmarried"]`);
+        if (married) married.addEventListener('change', () => updateSiblingTotal(type));
+        if (unmarried) unmarried.addEventListener('change', () => updateSiblingTotal(type));
+        
+        // Disable manual change on total if JS is active
+        const total = document.querySelector(`select[name="${type}"]`);
+        if(total) {
+            total.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+            });
+        }
+    });
+
+    // Disable Submit Button on Form Submit to prevent double submission
+    form.addEventListener('submit', function(e) {
+        // Validate 10-digit mobile numbers
+        let isValid = true;
+        phoneFields.forEach(name => {
+            const field = document.querySelector(`input[name="${name}"]`);
+            if (field && field.value && field.value.length !== 10) {
+                isValid = false;
+                field.classList.add('border-red-500');
+                // You could also show a toast or alert here
+            } else if (field) {
+                field.classList.remove('border-red-500');
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert("Please ensure all mobile numbers are exactly 10 digits.");
+            return false;
+        }
+
+        const btn = this.querySelector('button[type="submit"]');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Processing...';
+        }
+    });
 });
 </script>
 
