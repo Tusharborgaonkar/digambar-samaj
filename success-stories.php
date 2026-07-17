@@ -18,7 +18,7 @@ include 'includes/header.php';
                 
                 if (count($stories) > 0) {
                     foreach ($stories as $story): 
-                        $photo = !empty($story['photo']) ? htmlspecialchars($story['photo']) : 'assets/images/placeholder-couple.png';
+                        $photo = !empty($story['photo']) ? 'image.php?file=' . urlencode(ltrim(str_replace('../', '', $story['photo']), '/')) : 'assets/images/placeholder-couple.png';
             ?>
                         <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 group border border-gray-100" data-aos="fade-up">
                             <div class="relative overflow-hidden aspect-[3/4]">

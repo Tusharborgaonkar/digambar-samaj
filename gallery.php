@@ -15,6 +15,35 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </section>
 
+<!-- Photos Section -->
+<section class="py-16 bg-light">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-dark mb-3">Photo Gallery</h2>
+            <div class="w-16 h-1 bg-primary mx-auto"></div>
+            <p class="text-gray-600 mt-4">Glimpses of our community events and gatherings.</p>
+        </div>
+        
+        <?php if(empty($photos)): ?>
+            <p class="text-center text-gray-500">No photos available at the moment.</p>
+        <?php else: ?>
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                <?php foreach($photos as $p): ?>
+                    <a href="image.php?file=<?= urlencode($p['image_path']) ?>" data-fancybox="gallery" data-caption="<?= htmlspecialchars($p['title']) ?>" class="group block overflow-hidden rounded-xl shadow-sm hover:shadow-md transition">
+                        <div class="aspect-w-4 aspect-h-3">
+                            <img src="image.php?file=<?= urlencode($p['image_path']) ?>" alt="<?= htmlspecialchars($p['title']) ?>" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
+                        </div>
+                        <?php if(!empty($p['title'])): ?>
+                            <div class="p-3 bg-white">
+                                <h3 class="text-sm font-semibold text-gray-800 text-center truncate"><?= htmlspecialchars($p['title']) ?></h3>
+                            </div>
+                        <?php endif; ?>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+</section>
 
 <!-- YouTube Videos Section -->
 <section class="py-16 bg-white border-t border-gray-100">

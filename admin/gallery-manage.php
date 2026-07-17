@@ -116,7 +116,7 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
             <?php foreach($photos as $p): ?>
                 <div class="relative group rounded-lg overflow-hidden border border-gray-200">
-                    <img src="../<?= htmlspecialchars($p['image_path']) ?>" alt="<?= htmlspecialchars($p['title']) ?>" class="w-full h-32 object-cover">
+                    <img src="../image.php?file=<?= urlencode($p['image_path']) ?>" alt="<?= htmlspecialchars($p['title']) ?>" class="w-full h-32 object-cover">
                     <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-center items-center">
                         <span class="text-white text-xs text-center px-2 mb-2 font-bold"><?= htmlspecialchars($p['title'] ?: 'No Title') ?></span>
                         <a href="?delete=<?= $p['id'] ?>" onclick="return confirm('Are you sure you want to delete this photo?')" class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600">

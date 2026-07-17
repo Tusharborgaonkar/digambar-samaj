@@ -144,7 +144,7 @@ try {
                         <?php if (count($stories) > 0): ?>
                             <?php foreach ($stories as $story): 
                                 $cleanPath = !empty($story['photo']) ? ltrim(str_replace('../', '', $story['photo']), '/') : '';
-                                $photoPath = !empty($cleanPath) ? '../' . htmlspecialchars($cleanPath) : '../assets/images/placeholder-couple.png';
+                                $photoPath = !empty($cleanPath) ? '../image.php?file=' . urlencode($cleanPath) : '../assets/images/placeholder-couple.png';
                             ?>
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap">

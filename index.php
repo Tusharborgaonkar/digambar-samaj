@@ -256,10 +256,10 @@ include 'includes/header.php';
             <?php 
             $payment_qr_code = $settings['payment_qr_code'] ?? 'assets/images/qr_code.jpg';
             ?>
-            <img src="<?= htmlspecialchars($payment_qr_code) ?>" alt="Payment QR" class="w-48 h-48 border border-yellow-300 rounded shadow-sm">
+            <img src="image.php?file=<?= urlencode($payment_qr_code) ?>" alt="Payment QR" class="w-48 h-48 border border-yellow-300 rounded shadow-sm">
         </div>
         <div class="mt-6">
-            <a href="registration.php" class="inline-block bg-primary text-white px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold">Register Now</a>
+            <a href="pre-register.php" class="inline-block bg-primary text-white px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold">Register Now</a>
         </div>
     </div>
 </section>
@@ -273,10 +273,10 @@ include 'includes/header.php';
             <?php foreach($home_top_ads as $ad): ?>
                 <?php 
                 $img_path = str_replace('../', '', $ad['image']); 
-                $img_src = file_exists($img_path) ? $img_path : 'assets/images/placeholder.jpg';
+                $img_src = 'image.php?file=' . urlencode($img_path);
                 ?>
                 <a href="<?= htmlspecialchars($ad['link'] ?? '#') ?>" target="_blank" class="block w-full max-w-5xl rounded-xl overflow-hidden shadow-md hover:shadow-lg transition">
-                    <img src="<?= htmlspecialchars($img_src) ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-auto object-cover">
+                    <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-auto object-cover">
                 </a>
             <?php endforeach; ?>
         </div>
@@ -612,10 +612,10 @@ include 'includes/header.php';
             <?php foreach($home_bottom_ads as $ad): ?>
                 <?php 
                 $img_path = str_replace('../', '', $ad['image']); 
-                $img_src = file_exists($img_path) ? $img_path : 'assets/images/placeholder.jpg';
+                $img_src = 'image.php?file=' . urlencode($img_path);
                 ?>
                 <a href="<?= htmlspecialchars($ad['link'] ?? '#') ?>" target="_blank" class="block w-full max-w-5xl rounded-xl overflow-hidden shadow-md hover:shadow-lg transition">
-                    <img src="<?= htmlspecialchars($img_src) ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-auto object-cover">
+                    <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-auto object-cover">
                 </a>
             <?php endforeach; ?>
         </div>

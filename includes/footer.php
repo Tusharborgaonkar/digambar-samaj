@@ -29,7 +29,7 @@ $whatsapp_number = preg_replace('/[^0-9]/', '', $contact_phone);
                     <ul class="space-y-2">
                         <li><a href="about.php" class="text-gray-300 hover:text-accent transition">About Us</a></li>
                         <li><a href="community.php" class="text-gray-300 hover:text-accent transition">Community</a></li>
-                        <li><a href="registration.php" class="text-gray-300 hover:text-accent transition">Registration</a></li>
+                        <li><a href="pre-register.php" class="text-gray-300 hover:text-accent transition">Registration</a></li>
                         <li><a href="success-stories.php" class="text-gray-300 hover:text-accent transition">Success Stories</a></li>
                     </ul>
                 </div>

@@ -15,14 +15,15 @@ $current_user = $stmt->fetch();
 
 $full_name = '';
 
-$is_edit = ($current_user && $current_user['status'] === 'approved');
-$new_status = $is_edit ? 'approved' : 'pending';
+$is_edit = ($current_user && in_array($current_user['status'], ['account_approved', 'approved']));
+$new_status = ($current_user && $current_user['status'] === 'approved') ? 'approved' : 'pending';
 
 if (!$current_user || !in_array($current_user['status'], ['account_approved', 'approved'])) {
     if ($current_user && ($current_user['status'] === 'account_pending' || $current_user['status'] === 'pending')) {
         header("Location: waiting-approval.php");
         exit;
     }
+
     header("Location: index.php");
     exit;
 }
@@ -670,7 +671,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <label class="block text-gray-700 font-medium mb-2">Candidate Photo <?= $is_edit ? '' : '*' ?> (Passport size photo, max 10MB)</label>
                                 <?php if ($is_edit && !empty($current_user['profile_photo'])): ?>
                                     <div class="mb-2">
-                                        <img src="image.php?file=<?= urlencode($current_user['profile_photo']) ?>" class="w-24 h-24 object-cover border rounded" alt="Profile Photo">
+                                        <img src="image.php?file=<?= urlencode(str_replace('../', '', $current_user['profile_photo'])) ?>" class="w-24 h-24 object-cover border rounded" alt="Profile Photo">
                                     </div>
                                 <?php endif; ?>
                                 <input type="file" name="photo" accept="image/*" <?= $is_edit ? '' : 'required' ?> class="w-full border rounded-lg px-4 py-2">
@@ -681,7 +682,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <label class="block text-gray-700 font-medium mb-2">Family Photo <?= (isset($coreFieldsSettings['family_photo']) && $coreFieldsSettings['family_photo']['is_required'] && !$is_edit) ? '*' : '(Optional)' ?> (Max 10MB)</label>
                                 <?php if ($is_edit && !empty($current_user['family_photo'])): ?>
                                     <div class="mb-2">
-                                        <img src="image.php?file=<?= urlencode($current_user['family_photo']) ?>" class="w-32 h-24 object-cover border rounded" alt="Family Photo">
+                                        <img src="image.php?file=<?= urlencode(str_replace('../', '', $current_user['family_photo'])) ?>" class="w-32 h-24 object-cover border rounded" alt="Family Photo">
                                     </div>
                                 <?php endif; ?>
                                 <input type="file" name="family_photo" accept="image/*" <?= (isset($coreFieldsSettings['family_photo']) && $coreFieldsSettings['family_photo']['is_required'] && !$is_edit) ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
@@ -713,7 +714,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         <label class="block text-gray-700 font-medium mb-2">Upload ID Proof <?= $is_edit ? '' : '*' ?> (Max 5MB)</label>
                                         <?php if ($is_edit && !empty($current_user['id_proof_path'])): ?>
                                             <div class="mb-2">
-                                                <a href="image.php?file=<?= urlencode($current_user['id_proof_path']) ?>" target="_blank" class="text-blue-500 underline text-sm">View Current ID Proof</a>
+                                                <a href="image.php?file=<?= urlencode(str_replace('../', '', $current_user['id_proof_path'])) ?>" target="_blank" class="text-blue-500 underline text-sm">View Current ID Proof</a>
                                             </div>
                                         <?php endif; ?>
                                         <input type="file" name="id_proof_path" accept="image/*,.pdf" <?= $is_edit ? '' : 'required' ?> class="w-full border rounded-lg px-4 py-2">
@@ -745,7 +746,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <label class="block text-gray-700 font-medium mb-2">Payment Screenshot (Transaction ID) <?= $is_edit ? '' : '*' ?></label>
                             <?php if ($is_edit && !empty($current_user['payment_screenshot'])): ?>
                                 <div class="mb-2">
-                                    <a href="image.php?file=<?= urlencode($current_user['payment_screenshot']) ?>" target="_blank" class="text-blue-500 underline text-sm">View Current Payment Screenshot</a>
+                                    <a href="image.php?file=<?= urlencode(str_replace('../', '', $current_user['payment_screenshot'])) ?>" target="_blank" class="text-blue-500 underline text-sm">View Current Payment Screenshot</a>
                                 </div>
                             <?php endif; ?>
                             <input type="file" name="payment_screenshot" id="payment_screenshot" accept="image/*" class="w-full border rounded-lg px-4 py-2">
