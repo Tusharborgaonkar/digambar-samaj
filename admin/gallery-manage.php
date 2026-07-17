@@ -30,30 +30,7 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-// Handle Upload
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['photo'])) {
-    $title = $_POST['title'] ?? '';
-    $category = $_POST['category'] ?? 'All Photos';
-    
-    $uploadDir = __DIR__ . '/../uploads/gallery/';
-    if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
-    }
-    
-    $fileExt = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
-    $fileName = uniqid() . '.' . $fileExt;
-    $targetPath = $uploadDir . $fileName;
-    
-    if (move_uploaded_file($_FILES['photo']['tmp_name'], $targetPath)) {
-        $dbPath = 'uploads/gallery/' . $fileName;
-        $stmt = $pdo->prepare("INSERT INTO gallery (title, category, image_path) VALUES (?, ?, ?)");
-        $stmt->execute([$title, $category, $dbPath]);
-        header("Location: gallery-manage.php?msg=uploaded");
-        exit;
-    } else {
-        $error = "Failed to upload file. Error Code: " . $_FILES['photo']['error'];
-    }
-}
+
 
 // Fetch photos
 $stmt = $pdo->query("SELECT * FROM gallery ORDER BY created_at DESC");
