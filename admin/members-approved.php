@@ -29,18 +29,45 @@ if ($page < 1) $page = 1;
 
 $offset = ($page - 1) * $limit;
 
+// Search and Sorting settings
+$search = isset($_GET['search']) ? trim($_GET['search']) : '';
+$sort = isset($_GET['sort']) ? $_GET['sort'] : 'created_at';
+$order = isset($_GET['order']) && $_GET['order'] === 'asc' ? 'ASC' : 'DESC';
+
+$valid_sorts = ['name' => 'full_name', 'id' => 'profile_id', 'created_at' => 'created_at'];
+$sort_col = $valid_sorts[$sort] ?? 'created_at';
+
+// Build query
+$whereClause = "WHERE status = 'approved'";
+$params = [];
+if (!empty($search)) {
+    $whereClause .= " AND (full_name LIKE :search OR profile_id LIKE :search OR email LIKE :search OR mobile LIKE :search)";
+    $params[':search'] = '%' . $search . '%';
+}
+
 // Get total approved records
-$countStmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE status = 'approved'");
+$countStmt = $pdo->prepare("SELECT COUNT(*) FROM users $whereClause");
+foreach ($params as $key => $val) {
+    $countStmt->bindValue($key, $val);
+}
 $countStmt->execute();
 $total_records = $countStmt->fetchColumn();
 $total_pages = max(1, ceil($total_records / $limit));
 
 // Fetch approved members from database
-$stmt = $pdo->prepare("SELECT * FROM users WHERE status = 'approved' ORDER BY created_at DESC LIMIT :limit OFFSET :offset");
+$stmt = $pdo->prepare("SELECT * FROM users $whereClause ORDER BY $sort_col $order LIMIT :limit OFFSET :offset");
+foreach ($params as $key => $val) {
+    $stmt->bindValue($key, $val);
+}
 $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
 $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
 $stmt->execute();
 $members = $stmt->fetchAll();
+
+// Preserve query string for pagination and sorting
+$queryString = $_GET;
+unset($queryString['page']); // Remove page to build base URL
+$baseUrl = '?' . http_build_query($queryString) . (!empty($queryString) ? '&' : '');
 
 $start_result = $offset + 1;
 $end_result = min($offset + $limit, $total_records);
@@ -56,12 +83,30 @@ if ($total_records == 0) {
         <h3 class="text-2xl font-bold text-gray-800">Approved Members</h3>
         <p class="text-gray-500 text-sm">Members whose profiles have been verified and approved.</p>
     </div>
-    <div class="flex gap-2">
+    <div class="flex flex-col sm:flex-row gap-2">
+        <form method="GET" class="flex">
+            <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Search name, ID, email..." class="border border-gray-300 rounded-l-lg px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+            <button type="submit" class="bg-primary text-white px-4 py-2 rounded-r-lg hover:bg-opacity-90 transition"><i class="fas fa-search"></i></button>
+            <?php if(!empty($search)): ?>
+                <a href="members-approved.php" class="ml-2 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-300 transition flex items-center">Clear</a>
+            <?php endif; ?>
+        </form>
         <a href="export-members.php?status=approved" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition shadow-sm flex items-center">
             <i class="fas fa-download mr-2"></i> Export
         </a>
     </div>
 </div>
+
+<?php 
+function getSortIcon($col, $current_sort, $current_order) {
+    if ($current_sort !== $col) return '<i class="fas fa-sort text-gray-300 ml-1"></i>';
+    return $current_order === 'ASC' ? '<i class="fas fa-sort-up text-primary ml-1"></i>' : '<i class="fas fa-sort-down text-primary ml-1"></i>';
+}
+function getSortUrl($col, $current_sort, $current_order, $search) {
+    $new_order = ($current_sort === $col && $current_order === 'ASC') ? 'desc' : 'asc';
+    return "?sort=$col&order=$new_order" . (!empty($search) ? "&search=".urlencode($search) : "");
+}
+?>
 
 <!-- Data Table -->
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -72,9 +117,9 @@ if ($total_records == 0) {
                     <th class="py-4 px-6 font-semibold w-16">
                         <input type="checkbox" class="rounded border-gray-300 text-primary focus:ring-primary">
                     </th>
-                    <th class="py-4 px-6 font-semibold">Profile</th>
+                    <th class="py-4 px-6 font-semibold"><a href="<?= getSortUrl('name', $sort, $order, $search) ?>" class="hover:text-primary transition">Profile <?= getSortIcon('name', $sort, $order) ?></a></th>
                     <th class="py-4 px-6 font-semibold">Contact Info</th>
-                    <th class="py-4 px-6 font-semibold">Registration Date</th>
+                    <th class="py-4 px-6 font-semibold"><a href="<?= getSortUrl('created_at', $sort, $order, $search) ?>" class="hover:text-primary transition">Registration Date <?= getSortIcon('created_at', $sort, $order) ?></a></th>
                     <th class="py-4 px-6 font-semibold">Status</th>
                     <th class="py-4 px-6 font-semibold text-right">Actions</th>
                 </tr>
@@ -138,7 +183,7 @@ if ($total_records == 0) {
         </div>
         <div class="flex space-x-1">
             <?php if ($page > 1): ?>
-                <a href="?page=<?= $page - 1 ?>" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50">Previous</a>
+                <a href="<?= $baseUrl ?>page=<?= $page - 1 ?>" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50">Previous</a>
             <?php else: ?>
                 <button class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>Previous</button>
             <?php endif; ?>
@@ -148,7 +193,7 @@ if ($total_records == 0) {
             $end_page = min($total_pages, max(1, $page + 2));
             
             if ($start_page > 1) {
-                echo '<a href="?page=1" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50">1</a>';
+                echo '<a href="' . $baseUrl . 'page=1" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50">1</a>';
                 if ($start_page > 2) {
                     echo '<span class="px-3 py-1 text-gray-500 flex items-center justify-center">...</span>';
                 }
@@ -158,7 +203,7 @@ if ($total_records == 0) {
                 if ($i == $page): ?>
                     <button class="px-3 py-1 border border-primary bg-primary text-white rounded text-sm font-medium"><?= $i ?></button>
                 <?php else: ?>
-                    <a href="?page=<?= $i ?>" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50"><?= $i ?></a>
+                    <a href="<?= $baseUrl ?>page=<?= $i ?>" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50"><?= $i ?></a>
                 <?php endif; 
             endfor; 
             
@@ -166,12 +211,12 @@ if ($total_records == 0) {
                 if ($end_page < $total_pages - 1) {
                     echo '<span class="px-3 py-1 text-gray-500 flex items-center justify-center">...</span>';
                 }
-                echo '<a href="?page=' . $total_pages . '" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50">' . $total_pages . '</a>';
+                echo '<a href="' . $baseUrl . 'page=' . $total_pages . '" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50">' . $total_pages . '</a>';
             }
             ?>
 
             <?php if ($page < $total_pages): ?>
-                <a href="?page=<?= $page + 1 ?>" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50">Next</a>
+                <a href="<?= $baseUrl ?>page=<?= $page + 1 ?>" class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50">Next</a>
             <?php else: ?>
                 <button class="px-3 py-1 border border-gray-300 rounded text-sm text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>Next</button>
             <?php endif; ?>

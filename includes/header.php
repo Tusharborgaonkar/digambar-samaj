@@ -14,6 +14,9 @@ $is_admin_logged_in = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_lo
 $user_status = null;
 $registration_link = 'pre-register.php';
 $show_registration = true;
+$current_page = basename($_SERVER['PHP_SELF']);
+$registration_link = 'pre-register.php';
+$show_registration = true;
 
 if ($is_logged_in && isset($_SESSION['user_id'])) {
     if (file_exists('includes/db.php')) {
@@ -283,25 +286,25 @@ if ($is_logged_in && isset($_SESSION['user_id'])) {
     <div class="mobile-menu" id="mobileMenu">
         <button id="closeMobileMenu" class="absolute top-6 right-6 text-2xl text-gray-600 hover:text-red-500 transition focus:outline-none"><i class="fas fa-times"></i></button>
         <div class="flex flex-col space-y-6 px-8 mt-4">
-            <a href="index.php" class="text-dark hover:text-primary transition text-lg font-medium">Home</a>
+            <a href="index.php" class="<?= $current_page == 'index.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">Home</a>
             <div class="relative group">
-                <a href="about.php" class="text-dark hover:text-primary transition text-lg font-medium flex items-center gap-2">
+                <a href="about.php" class="<?= $current_page == 'about.php' || $current_page == 'community.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg flex items-center gap-2">
                     About Us <i class="fas fa-chevron-down text-xs"></i>
                 </a>
                 <div class="pl-4 mt-2 space-y-2">
-                    <a href="community.php" class="block text-gray-600 hover:text-primary transition">Community</a>
+                    <a href="community.php" class="<?= $current_page == 'community.php' ? 'text-primary font-bold' : 'text-gray-600 hover:text-primary' ?> transition block">Community</a>
                 </div>
             </div>
-            <a href="success-stories.php" class="text-dark hover:text-primary transition text-lg font-medium">Success Story</a>
-            <a href="profiles.php" class="text-dark hover:text-primary transition text-lg font-medium">Find Your Match</a>
-            <a href="gallery.php" class="text-dark hover:text-primary transition text-lg font-medium">Gallery</a>
-            <a href="news.php" class="text-dark hover:text-primary transition text-lg font-medium">News & Updates</a>
+            <a href="success-stories.php" class="<?= $current_page == 'success-stories.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">Success Story</a>
+            <a href="profiles.php" class="<?= $current_page == 'profiles.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">Find Your Match</a>
+            <a href="gallery.php" class="<?= $current_page == 'gallery.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">Gallery</a>
+            <a href="news.php" class="<?= $current_page == 'news.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">News & Updates</a>
             
             <?php if ($is_logged_in): ?>
-                <a href="my-profile.php" class="text-dark hover:text-primary transition text-lg font-medium">My Profile</a>
+                <a href="my-profile.php" class="<?= $current_page == 'my-profile.php' || $current_page == 'registration.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">My Profile</a>
                 <a href="login.php?logout=1" class="text-red-500 hover:text-red-700 transition text-lg font-medium">Logout</a>
             <?php else: ?>
-                <a href="login.php" class="text-dark hover:text-primary transition text-lg font-medium">Login / Registration</a>
+                <a href="login.php" class="<?= $current_page == 'login.php' || $current_page == 'registration.php' || $current_page == 'pre-register.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">Login / Registration</a>
             <?php endif; ?>
         </div>
     </div>
@@ -320,25 +323,25 @@ if ($is_logged_in && isset($_SESSION['user_id'])) {
                 
                 <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="index.php" class="text-dark hover:text-primary transition font-medium">Home</a>
+                    <a href="index.php" class="<?= $current_page == 'index.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Home</a>
                     <div class="relative group">
-                        <a href="about.php" class="text-dark hover:text-primary transition font-medium inline-flex items-center gap-1">
+                        <a href="about.php" class="<?= $current_page == 'about.php' || $current_page == 'community.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition inline-flex items-center gap-1 pb-1">
                             About Us <i class="fas fa-chevron-down text-xs"></i>
                         </a>
                         <div class="absolute top-full left-0 mt-2 w-48 bg-white shadow-lg rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                            <a href="community.php" class="block px-4 py-2 text-gray-700 hover:bg-primary hover:text-white rounded-t-lg transition">Community</a>
+                            <a href="community.php" class="<?= $current_page == 'community.php' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-primary hover:text-white' ?> block px-4 py-2 rounded-t-lg transition">Community</a>
                         </div>
                     </div>
-                    <a href="success-stories.php" class="text-dark hover:text-primary transition font-medium">Success Story</a>
-                    <a href="profiles.php" class="text-dark hover:text-primary transition font-medium">Find Your Match</a>
-                    <a href="gallery.php" class="text-dark hover:text-primary transition font-medium">Gallery</a>
-                    <a href="news.php" class="text-dark hover:text-primary transition font-medium">News & Updates</a>
+                    <a href="success-stories.php" class="<?= $current_page == 'success-stories.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Success Story</a>
+                    <a href="profiles.php" class="<?= $current_page == 'profiles.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Find Your Match</a>
+                    <a href="gallery.php" class="<?= $current_page == 'gallery.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Gallery</a>
+                    <a href="news.php" class="<?= $current_page == 'news.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">News & Updates</a>
                     
                     <?php if ($is_logged_in): ?>
-                        <a href="my-profile.php" class="text-dark hover:text-primary transition font-medium">My Profile</a>
+                        <a href="my-profile.php" class="<?= $current_page == 'my-profile.php' || $current_page == 'registration.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">My Profile</a>
                         <a href="login.php?logout=1" class="text-red-500 hover:text-red-700 transition font-medium">Logout</a>
                     <?php else: ?>
-                        <a href="login.php" class="text-dark hover:text-primary transition font-medium">Login / Registration</a>
+                        <a href="login.php" class="<?= $current_page == 'login.php' || $current_page == 'registration.php' || $current_page == 'pre-register.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Login / Registration</a>
                     <?php endif; ?>
                 </div>
                 

@@ -13,6 +13,16 @@ try {
     }
 } catch (Exception $e) {}
 
+// Fetch active advertisements
+$advertisements = [];
+try {
+    $adsStmt = $pdo->query("SELECT * FROM advertisements WHERE status = 1 ORDER BY id DESC");
+    $advertisements = $adsStmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {}
+
+$home_top_ads = array_filter($advertisements, function($ad) { return $ad['position'] == 'home_top'; });
+$home_bottom_ads = array_filter($advertisements, function($ad) { return $ad['position'] == 'home_bottom'; });
+
 $is_logged_in = false;
 $is_approved = false;
 if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) {
@@ -243,10 +253,32 @@ include 'includes/header.php';
             Kindly scan the QR code to pay Rs. 1000/- and mention your Mobile No. in Payment Remarks.
         </p>
         <div class="mt-4 flex justify-center">
-            <img src="assets/images/qr_code.jpg" alt="Payment QR" class="w-48 h-48 border border-yellow-300 rounded shadow-sm">
+            <?php 
+            $payment_qr_code = $settings['payment_qr_code'] ?? 'assets/images/qr_code.jpg';
+            ?>
+            <img src="<?= htmlspecialchars($payment_qr_code) ?>" alt="Payment QR" class="w-48 h-48 border border-yellow-300 rounded shadow-sm">
         </div>
         <div class="mt-6">
             <a href="registration.php" class="inline-block bg-primary text-white px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold">Register Now</a>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+<?php if (!empty($home_top_ads)): ?>
+<!-- Advertisements (Home Top) -->
+<section class="py-8 bg-white border-b border-gray-100">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col gap-6 items-center">
+            <?php foreach($home_top_ads as $ad): ?>
+                <?php 
+                $img_path = str_replace('../', '', $ad['image']); 
+                $img_src = file_exists($img_path) ? $img_path : 'assets/images/placeholder.jpg';
+                ?>
+                <a href="<?= htmlspecialchars($ad['link'] ?? '#') ?>" target="_blank" class="block w-full max-w-5xl rounded-xl overflow-hidden shadow-md hover:shadow-lg transition">
+                    <img src="<?= htmlspecialchars($img_src) ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-auto object-cover">
+                </a>
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
@@ -572,5 +604,23 @@ include 'includes/header.php';
     </div>
 </section>
 
+<?php if (!empty($home_bottom_ads)): ?>
+<!-- Advertisements (Home Bottom) -->
+<section class="py-8 bg-gray-50 border-t border-gray-200">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col gap-6 items-center">
+            <?php foreach($home_bottom_ads as $ad): ?>
+                <?php 
+                $img_path = str_replace('../', '', $ad['image']); 
+                $img_src = file_exists($img_path) ? $img_path : 'assets/images/placeholder.jpg';
+                ?>
+                <a href="<?= htmlspecialchars($ad['link'] ?? '#') ?>" target="_blank" class="block w-full max-w-5xl rounded-xl overflow-hidden shadow-md hover:shadow-lg transition">
+                    <img src="<?= htmlspecialchars($img_src) ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-auto object-cover">
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
 
 <?php include 'includes/footer.php'; ?>

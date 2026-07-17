@@ -35,12 +35,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['photo'])) {
     $title = $_POST['title'] ?? '';
     $category = $_POST['category'] ?? 'All Photos';
     
-    $uploadDir = '../uploads/gallery/';
+    $uploadDir = __DIR__ . '/../uploads/gallery/';
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0777, true);
     }
     
-    $fileExt = pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION);
+    $fileExt = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
     $fileName = uniqid() . '.' . $fileExt;
     $targetPath = $uploadDir . $fileName;
     
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['photo'])) {
         header("Location: gallery-manage.php?msg=uploaded");
         exit;
     } else {
-        $error = "Failed to upload file.";
+        $error = "Failed to upload file. Error Code: " . $_FILES['photo']['error'];
     }
 }
 

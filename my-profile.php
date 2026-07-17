@@ -39,9 +39,7 @@ $profile_img = (!empty($user['profile_photo']) && file_exists($user['profile_pho
                     <a href="edit-profile.php" class="bg-primary text-white px-6 py-2.5 rounded-lg hover:bg-opacity-90 shadow-md transition font-medium flex items-center gap-2">
                         <i class="fas fa-edit"></i> Edit Profile
                     </a>
-                    <button class="bg-white border border-gray-300 text-gray-700 px-6 py-2.5 rounded-lg hover:bg-gray-50 transition font-medium flex items-center gap-2 shadow-sm" onclick="Swal.fire({icon: 'info', title: 'Coming Soon', text: 'Change password functionality coming soon.'})">
-                        <i class="fas fa-key"></i> Change Password
-                    </button>
+
                     <a href="login.php?logout=1" class="bg-red-50 border border-red-200 text-red-600 px-6 py-2.5 rounded-lg hover:bg-red-100 transition font-medium flex items-center gap-2 shadow-sm">
                         <i class="fas fa-sign-out-alt"></i> Logout
                     </a>

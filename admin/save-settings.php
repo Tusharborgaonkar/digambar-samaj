@@ -20,6 +20,22 @@ try {
 } catch (Exception $e) {}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Handle File Uploads
+    if (isset($_FILES['payment_qr_code_file']) && $_FILES['payment_qr_code_file']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = '../uploads/';
+        if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
+        
+        $ext = pathinfo($_FILES['payment_qr_code_file']['name'], PATHINFO_EXTENSION);
+        $filename = 'qr_code_' . time() . '.' . $ext;
+        $destination = $upload_dir . $filename;
+        
+        if (move_uploaded_file($_FILES['payment_qr_code_file']['tmp_name'], $destination)) {
+            $qr_path = 'uploads/' . $filename; // Relative to front-end root
+            $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?");
+            $stmt->execute(['payment_qr_code', $qr_path, $qr_path]);
+        }
+    }
+
     foreach ($_POST as $key => $value) {
         // Sanitize key (only allow alphanumeric and underscore)
         $key = preg_replace('/[^a-zA-Z0-9_]/', '', $key);

@@ -143,7 +143,8 @@ try {
                     <tbody class="bg-white divide-y divide-gray-200">
                         <?php if (count($stories) > 0): ?>
                             <?php foreach ($stories as $story): 
-                                $photoPath = !empty($story['photo']) ? '../' . htmlspecialchars($story['photo']) : '../assets/images/placeholder-couple.png';
+                                $cleanPath = !empty($story['photo']) ? ltrim(str_replace('../', '', $story['photo']), '/') : '';
+                                $photoPath = !empty($cleanPath) ? '../' . htmlspecialchars($cleanPath) : '../assets/images/placeholder-couple.png';
                             ?>
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap">

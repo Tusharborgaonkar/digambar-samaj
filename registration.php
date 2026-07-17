@@ -189,9 +189,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mkdir($upload_dir, 0777, true);
     }
 
-    $photo = '';
-    $family_photo = '';
-    $payment_screenshot = '';
+    $photo = $is_edit ? ($current_user['profile_photo'] ?? '') : '';
+    $family_photo = $is_edit ? ($current_user['family_photo'] ?? '') : '';
+    $payment_screenshot = $is_edit ? ($current_user['payment_screenshot'] ?? '') : '';
 
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
         $photo = $upload_dir . time() . '_photo_' . basename($_FILES['photo']['name']);
@@ -206,7 +206,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         move_uploaded_file($_FILES['payment_screenshot']['tmp_name'], $payment_screenshot);
     }
     
-    $id_proof_path = '';
+    $id_proof_path = $is_edit ? ($current_user['id_proof_path'] ?? '') : '';
     if (isset($_FILES['id_proof_path']) && $_FILES['id_proof_path']['error'] === UPLOAD_ERR_OK) {
         $id_proof_path = $upload_dir . time() . '_idproof_' . basename($_FILES['id_proof_path']['name']);
         move_uploaded_file($_FILES['id_proof_path']['tmp_name'], $id_proof_path);
@@ -667,8 +667,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <!-- Candidate Photo is ALWAYS required -->
                             <div>
-                                <label class="block text-gray-700 font-medium mb-2">Candidate Photo * (Passport size photo, max 10MB)</label>
-                                <input type="file" name="photo" accept="image/*" required class="w-full border rounded-lg px-4 py-2">
+                                <label class="block text-gray-700 font-medium mb-2">Candidate Photo <?= !$is_edit ? '*' : '' ?> (Passport size photo, max 10MB)</label>
+                                <input type="file" name="photo" accept="image/*" <?= !$is_edit ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
                             </div>
                             
                             <?php if (!isset($coreFieldsSettings['family_photo']) || $coreFieldsSettings['family_photo']['is_visible']): ?>
@@ -700,8 +700,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-gray-700 font-medium mb-2">Upload ID Proof * (Max 5MB)</label>
-                                        <input type="file" name="id_proof_path" accept="image/*,.pdf" required class="w-full border rounded-lg px-4 py-2">
+                                        <label class="block text-gray-700 font-medium mb-2">Upload ID Proof <?= !$is_edit ? '*' : '' ?> (Max 5MB)</label>
+                                        <input type="file" name="id_proof_path" accept="image/*,.pdf" <?= !$is_edit ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
                                     </div>
                                 </div>
                             </div>
@@ -757,7 +757,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <?php endif; ?>
                 
-                <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-opacity-90 transition">Register Now</button>
+                <button id="submitBtn" type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-opacity-90 transition disabled:opacity-75 disabled:cursor-not-allowed"><?= $is_edit ? 'Update Profile' : 'Register Now' ?></button>
             </form>
         </div>
     </div>
@@ -958,6 +958,12 @@ document.getElementById('registrationForm')?.addEventListener('submit', function
         return;
     }
 
+    const btn = document.getElementById('submitBtn');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = 'Processing... <i class="fas fa-spinner fa-spin ml-2"></i>';
+    }
+    
     this.submit();
 });
 

@@ -3,6 +3,19 @@ require_once 'includes/db.php';
 
 $message_sent = false;
 
+// Fetch Contact Settings
+$settings = [];
+try {
+    $stmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
+    while ($row = $stmt->fetch()) {
+        $settings[$row['setting_key']] = $row['setting_value'];
+    }
+} catch (Exception $e) {}
+
+$contact_phone = $settings['contact_phone'] ?? '+91 7575005121';
+$contact_email = $settings['contact_email'] ?? 'digambarjainparichay@gmail.com';
+$contact_address = $settings['contact_address'] ?? '23-A, Shubhlaxmi Palace, Opp. Money Plant Junction, Bhuyangdev Cross Road, Sola Road, Ahmedabad-380061.';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_contact'])) {
     $name = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
@@ -76,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div>
                         <h4 class="text-lg font-bold text-dark mb-1">Call Us</h4>
                         <p class="text-gray-600 mb-1">We are available 9 AM - 6 PM</p>
-                        <p class="font-bold text-primary">+91 7575005121</p>
+                        <p class="font-bold text-primary"><?= htmlspecialchars($contact_phone) ?></p>
                     </div>
                 </div>
 
@@ -88,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div>
                         <h4 class="text-lg font-bold text-dark mb-1">Email Us</h4>
                         <p class="text-gray-600 mb-1">Drop us a line anytime</p>
-                        <p class="font-bold text-primary break-all">digambarjainparichay@gmail.com</p>
+                        <p class="font-bold text-primary break-all"><?= htmlspecialchars($contact_email) ?></p>
                     </div>
                 </div>
 
@@ -100,7 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div>
                         <h4 class="text-lg font-bold text-dark mb-1">Visit Us</h4>
                         <p class="text-gray-600 mb-1">Our Corporate Office</p>
-                        <p class="font-bold text-gray-800">23-A, Shubhlaxmi Palace, Opp. Money Plant Junction, Bhuyangdev Cross Road, Sola Road, Ahmedabad-380061.</p>
+                        <p class="font-bold text-gray-800"><?= htmlspecialchars($contact_address) ?></p>
                     </div>
                 </div>
             </div>
