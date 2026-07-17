@@ -47,10 +47,10 @@ $finfo = finfo_open(FILEINFO_MIME_TYPE);
 $mime_type = finfo_file($finfo, $requested_file);
 finfo_close($finfo);
 
-// Ensure it's an image
-if (strpos($mime_type, 'image/') !== 0) {
+// Ensure it's an image or PDF
+if (strpos($mime_type, 'image/') !== 0 && $mime_type !== 'application/pdf') {
     header("HTTP/1.1 403 Forbidden");
-    exit('Not an image');
+    exit('Not allowed');
 }
 
 // Serve the image securely

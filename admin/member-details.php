@@ -170,7 +170,7 @@ include 'includes/sidebar.php';
                 <span class="block text-gray-500 mb-1 font-semibold">ID Proof Verification</span>
                 <p class="mb-1 text-gray-800"><strong>Type:</strong> <?= htmlspecialchars($member['id_proof_type'] ?? 'N/A') ?></p>
                 <?php if (!empty($member['id_proof_path'])): ?>
-                    <a href="../<?= htmlspecialchars($member['id_proof_path']) ?>" target="_blank" class="text-primary hover:underline text-sm"><i class="fas fa-external-link-alt"></i> View Document</a>
+                    <a href="../image.php?file=<?= urlencode($member['id_proof_path']) ?>" target="_blank" class="text-primary hover:underline text-sm"><i class="fas fa-external-link-alt"></i> View Document</a>
                 <?php endif; ?>
             </div>
             <div>
