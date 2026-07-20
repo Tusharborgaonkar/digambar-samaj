@@ -6,7 +6,7 @@ Options -MultiViews +FollowSymLinks
 RewriteEngine On
 
 # Optional: Set RewriteBase if the site is in a subdirectory
-# RewriteBase /digambar-samaj/
+RewriteBase /digambar-samaj/
 
 # Unless directory, remove trailing slash
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -15,9 +15,10 @@ RewriteRule ^ %1 [R=301,L]
 
 # Externally redirect .php requests to extensionless url (Prevents duplicate content)
 RewriteCond %{ENV:REDIRECT_STATUS} ^$
+RewriteCond %{REQUEST_METHOD} !POST [NC]
 RewriteCond %{REQUEST_URI} !/image\.php [NC]
 RewriteCond %{REQUEST_URI} !/admin/ [NC]
-RewriteRule ^(.*)\.php$ $1 [R=301,L]
+RewriteRule ^(.*)\.php$ /digambar-samaj/$1 [R=301,L]
 
 # Resolve .php file for extensionless urls
 RewriteCond %{REQUEST_FILENAME} !-d

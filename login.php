@@ -90,7 +90,7 @@ include 'includes/header.php';
         
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md" data-aos="fade-up" data-aos-delay="200">
             <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-100">
-                <form class="space-y-6" action="login.php" method="POST">
+                <form class="space-y-6" action="" method="POST">
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700">
                             Email address or Mobile Number

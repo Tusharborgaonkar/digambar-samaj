@@ -164,6 +164,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // PHP Validations
+    if (!empty($birth_date)) {
+        $bdate = new DateTime($birth_date);
+        $today = new DateTime();
+        $age = $today->diff($bdate)->y;
+        if ($age < 18) {
+            $error = "Candidate must be at least 18 years old to register.";
+        }
+    }
     if ($pin_code && !preg_match('/^[0-9]{4,6}$/', $pin_code)) {
         $error = "Pin code must be 4 to 6 digits.";
     } elseif ($monthly_income !== '' && (!is_numeric($monthly_income) || $monthly_income < 0)) {
@@ -389,7 +397,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <h2 class="text-xl font-bold text-primary mb-4">Section 2: Personal Details</h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div><label class="block text-gray-700 font-medium mb-2">Birth Date *</label><input type="date" name="birth_date" value="<?= htmlspecialchars($current_user['birth_date'] ?? '') ?>" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div><label class="block text-gray-700 font-medium mb-2">Birth Date *</label><input type="date" name="birth_date" value="<?= htmlspecialchars($current_user['birth_date'] ?? '') ?>" max="<?php echo date('Y-m-d', strtotime('-18 years')); ?>" required class="w-full border rounded-lg px-4 py-2"></div>
                         
                         <?php 
                             $db_time = $current_user['birth_time'] ?? '';
@@ -845,10 +853,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 
                 <!-- Documents & Payment -->
-                <?php if (
+                <?php if (false && (
                     (isset($coreFieldsSettings['payment_screenshot']) && $coreFieldsSettings['payment_screenshot']['is_visible']) || 
                     (isset($coreFieldsSettings['payment_proof_drive_url']) && $coreFieldsSettings['payment_proof_drive_url']['is_visible'])
-                ): ?>
+                )): ?>
                 <div class="mb-8 pb-4 border-b border-gray-200">
                     <h2 class="text-xl font-bold text-primary mb-4">Documents & Payment</h2>
                     <div class="grid grid-cols-1 gap-4">

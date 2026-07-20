@@ -140,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <span class="block sm:inline"><?php echo htmlspecialchars($success); ?></span>
                 </div>
             <?php else: ?>
-                <form action="forgot-password.php" method="POST" class="space-y-6">
+                <form action="" method="POST" class="space-y-6">
                     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                     
                     <div>

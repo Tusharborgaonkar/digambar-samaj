@@ -125,7 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $valid_token) {
                     </a>
                 </div>
             <?php elseif ($valid_token): ?>
-                <form action="reset-password.php" method="POST" class="space-y-6">
+                <form action="" method="POST" class="space-y-6">
                     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                     <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
                     

@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$is_rate_limited) {
         <!-- Form Section -->
         <div class="p-8">
 
-            <form action="login.php" method="POST" class="space-y-6">
+            <form action="" method="POST" class="space-y-6">
                 <!-- Email Field -->
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
