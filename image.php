@@ -14,7 +14,7 @@ if (empty($file)) {
 
 // Allow public access to specific directories without login
 $is_public = false;
-if (strpos($file, 'uploads/advertisements') === 0 || strpos($file, 'uploads/gallery') === 0 || strpos($file, 'uploads/success_stories') === 0 || strpos($file, 'assets/') === 0) {
+if (strpos($file, 'uploads/advertisements') === 0 || strpos($file, 'uploads/ads') === 0 || strpos($file, 'uploads/gallery') === 0 || strpos($file, 'uploads/success_stories') === 0 || strpos($file, 'assets/') === 0) {
     $is_public = true;
 }
 
