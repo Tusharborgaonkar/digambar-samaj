@@ -37,7 +37,7 @@ if (isset($_GET['delete'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
     $upload_dir = '../uploads/gallery/';
     if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0777, true);
+        mkdir($upload_dir, 0755, true);
     }
     
     $file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));

@@ -194,7 +194,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Handle File Uploads
     $upload_dir = 'uploads/';
     if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0777, true);
+        mkdir($upload_dir, 0755, true);
     }
 
     $photo = $current_user['profile_photo'] ?? '';

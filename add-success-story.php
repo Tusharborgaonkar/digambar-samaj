@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
             $upload_dir = 'uploads/success_stories/';
             if (!is_dir($upload_dir)) {
-                mkdir($upload_dir, 0777, true);
+                mkdir($upload_dir, 0755, true);
             }
             
             $file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
@@ -57,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $upload_path = $upload_dir . $new_filename;
                 
                 if (move_uploaded_file($_FILES['photo']['tmp_name'], $upload_path)) {
+                    chmod($upload_path, 0644);
                     $photo = $upload_path;
                 } else {
                     $error_msg = "Failed to upload photo.";
