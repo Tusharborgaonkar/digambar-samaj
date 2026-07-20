@@ -4,21 +4,23 @@
 
 Options -MultiViews +FollowSymLinks
 RewriteEngine On
+RewriteBase /digambar-samaj/
 
 # Unless directory, remove trailing slash
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI} ^(.+)/$
 RewriteRule ^ %1 [R=301,L]
 
-# Externally redirect .php requests to extensionless url (Prevents duplicate content)
+# Externally redirect .php requests to extensionless url
 RewriteCond %{ENV:REDIRECT_STATUS} ^$
 RewriteCond %{REQUEST_METHOD} !POST [NC]
 RewriteCond %{REQUEST_URI} !/image\.php [NC]
 RewriteCond %{REQUEST_URI} !/admin/ [NC]
-RewriteCond %{REQUEST_URI} ^(.+)\.php$ [NC]
-RewriteRule ^ %1 [R=301,L]
+RewriteCond %{REQUEST_URI} ^/digambar-samaj/(.+)\.php$ [NC]
+RewriteRule ^ /digambar-samaj/%1 [R=301,L]
 
 # Resolve .php file for extensionless urls
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^([^\.]+)$ $1.php [L,QSA]
+
