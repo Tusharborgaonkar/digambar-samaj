@@ -24,6 +24,7 @@ $contact_phone = $settings['contact_phone'] ?? '+91 7575005121';
 $contact_email = $settings['contact_email'] ?? 'digambarjainparichay@gmail.com';
 $contact_address = $settings['contact_address'] ?? '23-A, Shubhlaxmi Palace, Opp. Money Plant Junction, Bhuyangdev Cross Road, Sola Road, Ahmedabad-380061.';
 $payment_qr_code = $settings['payment_qr_code'] ?? 'assets/images/qr_code.jpg';
+$show_home_top_ads = $settings['show_home_top_ads'] ?? '1';
 ?>
 
 <!-- Page Header -->
@@ -103,6 +104,18 @@ $payment_qr_code = $settings['payment_qr_code'] ?? 'assets/images/qr_code.jpg';
                 <label class="relative inline-flex items-center cursor-pointer ml-4">
                     <input type="hidden" name="auto_approve" value="0">
                     <input type="checkbox" name="auto_approve" value="1" <?= $auto_approve == '1' ? 'checked' : '' ?> class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+            </div>
+
+            <div class="flex items-start bg-gray-50 p-4 rounded-lg mt-4 border border-gray-100">
+                <div class="flex-1">
+                    <h5 class="font-bold text-gray-800">Show Advertisements</h5>
+                    <p class="text-xs text-gray-500 mt-1">Display the advertisements section below Free Registration on the homepage.</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer ml-4">
+                    <input type="hidden" name="show_home_top_ads" value="0">
+                    <input type="checkbox" name="show_home_top_ads" value="1" <?= (isset($show_home_top_ads) && $show_home_top_ads == '1') || !isset($show_home_top_ads) ? 'checked' : '' ?> class="sr-only peer">
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                 </label>
             </div>

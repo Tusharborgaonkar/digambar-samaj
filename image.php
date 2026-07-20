@@ -5,7 +5,7 @@ if (session_status() === PHP_SESSION_NONE) {
 require_once 'includes/db.php';
 
 // Get the requested file
-$file = $_GET['file'] ?? '';
+$file = ltrim($_GET['file'] ?? '', '/\\');
 
 if (empty($file)) {
     header("HTTP/1.1 400 Bad Request");

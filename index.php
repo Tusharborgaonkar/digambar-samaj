@@ -267,7 +267,7 @@ include 'includes/header.php';
 </section>
 <?php endif; ?>
 
-<?php if (!empty($home_top_ads)): ?>
+<?php if (!empty($home_top_ads) && (isset($settings['show_home_top_ads']) ? $settings['show_home_top_ads'] == '1' : true)): ?>
 <!-- Advertisements (Home Top) -->
 <section class="py-8 bg-white border-b border-gray-100">
     <div class="container mx-auto px-4">
@@ -276,6 +276,7 @@ include 'includes/header.php';
             <?php foreach($home_top_ads as $ad): ?>
                 <?php 
                 $img_path = str_replace('../', '', $ad['image_path'] ?? $ad['image']); 
+                if (!file_exists($img_path)) continue;
                 $img_src = 'image.php?file=' . urlencode($img_path);
                 ?>
                 <a href="<?= htmlspecialchars($ad['link_url'] ?? $ad['link'] ?? '#') ?>" target="_blank" class="block w-full max-w-[295px] aspect-[2/3] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition bg-white">
@@ -616,6 +617,7 @@ include 'includes/header.php';
             <?php foreach($home_bottom_ads as $ad): ?>
                 <?php 
                 $img_path = str_replace('../', '', $ad['image']); 
+                if (!file_exists($img_path)) continue;
                 $img_src = 'image.php?file=' . urlencode($img_path);
                 ?>
                 <a href="<?= htmlspecialchars($ad['link'] ?? '#') ?>" target="_blank" class="block w-full max-w-[295px] aspect-[2/3] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition bg-white">
