@@ -179,14 +179,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $error = "Candidate annual income must be a valid positive amount.";
     } elseif ($father_income !== '' && (!is_numeric($father_income) || $father_income < 0)) {
         $error = "Father income must be a valid positive amount.";
+    } elseif ($mobile && !preg_match('/^[0-9]{10}$/', $mobile)) {
+        $error = "Please ensure all mobile numbers are exactly 10 digits.";
     } elseif ($father_mobile && !preg_match('/^[0-9]{10}$/', $father_mobile)) {
-        $error = "Father mobile number must be exactly 10 digits.";
+        $error = "Please ensure all mobile numbers are exactly 10 digits.";
     } elseif ($mother_mobile && !preg_match('/^[0-9]{10}$/', $mother_mobile)) {
-        $error = "Mother mobile number must be exactly 10 digits.";
+        $error = "Please ensure all mobile numbers are exactly 10 digits.";
     } elseif ($ref1_mobile && !preg_match('/^[0-9]{10}$/', $ref1_mobile)) {
-        $error = "Reference 1 mobile number must be exactly 10 digits.";
+        $error = "Please ensure all mobile numbers are exactly 10 digits.";
     } elseif ($ref2_mobile && !preg_match('/^[0-9]{10}$/', $ref2_mobile)) {
-        $error = "Reference 2 mobile number must be exactly 10 digits.";
+        $error = "Please ensure all mobile numbers are exactly 10 digits.";
     } elseif ($ref1_mobile && $ref1_mobile === $ref2_mobile) {
         $error = "Reference 1 and 2 mobile numbers must be different.";
     }
@@ -315,14 +317,38 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h1 class="text-3xl md:text-4xl font-bold text-center text-dark mb-4" data-aos="fade-up"><?= $is_edit ? 'Edit Profile' : 'Registration Form' ?></h1>
             <p class="text-center text-gray-600 mb-8" data-aos="fade-up" data-aos-delay="100"><?= $is_edit ? 'Update your profile information' : 'Join the most trusted Digambar Jain Matrimony platform' ?></p>
             
-            <?php if ($success): ?>
+            <?php if (!empty($error)): ?>
                 <script>
-                    sessionStorage.removeItem("registrationFormData");
-                    <?php if ($is_edit): ?>
-                        window.location.href = "my-profile.php";
-                    <?php else: ?>
-                        window.location.href = "waiting-approval.php";
-                    <?php endif; ?>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Validation Error',
+                            text: <?= json_encode($error) ?>,
+                            confirmButtonColor: '#eab308'
+                        });
+                    });
+                </script>
+            <?php endif; ?>
+
+            <?php if (!empty($success)): ?>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        sessionStorage.removeItem("registrationFormData");
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: <?= json_encode($success) ?>,
+                            confirmButtonColor: '#eab308',
+                            timer: 3000,
+                            timerProgressBar: true
+                        }).then(() => {
+                            <?php if ($is_edit): ?>
+                                window.location.href = "my-profile.php";
+                            <?php else: ?>
+                                window.location.href = "waiting-approval.php";
+                            <?php endif; ?>
+                        });
+                    });
                 </script>
             <?php endif; ?>
             
