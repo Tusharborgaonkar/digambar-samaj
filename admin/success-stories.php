@@ -24,32 +24,74 @@ $error_msg = '';
 
 // Handle actions (Approve, Reject/Pending, Delete)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['action']) && isset($_POST['id'])) {
-        $id = (int)$_POST['id'];
+    if (isset($_POST['action'])) {
         $action = $_POST['action'];
 
         try {
-            if ($action === 'approve') {
-                $stmt = $pdo->prepare("UPDATE success_stories SET status = 'approved' WHERE id = ?");
-                $stmt->execute([$id]);
-                $success_msg = "Story approved successfully.";
-            } elseif ($action === 'pending') {
-                $stmt = $pdo->prepare("UPDATE success_stories SET status = 'pending' WHERE id = ?");
-                $stmt->execute([$id]);
-                $success_msg = "Story set to pending.";
-            } elseif ($action === 'delete') {
-                // First get the photo path to delete the file
-                $stmt = $pdo->prepare("SELECT photo FROM success_stories WHERE id = ?");
-                $stmt->execute([$id]);
-                $story = $stmt->fetch();
-                
-                if ($story && !empty($story['photo']) && file_exists('../' . $story['photo'])) {
-                    unlink('../' . $story['photo']);
+            if ($action === 'add') {
+                $couple_name = $_POST['couple_name'] ?? '';
+                $city = $_POST['city'] ?? '';
+                $story_text = $_POST['story'] ?? '';
+                $photo = '';
+
+                if (empty($couple_name) || empty($city) || empty($story_text)) {
+                    $error_msg = "Please fill in all required fields.";
+                } else {
+                    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+                        $upload_dir = '../uploads/success_stories/';
+                        if (!is_dir($upload_dir)) {
+                            mkdir($upload_dir, 0755, true);
+                        }
+                        
+                        $file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+                        $allowed_exts = ['jpg', 'jpeg', 'png', 'gif'];
+                        
+                        if (in_array($file_ext, $allowed_exts)) {
+                            $new_filename = uniqid('story_') . '.' . $file_ext;
+                            $upload_path = $upload_dir . $new_filename;
+                            
+                            if (move_uploaded_file($_FILES['photo']['tmp_name'], $upload_path)) {
+                                chmod($upload_path, 0644);
+                                $photo = 'uploads/success_stories/' . $new_filename;
+                            } else {
+                                $error_msg = "Failed to upload photo.";
+                            }
+                        } else {
+                            $error_msg = "Invalid file type. Only JPG, JPEG, PNG and GIF are allowed.";
+                        }
+                    } else {
+                        $error_msg = "Please upload a photo.";
+                    }
                 }
 
-                $stmt = $pdo->prepare("DELETE FROM success_stories WHERE id = ?");
-                $stmt->execute([$id]);
-                $success_msg = "Story deleted successfully.";
+                if (empty($error_msg)) {
+                    $stmt = $pdo->prepare("INSERT INTO success_stories (couple_name, city, story, photo, status) VALUES (?, ?, ?, ?, 'approved')");
+                    $stmt->execute([$couple_name, $city, $story_text, $photo]);
+                    $success_msg = "Success story added successfully.";
+                }
+            } elseif (isset($_POST['id'])) {
+                $id = (int)$_POST['id'];
+                if ($action === 'approve') {
+                    $stmt = $pdo->prepare("UPDATE success_stories SET status = 'approved' WHERE id = ?");
+                    $stmt->execute([$id]);
+                    $success_msg = "Story approved successfully.";
+                } elseif ($action === 'pending') {
+                    $stmt = $pdo->prepare("UPDATE success_stories SET status = 'pending' WHERE id = ?");
+                    $stmt->execute([$id]);
+                    $success_msg = "Story set to pending.";
+                } elseif ($action === 'delete') {
+                    $stmt = $pdo->prepare("SELECT photo FROM success_stories WHERE id = ?");
+                    $stmt->execute([$id]);
+                    $story = $stmt->fetch();
+                    
+                    if ($story && !empty($story['photo']) && file_exists('../' . $story['photo'])) {
+                        unlink('../' . $story['photo']);
+                    }
+
+                    $stmt = $pdo->prepare("DELETE FROM success_stories WHERE id = ?");
+                    $stmt->execute([$id]);
+                    $success_msg = "Story deleted successfully.";
+                }
             }
         } catch (PDOException $e) {
             $error_msg = "Database error: " . $e->getMessage();
@@ -72,7 +114,19 @@ include 'includes/sidebar.php';
 
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-2xl font-bold text-gray-800">Manage Success Stories</h1>
+    <button onclick="document.getElementById('addStoryModal').classList.remove('hidden')" class="bg-primary text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition font-semibold shadow-sm"><i class="fas fa-plus mr-2"></i> Add Success Story</button>
 </div>
+
+<?php if ($success_msg): ?>
+<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+    <?= htmlspecialchars($success_msg) ?>
+</div>
+<?php endif; ?>
+<?php if ($error_msg): ?>
+<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+    <?= htmlspecialchars($error_msg) ?>
+</div>
+<?php endif; ?>
 
 <div class="bg-white rounded-xl shadow-md overflow-hidden">
     <div class="overflow-x-auto">
@@ -150,6 +204,47 @@ include 'includes/sidebar.php';
                     </tbody>
                 </table>
             </div>
+</div>
+
+<!-- Add Story Modal -->
+<div id="addStoryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-1/2 max-w-2xl overflow-hidden">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50">
+                <h3 class="text-lg font-bold text-gray-800">Add New Success Story</h3>
+                <button type="button" onclick="document.getElementById('addStoryModal').classList.add('hidden')" class="text-gray-500 hover:text-red-500 focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <input type="hidden" name="action" value="add">
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Couple Name <span class="text-red-500">*</span></label>
+                    <input type="text" name="couple_name" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2 border bg-white">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">City <span class="text-red-500">*</span></label>
+                    <input type="text" name="city" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2 border bg-white">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Story <span class="text-red-500">*</span></label>
+                    <textarea name="story" rows="4" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2 border bg-white"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Photo <span class="text-red-500">*</span></label>
+                    <input type="file" name="photo" accept="image/*" required class="w-full border-gray-300 rounded-md shadow-sm p-2 border bg-white">
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t text-right bg-gray-50 flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('addStoryModal').classList.add('hidden')" class="bg-gray-200 text-gray-800 px-4 py-2 rounded shadow hover:bg-gray-300 font-semibold">Cancel</button>
+                <button type="submit" class="bg-primary text-white px-6 py-2 rounded shadow hover:bg-opacity-90 font-semibold">Save Story</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- Story Modal -->

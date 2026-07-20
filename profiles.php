@@ -62,6 +62,11 @@ if ($genderFilter === 'Bride' || $genderFilter === 'Groom') {
     $params[] = $genderVal;
 }
 
+if (!empty($_GET['match_id'])) {
+    $where[] = "profile_id = ?";
+    $params[] = $_GET['match_id'];
+}
+
 if (!empty($_GET['city'])) {
     $where[] = "native_place LIKE ?";
     $params[] = "%" . $_GET['city'] . "%";
@@ -110,7 +115,7 @@ $whereClause = implode(" AND ", $where);
 
 // Build query string for pagination (preserve all filters)
 $filterParams = [];
-foreach (['gender', 'city', 'education', 'manglik', 'marital', 'occupation', 'age_from', 'age_to'] as $key) {
+foreach (['gender', 'match_id', 'city', 'education', 'manglik', 'marital', 'occupation', 'age_from', 'age_to'] as $key) {
     if (!empty($_GET[$key])) {
         $filterParams[$key] = $_GET[$key];
     }
@@ -206,6 +211,9 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </label>
                         </div>
                         
+                        <!-- Match ID -->
+                        <input type="text" name="match_id" placeholder="Enter Match ID (e.g. DJP12345)" value="<?= htmlspecialchars($_GET['match_id'] ?? '') ?>" class="w-full border border-gray-300 rounded-md p-2.5 mb-4 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+
                         <!-- City -->
                         <input type="text" name="city" placeholder="Enter City / Native Place" value="<?= htmlspecialchars($_GET['city'] ?? '') ?>" class="w-full border border-gray-300 rounded-md p-2.5 mb-4 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
                         
@@ -263,7 +271,7 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </button>
                         
                         <!-- Reset Link -->
-                        <?php if (!empty($_GET['city']) || !empty($_GET['education']) || !empty($_GET['manglik']) || !empty($_GET['marital']) || !empty($_GET['occupation']) || !empty($_GET['age_from']) || !empty($_GET['age_to'])): ?>
+                        <?php if (!empty($_GET['match_id']) || !empty($_GET['city']) || !empty($_GET['education']) || !empty($_GET['manglik']) || !empty($_GET['marital']) || !empty($_GET['occupation']) || !empty($_GET['age_from']) || !empty($_GET['age_to'])): ?>
                         <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>" class="block text-center text-sm text-gray-500 hover:text-primary mt-3 transition">
                             <i class="fas fa-times-circle mr-1"></i> Clear All Filters
                         </a>
@@ -331,7 +339,7 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <div class="w-full sm:w-3/4 p-5 flex flex-col justify-between">
                                 <div>
                                     <a href="profile-details.php?id=<?= $p['id'] ?>" class="text-xl md:text-2xl text-primary font-bold hover:underline mb-2 block">
-                                        <?= htmlspecialchars($p['full_name']) ?> <span class="text-gray-500 text-lg font-normal">[MID: <?= htmlspecialchars($p['profile_id']) ?>]</span>
+                                        <?= htmlspecialchars($p['full_name'] ?? '') ?> <span class="text-gray-500 text-lg font-normal">[MID: <?= htmlspecialchars($p['profile_id'] ?? '') ?>]</span>
                                     </a>
                                     <hr class="border-gray-200 mb-4">
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-6 text-gray-700 text-sm md:text-base">
