@@ -1,7 +1,5 @@
 <?php
 $current_page = 'gallery-manage.php';
-include 'includes/header.php';
-include 'includes/sidebar.php';
 require_once '../includes/db.php';
 
 // Ensure table exists
@@ -14,6 +12,11 @@ try {
         status TINYINT(1) DEFAULT 1,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
+} catch (Exception $e) {}
+
+// Add category column if missing (ignore error if already exists)
+try {
+    $pdo->exec("ALTER TABLE gallery ADD COLUMN category VARCHAR(100) DEFAULT 'All Photos'");
 } catch (Exception $e) {}
 
 // Handle Delete
@@ -30,7 +33,42 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
+// Handle Upload
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+    $upload_dir = '../uploads/gallery/';
+    if (!is_dir($upload_dir)) {
+        mkdir($upload_dir, 0777, true);
+    }
+    
+    $file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+    $allowed_exts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    
+    if (in_array($file_ext, $allowed_exts)) {
+        $filename = uniqid() . '.' . $file_ext;
+        $target_file = $upload_dir . $filename;
+        
+        if (move_uploaded_file($_FILES['photo']['tmp_name'], $target_file)) {
+            $title = isset($_POST['title']) ? trim($_POST['title']) : '';
+            $category = isset($_POST['category']) ? trim($_POST['category']) : 'All Photos';
+            $db_path = 'uploads/gallery/' . $filename;
+            
+            $stmt = $pdo->prepare("INSERT INTO gallery (title, category, image_path) VALUES (?, ?, ?)");
+            $stmt->execute([$title, $category, $db_path]);
+            
+            header("Location: gallery-manage.php?msg=uploaded");
+            exit;
+        } else {
+            $error = "Failed to move uploaded file.";
+        }
+    } else {
+        $error = "Invalid file type. Only JPG, PNG, GIF, and WebP are allowed.";
+    }
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['photo']) && $_FILES['photo']['error'] !== UPLOAD_ERR_OK) {
+    $error = "Upload error code: " . $_FILES['photo']['error'];
+}
 
+include 'includes/header.php';
+include 'includes/sidebar.php';
 
 // Fetch photos
 $stmt = $pdo->query("SELECT * FROM gallery ORDER BY created_at DESC");
@@ -101,9 +139,11 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <p class="text-gray-500">No photos uploaded yet.</p>
     <?php else: ?>
         <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            <?php foreach($photos as $p): ?>
+            <?php foreach($photos as $p): 
+                $clean_path = ltrim(str_replace('../', '', $p['image_path']), '/');
+            ?>
                 <div class="relative group rounded-lg overflow-hidden border border-gray-200">
-                    <img src="../image.php?file=<?= urlencode($p['image_path']) ?>" alt="<?= htmlspecialchars($p['title']) ?>" class="w-full h-32 object-cover">
+                    <img src="../image.php?file=<?= urlencode($clean_path) ?>" alt="<?= htmlspecialchars($p['title']) ?>" class="w-full h-32 object-cover">
                     <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-center items-center">
                         <span class="text-white text-xs text-center px-2 mb-2 font-bold"><?= htmlspecialchars($p['title'] ?: 'No Title') ?></span>
                         <a href="?delete=<?= $p['id'] ?>" onclick="return confirm('Are you sure you want to delete this photo?')" class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600">

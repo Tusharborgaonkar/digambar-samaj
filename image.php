@@ -14,7 +14,7 @@ if (empty($file)) {
 
 // Allow public access to specific directories without login
 $is_public = false;
-if (strpos($file, 'uploads/advertisements') === 0 || strpos($file, 'uploads/gallery') === 0 || strpos($file, 'uploads/success_stories') === 0) {
+if (strpos($file, 'uploads/advertisements') === 0 || strpos($file, 'uploads/gallery') === 0 || strpos($file, 'uploads/success_stories') === 0 || strpos($file, 'assets/') === 0) {
     $is_public = true;
 }
 
@@ -24,8 +24,8 @@ if (!$is_public && !isset($_SESSION['user_logged_in']) && !isset($_SESSION['admi
     exit('Access Denied');
 }
 
-// Ensure the path is within allowed directories (uploads/ or imports/)
-$allowed_dirs = ['uploads', 'imports'];
+// Ensure the path is within allowed directories (uploads/ or imports/ or assets/)
+$allowed_dirs = ['uploads', 'imports', 'assets'];
 $file_parts = explode('/', str_replace('\\', '/', $file));
 $base_dir = $file_parts[0];
 

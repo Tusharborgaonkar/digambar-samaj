@@ -28,10 +28,12 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <p class="text-center text-gray-500">No photos available at the moment.</p>
         <?php else: ?>
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                <?php foreach($photos as $p): ?>
-                    <a href="image.php?file=<?= urlencode($p['image_path']) ?>" data-fancybox="gallery" data-caption="<?= htmlspecialchars($p['title']) ?>" class="group block overflow-hidden rounded-xl shadow-sm hover:shadow-md transition">
+                <?php foreach($photos as $p): 
+                    $clean_path = ltrim(str_replace('../', '', $p['image_path']), '/');
+                ?>
+                    <a href="image.php?file=<?= urlencode($clean_path) ?>" data-fancybox="gallery" data-caption="<?= htmlspecialchars($p['title']) ?>" class="group block overflow-hidden rounded-xl shadow-sm hover:shadow-md transition">
                         <div class="aspect-w-4 aspect-h-3">
-                            <img src="image.php?file=<?= urlencode($p['image_path']) ?>" alt="<?= htmlspecialchars($p['title']) ?>" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
+                            <img src="image.php?file=<?= urlencode($clean_path) ?>" alt="<?= htmlspecialchars($p['title']) ?>" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
                         </div>
                         <?php if(!empty($p['title'])): ?>
                             <div class="p-3 bg-white">
