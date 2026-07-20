@@ -118,7 +118,7 @@ include 'includes/header.php';
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start" data-aos="fade-up">
             <!-- Left Side: Content -->
             <div class="text-left">
-                <h1 class="text-4xl md:text-6xl md:text-[4.5rem] font-bold text-white mb-6 leading-tight">दिगंबर जैन युवक-युवती परिचय hii</h1>
+                <h1 class="text-4xl md:text-6xl md:text-[4.5rem] font-bold text-white mb-6 leading-tight">दिगंबर जैन युवक-युवती परिचय</h1>
                 <p class="text-2xl md:text-3xl text-yellow-400 font-bold mb-6 drop-shadow-lg tracking-wide">The most trusted matrimony service for Digambar Jain!</p>
                 <p class="text-lg md:text-xl text-gray-200 leading-relaxed max-w-xl md:mx-0">This website is created only for the Digambar Jain community to help eligible young men and women of the entire Digambar Jain society find their suitable life partner.</p>
             </div>
