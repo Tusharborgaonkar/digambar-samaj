@@ -20,8 +20,21 @@ try {
     $advertisements = $adsStmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {}
 
-$home_top_ads = array_filter($advertisements, function($ad) { return $ad['position'] == 'home_top'; });
-$home_bottom_ads = array_filter($advertisements, function($ad) { return $ad['position'] == 'home_bottom'; });
+$home_top_ads = array_filter($advertisements, function($ad) { 
+    if ($ad['position'] != 'home_top') return false;
+    $img = $ad['image_path'] ?? ($ad['image'] ?? '');
+    if (!$img) return false;
+    $img_path = ltrim(str_replace('../', '', $img), '/\\');
+    return file_exists(__DIR__ . '/' . $img_path);
+});
+
+$home_bottom_ads = array_filter($advertisements, function($ad) { 
+    if ($ad['position'] != 'home_bottom') return false;
+    $img = $ad['image_path'] ?? ($ad['image'] ?? '');
+    if (!$img) return false;
+    $img_path = ltrim(str_replace('../', '', $img), '/\\');
+    return file_exists(__DIR__ . '/' . $img_path);
+});
 
 $is_logged_in = false;
 $is_approved = false;
@@ -279,7 +292,6 @@ include 'includes/header.php';
             <?php foreach($home_top_ads as $ad): ?>
                 <?php 
                 $img_path = ltrim(str_replace('../', '', $ad['image_path'] ?? $ad['image']), '/\\'); 
-                if (!file_exists(__DIR__ . '/' . $img_path)) continue;
                 $img_src = 'image.php?file=' . urlencode($img_path);
                 ?>
                 <a href="<?= htmlspecialchars($ad['link_url'] ?? $ad['link'] ?? '#') ?>" target="_blank" class="block w-full max-w-[295px] aspect-[2/3] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition bg-white">
@@ -619,8 +631,7 @@ include 'includes/header.php';
         <div class="flex flex-wrap justify-center gap-6 items-center">
             <?php foreach($home_bottom_ads as $ad): ?>
                 <?php 
-                $img_path = ltrim(str_replace('../', '', $ad['image']), '/\\'); 
-                if (!file_exists(__DIR__ . '/' . $img_path)) continue;
+                $img_path = ltrim(str_replace('../', '', $ad['image_path'] ?? ($ad['image'] ?? '')), '/\\'); 
                 $img_src = 'image.php?file=' . urlencode($img_path);
                 ?>
                 <a href="<?= htmlspecialchars($ad['link'] ?? '#') ?>" target="_blank" class="block w-full max-w-[295px] aspect-[2/3] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition bg-white">
