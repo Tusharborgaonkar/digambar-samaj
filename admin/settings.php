@@ -111,7 +111,7 @@ $payment_qr_code = $settings['payment_qr_code'] ?? 'assets/images/qr_code.jpg';
 
             <div>
                 <label class="block font-bold text-gray-800 mb-2">Support Email Address (Admin Notifications)</label>
-                <input type="email" name="support_email" value="<?= htmlspecialchars($support_email) ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
+                <input type="email" name="support_email" value="<?= htmlspecialchars($support_email) ?>" pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}" title="Please enter a valid email address with @ and . characters" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
             </div>
             
             <hr class="border-gray-100 mt-6 mb-6">
@@ -121,11 +121,11 @@ $payment_qr_code = $settings['payment_qr_code'] ?? 'assets/images/qr_code.jpg';
             <div class="space-y-4">
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Public Contact Email</label>
-                    <input type="email" name="contact_email" value="<?= htmlspecialchars($contact_email) ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
+                    <input type="email" name="contact_email" value="<?= htmlspecialchars($contact_email) ?>" pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}" title="Please enter a valid email address with @ and . characters" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
                 </div>
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Public Contact Phone</label>
-                    <input type="text" name="contact_phone" value="<?= htmlspecialchars($contact_phone) ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
+                    <input type="text" name="contact_phone" value="<?= htmlspecialchars($contact_phone) ?>" pattern="^\+?[0-9\s\-]{10,15}$" title="Enter a valid phone number (10-15 digits, optionally starting with +)" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
                 </div>
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Public Contact Address</label>
