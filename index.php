@@ -283,7 +283,7 @@ include 'includes/header.php';
 </section>
 <?php endif; ?>
 
-<?php if (!empty($home_top_ads) && (isset($settings['show_home_top_ads']) ? $settings['show_home_top_ads'] == '1' : true)): ?>
+<?php if (!empty($home_top_ads) && (isset($settings['show_home_top_ads']) ? $settings['show_home_top_ads'] == '1' : false)): ?>
 <!-- Advertisements (Home Top) -->
 <section class="py-8 bg-white border-b border-gray-100">
     <div class="container mx-auto px-4">
@@ -624,7 +624,7 @@ include 'includes/header.php';
     </div>
 </section>
 
-<?php if (!empty($home_bottom_ads)): ?>
+<?php if (!empty($home_bottom_ads) && (isset($settings['show_home_top_ads']) ? $settings['show_home_top_ads'] == '1' : false)): ?>
 <!-- Advertisements (Home Bottom) -->
 <section class="py-8 bg-gray-50 border-t border-gray-200">
     <div class="container mx-auto px-4">
