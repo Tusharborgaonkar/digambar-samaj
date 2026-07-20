@@ -269,14 +269,15 @@ include 'includes/header.php';
 <!-- Advertisements (Home Top) -->
 <section class="py-8 bg-white border-b border-gray-100">
     <div class="container mx-auto px-4">
-        <div class="flex flex-col gap-6 items-center">
+        <h2 class="text-3xl font-bold text-center text-dark mb-8">Advertisements</h2>
+        <div class="flex flex-wrap justify-center gap-6 items-center">
             <?php foreach($home_top_ads as $ad): ?>
                 <?php 
-                $img_path = str_replace('../', '', $ad['image']); 
+                $img_path = str_replace('../', '', $ad['image_path'] ?? $ad['image']); 
                 $img_src = 'image.php?file=' . urlencode($img_path);
                 ?>
-                <a href="<?= htmlspecialchars($ad['link'] ?? '#') ?>" target="_blank" class="block w-full max-w-5xl rounded-xl overflow-hidden shadow-md hover:shadow-lg transition">
-                    <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-auto object-cover">
+                <a href="<?= htmlspecialchars($ad['link_url'] ?? $ad['link'] ?? '#') ?>" target="_blank" class="block w-full max-w-[295px] aspect-[2/3] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition bg-white">
+                    <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
                 </a>
             <?php endforeach; ?>
         </div>
