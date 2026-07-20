@@ -31,8 +31,23 @@ $offset = ($page - 1) * $limit;
 
 // Search and Sorting settings
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-$sort = isset($_GET['sort']) ? $_GET['sort'] : 'created_at';
-$order = isset($_GET['order']) && $_GET['order'] === 'asc' ? 'ASC' : 'DESC';
+$sort_combo = isset($_GET['sort_combo']) ? $_GET['sort_combo'] : 'created_at_desc';
+
+// Legacy fallback
+if (isset($_GET['sort']) && isset($_GET['order']) && !isset($_GET['sort_combo'])) {
+    $sort_combo = $_GET['sort'] . '_' . strtolower($_GET['order']);
+}
+
+$parts = explode('_', $sort_combo);
+if (count($parts) >= 2) {
+    $order_part = array_pop($parts);
+    $sort = implode('_', $parts);
+    $order = strtoupper($order_part) === 'ASC' ? 'ASC' : 'DESC';
+} else {
+    $sort = 'created_at';
+    $order = 'DESC';
+}
+$current_sort_combo = $sort . '_' . strtolower($order);
 
 $valid_sorts = ['name' => 'full_name', 'id' => 'profile_id', 'created_at' => 'created_at'];
 $sort_col = $valid_sorts[$sort] ?? 'created_at';
@@ -84,12 +99,22 @@ if ($total_records == 0) {
         <p class="text-gray-500 text-sm">Members whose profiles have been verified and approved.</p>
     </div>
     <div class="flex flex-col sm:flex-row gap-2">
-        <form method="GET" class="flex">
-            <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Search name, ID, email..." class="border border-gray-300 rounded-l-lg px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
-            <button type="submit" class="bg-primary text-white px-4 py-2 rounded-r-lg hover:bg-opacity-90 transition"><i class="fas fa-search"></i></button>
-            <?php if(!empty($search)): ?>
-                <a href="members-approved.php" class="ml-2 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-300 transition flex items-center">Clear</a>
-            <?php endif; ?>
+        <form method="GET" class="flex flex-col sm:flex-row gap-2 w-full">
+            <select name="sort_combo" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary" onchange="this.form.submit()">
+                <option value="created_at_desc" <?= $current_sort_combo === 'created_at_desc' ? 'selected' : '' ?>>Newest First</option>
+                <option value="created_at_asc" <?= $current_sort_combo === 'created_at_asc' ? 'selected' : '' ?>>Oldest First</option>
+                <option value="name_asc" <?= $current_sort_combo === 'name_asc' ? 'selected' : '' ?>>Name (A-Z)</option>
+                <option value="name_desc" <?= $current_sort_combo === 'name_desc' ? 'selected' : '' ?>>Name (Z-A)</option>
+                <option value="id_asc" <?= $current_sort_combo === 'id_asc' ? 'selected' : '' ?>>ID (A-Z)</option>
+                <option value="id_desc" <?= $current_sort_combo === 'id_desc' ? 'selected' : '' ?>>ID (Z-A)</option>
+            </select>
+            <div class="flex flex-grow">
+                <input type="text" name="search" value="<?= htmlspecialchars($search) ?>" placeholder="Search name, ID, email..." class="w-full border border-gray-300 rounded-l-lg px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+                <button type="submit" class="bg-primary text-white px-4 py-2 rounded-r-lg hover:bg-opacity-90 transition"><i class="fas fa-search"></i></button>
+                <?php if(!empty($search)): ?>
+                    <a href="members-approved.php<?= $current_sort_combo !== 'created_at_desc' ? '?sort_combo=' . $current_sort_combo : '' ?>" class="ml-2 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-300 transition flex items-center">Clear</a>
+                <?php endif; ?>
+            </div>
         </form>
         <a href="export-members.php?status=approved" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition shadow-sm flex items-center">
             <i class="fas fa-download mr-2"></i> Export
@@ -104,7 +129,7 @@ function getSortIcon($col, $current_sort, $current_order) {
 }
 function getSortUrl($col, $current_sort, $current_order, $search) {
     $new_order = ($current_sort === $col && $current_order === 'ASC') ? 'desc' : 'asc';
-    return "?sort=$col&order=$new_order" . (!empty($search) ? "&search=".urlencode($search) : "");
+    return "?sort_combo={$col}_{$new_order}" . (!empty($search) ? "&search=".urlencode($search) : "");
 }
 ?>
 
