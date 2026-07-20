@@ -155,9 +155,13 @@ include 'includes/sidebar.php';
     <!-- Ad Card -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
         <div class="h-48 bg-gray-200 relative overflow-hidden group">
-            <img src="../image.php?file=<?= urlencode($ad['image']) ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
+            <?php 
+            $img_path = ltrim(str_replace('../', '', $ad['image']), '/\\');
+            $img_src = '../image.php?file=' . urlencode($img_path);
+            ?>
+            <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <a href="../image.php?file=<?= urlencode($ad['image']) ?>" target="_blank" class="bg-white text-gray-800 p-2 rounded-full mx-1 hover:bg-gray-100 transition shadow" title="Preview"><i class="fas fa-eye w-5 h-5 flex items-center justify-center"></i></a>
+                <a href="<?= $img_src ?>" target="_blank" class="bg-white text-gray-800 p-2 rounded-full mx-1 hover:bg-gray-100 transition shadow" title="Preview"><i class="fas fa-eye w-5 h-5 flex items-center justify-center"></i></a>
                 <button type="button" onclick="openEditModal(<?= $ad['id'] ?>, '<?= htmlspecialchars(addslashes($ad['title'])) ?>', '<?= htmlspecialchars(addslashes($ad['link'])) ?>', '<?= $ad['position'] ?>', <?= $ad['status'] ?>)" class="bg-white text-blue-600 p-2 rounded-full mx-1 hover:bg-blue-50 transition shadow" title="Edit"><i class="fas fa-edit w-5 h-5 flex items-center justify-center"></i></button>
                 <a href="?delete=<?= $ad['id'] ?>" onclick="return confirm('Delete this ad?');" class="bg-white text-red-600 p-2 rounded-full mx-1 hover:bg-red-50 transition shadow" title="Delete"><i class="fas fa-trash w-5 h-5 flex items-center justify-center"></i></a>
             </div>
