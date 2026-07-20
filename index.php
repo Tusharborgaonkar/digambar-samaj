@@ -110,34 +110,9 @@ include 'includes/header.php';
                 <p class="text-lg md:text-xl text-gray-200 leading-relaxed max-w-xl md:mx-0">This website is created only for the Digambar Jain community to help eligible young men and women of the entire Digambar Jain society find their suitable life partner.</p>
             </div>
             
-            <!-- Right Side: Image / Advertisements -->
-            <div class="flex justify-center md:justify-end mt-12 md:mt-0 relative w-full mx-auto md:ml-auto md:mr-0">
-                <?php if (!empty($home_top_ads)): ?>
-                    <!-- Swiper Slider for Hero Advertisements -->
-                    <div class="swiper hero-ad-swiper w-full max-w-[295px] aspect-[2/3] rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/30 transform hover:scale-[1.02] transition duration-500 overflow-hidden bg-white">
-                        <div class="swiper-wrapper h-full">
-                            <?php foreach ($home_top_ads as $ad): 
-                                $adPath = ltrim(str_replace('../', '', $ad['image_path'] ?? $ad['image']), '/');
-                                $imgSrc = 'image.php?file=' . urlencode($adPath);
-                            ?>
-                                <div class="swiper-slide cursor-pointer h-full" <?php if(!empty($ad['link_url'] ?? $ad['link'])): ?>onclick="window.open('<?= htmlspecialchars($ad['link_url'] ?? $ad['link']) ?>', '_blank')"<?php endif; ?>>
-                                    <img src="<?= $imgSrc ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
-                                    <?php if (!empty($ad['title'])): ?>
-                                        <div class="absolute bottom-0 left-0 w-full bg-black/60 p-3 text-white text-center">
-                                            <h4 class="font-bold text-lg"><?= htmlspecialchars($ad['title']) ?></h4>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                        <div class="swiper-pagination"></div>
-                        <!-- Navigation arrows -->
-                        <div class="swiper-button-prev !text-white after:!text-xl drop-shadow-md"></div>
-                        <div class="swiper-button-next !text-white after:!text-xl drop-shadow-md"></div>
-                    </div>
-                <?php else: ?>
-                    <img src="assets/images/gallery/TEMP1.jpg" alt="Matrimony Couple" class="w-full h-auto rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/30 transform hover:scale-[1.02] transition duration-500">
-                <?php endif; ?>
+            <!-- Right Side: Image -->
+            <div class="flex justify-center md:justify-end mt-12 md:mt-0 relative w-full max-w-[650px] mx-auto md:ml-auto md:mr-0">
+                <img src="assets/images/gallery/TEMP1.jpg" alt="Matrimony Couple" class="w-full h-auto rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/30 transform hover:scale-[1.02] transition duration-500">
             </div>
         </div>
     </div>
