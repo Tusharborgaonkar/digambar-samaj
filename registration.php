@@ -15,8 +15,8 @@ $current_user = $stmt->fetch();
 
 $full_name = '';
 
-$is_edit = ($current_user && $current_user['status'] === 'approved');
-$new_status = ($current_user && $current_user['status'] === 'approved') ? 'approved' : 'pending';
+$is_edit = ($current_user !== false && !empty($current_user));
+$new_status = $is_edit ? $current_user['status'] : 'pending';
 
 if (!$current_user || !in_array($current_user['status'], ['account_approved', 'approved'])) {
     if ($current_user && ($current_user['status'] === 'account_pending' || $current_user['status'] === 'pending')) {

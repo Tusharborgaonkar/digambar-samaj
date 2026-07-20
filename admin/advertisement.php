@@ -47,6 +47,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_ad'])) {
     exit;
 }
 
+// Handle Edit Ad
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_ad'])) {
+    $id = $_POST['edit_id'];
+    $title = $_POST['title'] ?? '';
+    $link = $_POST['link'] ?? '';
+    $position = $_POST['position'] ?? 'home_top';
+    $status = isset($_POST['status']) ? 1 : 0;
+    
+    // Check if new image is uploaded
+    if (isset($_FILES['ad_image']) && $_FILES['ad_image']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = '../uploads/ads/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        $fileExt = strtolower(pathinfo($_FILES['ad_image']['name'], PATHINFO_EXTENSION));
+        $fileName = 'ad_' . time() . '_' . uniqid() . '.' . $fileExt;
+        $targetPath = $uploadDir . $fileName;
+        
+        if (move_uploaded_file($_FILES['ad_image']['tmp_name'], $targetPath)) {
+            chmod($targetPath, 0644);
+            $dbPath = 'uploads/ads/' . $fileName;
+            
+            // Delete old image
+            $stmt = $pdo->prepare("SELECT image FROM advertisements WHERE id = ?");
+            $stmt->execute([$id]);
+            $oldImg = $stmt->fetchColumn();
+            if ($oldImg && file_exists('../' . $oldImg)) {
+                unlink('../' . $oldImg);
+            }
+            
+            $stmt = $pdo->prepare("UPDATE advertisements SET title = ?, link = ?, position = ?, status = ?, image = ? WHERE id = ?");
+            $stmt->execute([$title, $link, $position, $status, $dbPath, $id]);
+        }
+    } else {
+        $stmt = $pdo->prepare("UPDATE advertisements SET title = ?, link = ?, position = ?, status = ? WHERE id = ?");
+        $stmt->execute([$title, $link, $position, $status, $id]);
+    }
+    
+    header("Location: advertisement.php?msg=updated");
+    exit;
+}
+
 // Handle Upload
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['ad_image'])) {
     $title = $_POST['title'] ?? '';
@@ -116,6 +158,7 @@ include 'includes/sidebar.php';
             <img src="../image.php?file=<?= urlencode($ad['image']) ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <a href="../image.php?file=<?= urlencode($ad['image']) ?>" target="_blank" class="bg-white text-gray-800 p-2 rounded-full mx-1 hover:bg-gray-100 transition shadow" title="Preview"><i class="fas fa-eye w-5 h-5 flex items-center justify-center"></i></a>
+                <button type="button" onclick="openEditModal(<?= $ad['id'] ?>, '<?= htmlspecialchars(addslashes($ad['title'])) ?>', '<?= htmlspecialchars(addslashes($ad['link'])) ?>', '<?= $ad['position'] ?>', <?= $ad['status'] ?>)" class="bg-white text-blue-600 p-2 rounded-full mx-1 hover:bg-blue-50 transition shadow" title="Edit"><i class="fas fa-edit w-5 h-5 flex items-center justify-center"></i></button>
                 <a href="?delete=<?= $ad['id'] ?>" onclick="return confirm('Delete this ad?');" class="bg-white text-red-600 p-2 rounded-full mx-1 hover:bg-red-50 transition shadow" title="Delete"><i class="fas fa-trash w-5 h-5 flex items-center justify-center"></i></a>
             </div>
             <div class="absolute top-3 right-3">
@@ -209,5 +252,70 @@ include 'includes/sidebar.php';
         </div>
     </div>
 </div>
+
+<!-- Edit Ad Modal -->
+<div id="editAdModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="flex justify-between items-center p-6 border-b border-gray-100">
+            <h3 class="text-xl font-bold text-gray-800">Edit Advertisement</h3>
+            <button class="text-gray-400 hover:text-gray-600 transition" onclick="document.getElementById('editAdModal').classList.add('hidden')">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <div class="p-6 overflow-y-auto">
+            <form class="space-y-5" action="" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="edit_id" id="edit_ad_id">
+                <input type="hidden" name="edit_ad" value="1">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ad Title / Name</label>
+                    <input type="text" name="title" id="edit_title" placeholder="e.g. Summer Promo" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Target Link URL (Optional)</label>
+                    <input type="url" name="link" id="edit_link" placeholder="https://..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Upload New Banner Image (Leave empty to keep current)</label>
+                    <input type="file" name="ad_image" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Position</label>
+                        <select name="position" id="edit_position" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none bg-white text-sm">
+                            <option value="home_top">Home Top</option>
+                            <option value="home_bottom">Home Bottom</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                        <label class="relative inline-flex items-center cursor-pointer mt-2">
+                            <input type="checkbox" name="status" id="edit_status" value="1" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full bg-primary text-white py-3 rounded-xl font-bold hover:bg-opacity-90 transition mt-4">
+                    Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openEditModal(id, title, link, position, status) {
+    document.getElementById('edit_ad_id').value = id;
+    document.getElementById('edit_title').value = title;
+    document.getElementById('edit_link').value = link;
+    document.getElementById('edit_position').value = position;
+    document.getElementById('edit_status').checked = (status == 1);
+    document.getElementById('editAdModal').classList.remove('hidden');
+}
+</script>
 
 <?php include 'includes/footer.php'; ?>

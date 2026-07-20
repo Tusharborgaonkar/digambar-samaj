@@ -12,11 +12,10 @@ $user_id = $_SESSION['user_id'];
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$user_id]);
 $current_user = $stmt->fetch();
+$is_edit = ($current_user !== false && !empty($current_user));
+$new_status = $is_edit ? $current_user['status'] : 'pending';
 
 $full_name = '';
-
-$is_edit = ($current_user && $current_user['status'] === 'approved');
-$new_status = $is_edit ? 'approved' : 'pending';
 
 if (!$current_user || !in_array($current_user['status'], ['account_approved', 'approved'])) {
     if ($current_user && ($current_user['status'] === 'account_pending' || $current_user['status'] === 'pending')) {
