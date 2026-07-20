@@ -254,12 +254,15 @@ include 'includes/header.php';
         </p>
         <?php 
         $payment_qr_code = $settings['payment_qr_code'] ?? 'assets/images/qr_code.jpg';
+        $qr_exists = !empty($payment_qr_code) && file_exists($payment_qr_code);
         ?>
-        <?php if (!empty($payment_qr_code) && file_exists($payment_qr_code)): ?>
-            <div class="mt-4 flex justify-center">
-                <img src="image.php?file=<?= urlencode($payment_qr_code) ?>" alt="Payment QR" class="w-48 h-48 border border-yellow-300 rounded shadow-sm">
-            </div>
-        <?php endif; ?>
+        <div class="mt-4 flex justify-center">
+            <?php if ($qr_exists): ?>
+                <img src="image.php?file=<?= urlencode($payment_qr_code) ?>" alt="Payment QR" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover">
+            <?php else: ?>
+                <img src="https://placehold.co/200x200/fef08a/854d0e?text=QR+Code+Not+Found" alt="Payment QR Placeholder" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover">
+            <?php endif; ?>
+        </div>
         <div class="mt-6">
             <a href="pre-register.php" class="inline-block bg-primary text-white px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold">Register Now</a>
         </div>

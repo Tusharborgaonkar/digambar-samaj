@@ -83,9 +83,14 @@ $show_home_top_ads = $settings['show_home_top_ads'] ?? '1';
                 <div class="flex-grow">
                     <h5 class="font-bold text-gray-800">Payment QR Code Image</h5>
                     <p class="text-xs text-gray-500 mt-1">Upload the QR code image for payments. (Shown on homepage and registration)</p>
-                    <?php if (!empty($payment_qr_code) && file_exists('../' . $payment_qr_code)): ?>
+                    <?php if (!empty($payment_qr_code)): ?>
                         <div class="mt-2">
-                            <img src="../image.php?file=<?= urlencode($payment_qr_code) ?>" alt="Current QR Code" class="w-24 h-24 object-cover border rounded">
+                            <?php if (file_exists('../' . $payment_qr_code)): ?>
+                                <img src="../image.php?file=<?= urlencode($payment_qr_code) ?>" alt="Current QR Code" class="w-24 h-24 object-cover border rounded">
+                            <?php else: ?>
+                                <img src="https://placehold.co/200x200/fef08a/854d0e?text=Missing" alt="Missing QR Code" class="w-24 h-24 object-cover border rounded">
+                                <p class="text-xs text-red-500 mt-1">Image file not found on server.</p>
+                            <?php endif; ?>
                         </div>
                     <?php endif; ?>
                 </div>
