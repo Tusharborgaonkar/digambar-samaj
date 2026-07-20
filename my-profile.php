@@ -8,6 +8,39 @@ if (!isset($_SESSION['user_logged_in']) || !$_SESSION['user_logged_in']) {
 }
 
 $user_id = $_SESSION['user_id'];
+
+// Handle Payment Screenshot Upload
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_payment'])) {
+    if (isset($_FILES['payment_screenshot']) && $_FILES['payment_screenshot']['error'] === UPLOAD_ERR_OK) {
+        $uploadDir = 'uploads/receipts/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        
+        $fileInfo = pathinfo($_FILES['payment_screenshot']['name']);
+        $ext = strtolower($fileInfo['extension']);
+        $allowed = ['jpg', 'jpeg', 'png', 'pdf'];
+        
+        if (in_array($ext, $allowed)) {
+            $newFileName = 'payment_' . $user_id . '_' . time() . '.' . $ext;
+            $dest = $uploadDir . $newFileName;
+            
+            if (move_uploaded_file($_FILES['payment_screenshot']['tmp_name'], $dest)) {
+                $stmt = $pdo->prepare("UPDATE users SET payment_screenshot = ? WHERE id = ?");
+                $stmt->execute([$dest, $user_id]);
+                echo "<script>alert('Payment screenshot uploaded successfully!'); window.location.href='my-profile.php#payment-upload';</script>";
+                exit;
+            } else {
+                echo "<script>alert('Failed to move uploaded file.');</script>";
+            }
+        } else {
+            echo "<script>alert('Invalid file type. Only JPG, PNG, and PDF are allowed.');</script>";
+        }
+    } else {
+        echo "<script>alert('Please select a valid file.');</script>";
+    }
+}
+
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$user_id]);
 $user = $stmt->fetch();
@@ -123,6 +156,38 @@ $profile_img = (!empty($user['profile_photo']) && file_exists($user['profile_pho
                             </div>
                         </div>
                     </div>
+
+                    <!-- Payment Screenshot Upload Card -->
+                    <div id="payment-upload" class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 mt-8">
+                        <h3 class="text-lg font-bold text-dark mb-4 flex items-center gap-2">
+                            <i class="fas fa-file-invoice-dollar text-primary"></i> Payment Screenshot
+                        </h3>
+                        <?php if (!empty($user['payment_screenshot']) && file_exists($user['payment_screenshot'])): ?>
+                            <div class="mb-4">
+                                <p class="text-sm text-green-600 font-medium mb-2"><i class="fas fa-check-circle"></i> Screenshot Uploaded</p>
+                                <?php 
+                                $ext = strtolower(pathinfo($user['payment_screenshot'], PATHINFO_EXTENSION));
+                                if (in_array($ext, ['jpg', 'jpeg', 'png'])): 
+                                ?>
+                                    <img src="image.php?file=<?= urlencode($user['payment_screenshot']) ?>" alt="Payment Receipt" class="w-full h-auto rounded border border-gray-200">
+                                <?php else: ?>
+                                    <a href="<?= htmlspecialchars($user['payment_screenshot']) ?>" target="_blank" class="text-blue-600 underline text-sm"><i class="fas fa-external-link-alt"></i> View Uploaded PDF/File</a>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <form action="my-profile.php" method="POST" enctype="multipart/form-data" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Upload New Screenshot</label>
+                                <input type="file" name="payment_screenshot" accept=".jpg,.jpeg,.png,.pdf" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-primary hover:file:bg-blue-100" required>
+                                <p class="text-xs text-gray-500 mt-1">Allowed formats: JPG, PNG, PDF</p>
+                            </div>
+                            <button type="submit" name="upload_payment" class="w-full bg-primary text-white py-2 rounded-lg font-medium hover:bg-opacity-90 transition">
+                                Save Profile
+                            </button>
+                        </form>
+                    </div>
+
                 </div>
 
                 <!-- Right Column (Detailed Info) -->

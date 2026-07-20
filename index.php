@@ -264,7 +264,7 @@ include 'includes/header.php';
             <?php endif; ?>
         </div>
         <div class="mt-6">
-            <a href="pre-register.php" class="inline-block bg-primary text-white px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold">PAY NOW</a>
+            <a href="my-profile.php#payment-upload" class="inline-block bg-primary text-white px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold">Upload Payment Screenshot</a>
         </div>
     </div>
 </section>
