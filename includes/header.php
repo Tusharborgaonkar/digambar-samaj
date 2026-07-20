@@ -66,6 +66,14 @@ if ($is_logged_in && isset($_SESSION['user_id'])) {
     <title>Jain Digambar Matrimony - Exclusive Matrimony for Digambar Jain Samaj</title>
     
     <!-- Tailwind CSS CDN -->
+    <script>
+        // Suppress Tailwind CDN production warning
+        const originalWarn = console.warn;
+        console.warn = function(...args) {
+            if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com should not be used in production')) return;
+            originalWarn.apply(console, args);
+        };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Tailwind Config -->

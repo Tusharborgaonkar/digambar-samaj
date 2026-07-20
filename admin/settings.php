@@ -82,7 +82,7 @@ $payment_qr_code = $settings['payment_qr_code'] ?? 'assets/images/qr_code.jpg';
                 <div class="flex-grow">
                     <h5 class="font-bold text-gray-800">Payment QR Code Image</h5>
                     <p class="text-xs text-gray-500 mt-1">Upload the QR code image for payments. (Shown on homepage and registration)</p>
-                    <?php if (!empty($payment_qr_code)): ?>
+                    <?php if (!empty($payment_qr_code) && file_exists('../' . $payment_qr_code)): ?>
                         <div class="mt-2">
                             <img src="../image.php?file=<?= urlencode($payment_qr_code) ?>" alt="Current QR Code" class="w-24 h-24 object-cover border rounded">
                         </div>

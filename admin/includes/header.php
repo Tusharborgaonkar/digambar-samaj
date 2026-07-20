@@ -16,6 +16,14 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
     <title>Admin Dashboard - Jain Digambar Matrimony</title>
     
     <!-- Tailwind CSS CDN -->
+    <script>
+        // Suppress Tailwind CDN production warning
+        const originalWarn = console.warn;
+        console.warn = function(...args) {
+            if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com should not be used in production')) return;
+            originalWarn.apply(console, args);
+        };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Tailwind Config (Matching Main Site + Admin Specifics) -->

@@ -252,12 +252,14 @@ include 'includes/header.php';
         <p class="text-md text-yellow-600 mt-2 font-medium">
             Kindly scan the QR code to pay Rs. 1000/- and mention your Mobile No. in Payment Remarks.
         </p>
-        <div class="mt-4 flex justify-center">
-            <?php 
-            $payment_qr_code = $settings['payment_qr_code'] ?? 'assets/images/qr_code.jpg';
-            ?>
-            <img src="image.php?file=<?= urlencode($payment_qr_code) ?>" alt="Payment QR" class="w-48 h-48 border border-yellow-300 rounded shadow-sm">
-        </div>
+        <?php 
+        $payment_qr_code = $settings['payment_qr_code'] ?? 'assets/images/qr_code.jpg';
+        ?>
+        <?php if (!empty($payment_qr_code) && file_exists($payment_qr_code)): ?>
+            <div class="mt-4 flex justify-center">
+                <img src="image.php?file=<?= urlencode($payment_qr_code) ?>" alt="Payment QR" class="w-48 h-48 border border-yellow-300 rounded shadow-sm">
+            </div>
+        <?php endif; ?>
         <div class="mt-6">
             <a href="pre-register.php" class="inline-block bg-primary text-white px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold">Register Now</a>
         </div>
