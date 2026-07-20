@@ -376,7 +376,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <?php if (!isset($coreFieldsSettings['mobile']) || $coreFieldsSettings['mobile']['is_visible']): ?>
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Mobile Number *</label>
-                            <input type="tel" name="mobile" value="<?= htmlspecialchars($current_user['mobile'] ?? '') ?>" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                            <input type="tel" name="mobile" value="<?= htmlspecialchars($current_user['mobile'] ?? '') ?>" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Please enter exactly 10 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                            <p class="text-xs text-gray-500 mt-1">10 digits only number</p>
                         </div>
                         <?php endif; ?>
                         <div>
@@ -604,7 +605,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <h2 class="text-xl font-bold text-primary mb-4">Section 3: Family Details</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div><label class="block text-gray-700 font-medium mb-2">Father Name *</label><input type="text" name="father_name" value="<?= htmlspecialchars($current_user['father_name'] ?? '') ?>" required class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Father Mobile Number *</label><input type="tel" name="father_mobile" value="<?= htmlspecialchars($current_user['father_mobile'] ?? '') ?>" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Please enter exactly 10 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border rounded-lg px-4 py-2"></div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Father Mobile Number *</label>
+                            <input type="tel" name="father_mobile" value="<?= htmlspecialchars($current_user['father_mobile'] ?? '') ?>" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Please enter exactly 10 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border rounded-lg px-4 py-2">
+                            <p class="text-xs text-gray-500 mt-1">10 digits only number</p>
+                        </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Father Income (Optional)</label><input type="number" name="father_income" value="<?= htmlspecialchars($current_user['father_income'] ?? '') ?>" min="0" step="1" placeholder="Optional" class="w-full border rounded-lg px-4 py-2"></div>
                         
                         <?php $fOcc = $current_user['father_occupation'] ?? ''; ?>
@@ -617,7 +622,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             </select>
                         </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Mother Name *</label><input type="text" name="mother_name" value="<?= htmlspecialchars($current_user['mother_name'] ?? '') ?>" required class="w-full border rounded-lg px-4 py-2"></div>
-                        <div><label class="block text-gray-700 font-medium mb-2">Mother Mobile Number (Optional)</label><input type="tel" name="mother_mobile" value="<?= htmlspecialchars($current_user['mother_mobile'] ?? '') ?>" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Please enter exactly 10 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border rounded-lg px-4 py-2"></div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Mother Mobile Number (Optional)</label>
+                            <input type="tel" name="mother_mobile" value="<?= htmlspecialchars($current_user['mother_mobile'] ?? '') ?>" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Please enter exactly 10 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border rounded-lg px-4 py-2">
+                            <p class="text-xs text-gray-500 mt-1">10 digits only number</p>
+                        </div>
                         
                         <?php 
                         $mOcc = $current_user['mother_occupation'] ?? ''; 
