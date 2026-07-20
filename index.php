@@ -264,7 +264,7 @@ include 'includes/header.php';
             <?php endif; ?>
         </div>
         <div class="mt-6">
-            <a href="pre-register.php" class="inline-block bg-primary text-white px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold">Register Now</a>
+            <a href="pre-register.php" class="inline-block bg-primary text-white px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold">PAY NOW</a>
         </div>
     </div>
 </section>
@@ -278,8 +278,8 @@ include 'includes/header.php';
         <div class="flex flex-wrap justify-center gap-6 items-center">
             <?php foreach($home_top_ads as $ad): ?>
                 <?php 
-                $img_path = str_replace('../', '', $ad['image_path'] ?? $ad['image']); 
-                if (!file_exists($img_path)) continue;
+                $img_path = ltrim(str_replace('../', '', $ad['image_path'] ?? $ad['image']), '/\\'); 
+                if (!file_exists(__DIR__ . '/' . $img_path)) continue;
                 $img_src = 'image.php?file=' . urlencode($img_path);
                 ?>
                 <a href="<?= htmlspecialchars($ad['link_url'] ?? $ad['link'] ?? '#') ?>" target="_blank" class="block w-full max-w-[295px] aspect-[2/3] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition bg-white">
@@ -619,8 +619,8 @@ include 'includes/header.php';
         <div class="flex flex-wrap justify-center gap-6 items-center">
             <?php foreach($home_bottom_ads as $ad): ?>
                 <?php 
-                $img_path = str_replace('../', '', $ad['image']); 
-                if (!file_exists($img_path)) continue;
+                $img_path = ltrim(str_replace('../', '', $ad['image']), '/\\'); 
+                if (!file_exists(__DIR__ . '/' . $img_path)) continue;
                 $img_src = 'image.php?file=' . urlencode($img_path);
                 ?>
                 <a href="<?= htmlspecialchars($ad['link'] ?? '#') ?>" target="_blank" class="block w-full max-w-[295px] aspect-[2/3] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition bg-white">

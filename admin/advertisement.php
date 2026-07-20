@@ -28,7 +28,7 @@ if (isset($_GET['delete'])) {
     $stmt = $pdo->prepare("SELECT image FROM advertisements WHERE id = ?");
     $stmt->execute([$id]);
     $img = $stmt->fetchColumn();
-    if ($img && file_exists('../' . $img)) {
+    if ($img && strpos($img, 'uploads/ads/') === 0 && file_exists('../' . $img)) {
         unlink('../' . $img);
     }
     $pdo->prepare("DELETE FROM advertisements WHERE id = ?")->execute([$id]);
@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_ad'])) {
             $stmt = $pdo->prepare("SELECT image FROM advertisements WHERE id = ?");
             $stmt->execute([$id]);
             $oldImg = $stmt->fetchColumn();
-            if ($oldImg && file_exists('../' . $oldImg)) {
+            if ($oldImg && strpos($oldImg, 'uploads/ads/') === 0 && file_exists('../' . $oldImg)) {
                 unlink('../' . $oldImg);
             }
             
