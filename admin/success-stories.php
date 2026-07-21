@@ -270,10 +270,9 @@ include 'includes/sidebar.php';
 </div>
 
 <!-- Add Story Modal -->
-<div id="addStoryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-1/2 max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-        <form method="POST" enctype="multipart/form-data" class="flex flex-col h-full">
-            <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50 shrink-0">
+<div id="addStoryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden p-4">
+    <form method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow-xl w-full md:w-1/2 max-w-2xl max-h-full flex flex-col overflow-hidden">
+        <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50 shrink-0">
                 <h3 class="text-lg font-bold text-gray-800">Add New Success Story</h3>
                 <button type="button" onclick="document.getElementById('addStoryModal').classList.add('hidden')" class="text-gray-500 hover:text-red-500 focus:outline-none">
                     <i class="fas fa-times text-xl"></i>
@@ -307,14 +306,12 @@ include 'includes/sidebar.php';
                 <button type="submit" class="bg-primary text-white px-6 py-2 rounded shadow hover:bg-opacity-90 font-semibold">Save Story</button>
             </div>
         </form>
-    </div>
 </div>
 
 <!-- Edit Story Modal -->
-<div id="editStoryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-1/2 max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
-        <form id="editStoryForm" method="POST" enctype="multipart/form-data" class="flex flex-col h-full">
-            <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50 shrink-0">
+<div id="editStoryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden p-4">
+    <form id="editStoryForm" method="POST" enctype="multipart/form-data" class="bg-white rounded-lg shadow-xl w-full md:w-1/2 max-w-2xl max-h-full flex flex-col overflow-hidden">
+        <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50 shrink-0">
                 <h3 class="text-lg font-bold text-gray-800">Edit Success Story</h3>
                 <button type="button" onclick="document.getElementById('editStoryModal').classList.add('hidden')" class="text-gray-500 hover:text-red-500 focus:outline-none">
                     <i class="fas fa-times text-xl"></i>
@@ -359,7 +356,6 @@ include 'includes/sidebar.php';
                 <button type="submit" class="bg-primary text-white px-6 py-2 rounded shadow hover:bg-opacity-90 font-semibold">Update Story</button>
             </div>
         </form>
-    </div>
 </div>
 
 <!-- Story Modal (View) -->
