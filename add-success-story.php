@@ -57,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $upload_path = $upload_dir . $new_filename;
                 
                 if (move_uploaded_file($_FILES['photo']['tmp_name'], $upload_path)) {
-                    chmod($upload_path, 0644);
                     $photo = $upload_path;
                 } else {
                     $error_msg = "Failed to upload photo.";

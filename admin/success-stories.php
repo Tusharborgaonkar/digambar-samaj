@@ -54,7 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $upload_path = $upload_dir . $new_filename;
                             
                             if (move_uploaded_file($_FILES['photo']['tmp_name'], $upload_path)) {
-                                chmod($upload_path, 0644);
                                 $photo = 'uploads/success_stories/' . $new_filename;
                             } else {
                                 $error_msg = "Failed to upload photo.";
@@ -97,7 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $upload_path = $upload_dir . $new_filename;
                                 
                                 if (move_uploaded_file($_FILES['photo']['tmp_name'], $upload_path)) {
-                                    chmod($upload_path, 0644);
                                     // Get old photo to delete
                                     $stmt = $pdo->prepare("SELECT photo FROM success_stories WHERE id = ?");
                                     $stmt->execute([$id]);
@@ -234,7 +232,8 @@ include 'includes/sidebar.php';
                                             data-name="<?= htmlspecialchars($story['couple_name']) ?>" 
                                             data-city="<?= htmlspecialchars($story['city']) ?>" 
                                             data-story="<?= htmlspecialchars($story['story']) ?>"
-                                            data-order="<?= $story['display_order'] ?? 0 ?>">
+                                            data-order="<?= $story['display_order'] ?? 0 ?>"
+                                            data-photo="<?= $photoPath ?>">
                                             <i class="fas fa-edit text-lg"></i>
                                         </button>
                                         <form method="POST" class="inline-block">
@@ -342,8 +341,13 @@ include 'includes/sidebar.php';
                     <textarea name="story" id="edit_story" rows="4" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2 border bg-white"></textarea>
                 </div>
                 
+                <div class="mb-3">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Current Photo</label>
+                    <img id="edit_current_photo" src="" alt="Current Photo" class="h-24 w-24 object-cover rounded-md border border-gray-200">
+                </div>
+
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Photo (Leave empty to keep existing)</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Upload New Photo (Leave empty to keep existing)</label>
                     <input type="file" name="photo" accept="image/*" class="w-full border-gray-300 rounded-md shadow-sm p-2 border bg-white">
                 </div>
             </div>
@@ -397,6 +401,7 @@ include 'includes/sidebar.php';
             document.getElementById('edit_city').value = this.getAttribute('data-city');
             document.getElementById('edit_story').value = this.getAttribute('data-story');
             document.getElementById('edit_display_order').value = this.getAttribute('data-order');
+            document.getElementById('edit_current_photo').src = this.getAttribute('data-photo');
             document.getElementById('editStoryModal').classList.remove('hidden');
         });
     });
