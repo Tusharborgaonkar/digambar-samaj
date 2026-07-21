@@ -11,13 +11,24 @@ if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) 
     $stmt = $pdo->prepare("SELECT status FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     $user_status = $stmt->fetchColumn();
-    // 'approved' = profile publicly visible; 'account_approved' = account verified, can view photos
-    if (in_array($user_status, ['approved', 'account_approved'])) {
+    // Only 'approved' users can access
+    if ($user_status === 'approved') {
         $is_approved = true;
+    } else {
+        if ($user_status === 'account_approved') {
+            header("Location: registration.php");
+            exit;
+        } else {
+            header("Location: waiting-approval.php");
+            exit;
+        }
     }
 } else if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
     $is_logged_in = true;
     $is_approved = true;
+} else {
+    header("Location: login.php");
+    exit;
 }
 
 $liked_profiles = [];

@@ -1,14 +1,8 @@
 <?php
 require_once 'includes/db.php';
 try {
-    $stmt = $pdo->query("DESCRIBE gallery");
+    $stmt = $pdo->query("DESCRIBE payments");
     print_r($stmt->fetchAll(PDO::FETCH_ASSOC));
 } catch (Exception $e) {
-    echo "Gallery table error: " . $e->getMessage() . "\n";
-}
-try {
-    $stmt = $pdo->query("DESCRIBE success_stories");
-    print_r($stmt->fetchAll(PDO::FETCH_ASSOC));
-} catch (Exception $e) {
-    echo "Success stories error: " . $e->getMessage() . "\n";
+    echo "Payments table error: " . $e->getMessage() . "\n";
 }

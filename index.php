@@ -44,7 +44,7 @@ if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) 
         $stmt = $pdo->prepare("SELECT status FROM users WHERE id = ?");
         $stmt->execute([$_SESSION['user_id']]);
         $user_status = $stmt->fetchColumn();
-        if (in_array($user_status, ['approved', 'account_approved'])) {
+        if ($user_status === 'approved') {
             $is_approved = true;
         }
     } catch(PDOException $e) {}
@@ -339,8 +339,8 @@ include 'includes/header.php';
                 $stmt = $pdo->prepare("SELECT status FROM users WHERE id = ?");
                 $stmt->execute([$_SESSION['user_id']]);
                 $user_status = $stmt->fetchColumn();
-                // 'approved' = profile publicly visible; 'account_approved' = account verified, can view photos
-                if (in_array($user_status, ['approved', 'account_approved'])) {
+                // 'approved' = profile publicly visible, can view photos
+                if ($user_status === 'approved') {
                     $is_approved = true;
                 }
             } else if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {

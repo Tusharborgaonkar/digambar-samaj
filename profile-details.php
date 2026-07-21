@@ -18,8 +18,17 @@ if ($is_admin_logged_in) {
     $stmt = $pdo->prepare("SELECT status FROM users WHERE id = ?");
     $stmt->execute([$_SESSION['user_id']]);
     $user_status = $stmt->fetchColumn();
+    
     if ($user_status === 'approved') {
         $is_approved = true;
+    } else {
+        if ($user_status === 'account_approved') {
+            header("Location: registration.php");
+            exit;
+        } else {
+            header("Location: waiting-approval.php");
+            exit;
+        }
     }
 }
 

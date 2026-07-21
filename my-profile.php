@@ -12,6 +12,7 @@ $user_id = $_SESSION['user_id'];
 // Handle Payment Screenshot Upload
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_payment'])) {
     if (isset($_FILES['payment_screenshot']) && $_FILES['payment_screenshot']['error'] === UPLOAD_ERR_OK) {
+        $payment_txn_id = trim(htmlspecialchars($_POST['payment_transaction_id'] ?? ''));
         $uploadDir = 'uploads/receipts/';
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);
@@ -26,8 +27,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_payment'])) {
             $dest = $uploadDir . $newFileName;
             
             if (move_uploaded_file($_FILES['payment_screenshot']['tmp_name'], $dest)) {
-                $stmt = $pdo->prepare("UPDATE users SET payment_screenshot = ? WHERE id = ?");
-                $stmt->execute([$dest, $user_id]);
+                $stmt = $pdo->prepare("UPDATE users SET payment_screenshot = ?, payment_transaction_id = ?, payment_status = 'pending' WHERE id = ?");
+                $stmt->execute([$dest, $payment_txn_id, $user_id]);
+
+                // Insert into payments table
+                $stmtUser = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+                $stmtUser->execute([$user_id]);
+                $userRecord = $stmtUser->fetch();
+                if ($userRecord) {
+                    $address = trim(!empty($userRecord['current_address']) ? $userRecord['current_address'] : ($userRecord['permanent_address'] ?? ''));
+                    $stmtPay = $pdo->prepare("INSERT INTO payments (user_id, full_name, phone_number, email, address, dob, transaction_id, payment_screenshot, payment_method, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Screenshot', 'pending')");
+                    $stmtPay->execute([$user_id, $userRecord['full_name'], $userRecord['mobile'], $userRecord['email'], $address, $userRecord['birth_date'], $payment_txn_id, $dest]);
+                }
+
                 echo "<script>alert('Payment screenshot uploaded successfully!'); window.location.href='my-profile.php#payment-upload';</script>";
                 exit;
             } else {
@@ -192,11 +204,20 @@ $profile_img = (!empty($user['profile_photo']) && file_exists($user['profile_pho
                                     <a href="<?= htmlspecialchars($user['payment_screenshot']) ?>" target="_blank" class="text-blue-600 underline text-sm"><i class="fas fa-external-link-alt"></i> View Uploaded PDF/File</a>
                                 <?php endif; ?>
                             </div>
+                            <?php if (!empty($user['payment_transaction_id'])): ?>
+                                <div class="mb-4 bg-gray-50 border border-gray-200 rounded p-3">
+                                    <p class="text-sm text-gray-500 font-medium">Transaction ID:</p>
+                                    <p class="text-md text-gray-800 font-bold"><?= htmlspecialchars($user['payment_transaction_id']) ?></p>
+                                </div>
+                            <?php endif; ?>
                         <?php endif; ?>
                         
                         <form action="my-profile.php" method="POST" enctype="multipart/form-data" class="space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Upload New Screenshot</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Transaction ID <span class="text-red-500">*</span></label>
+                                <input type="text" name="payment_transaction_id" placeholder="e.g. GPay Transaction ID" class="w-full text-sm border-gray-300 rounded-md shadow-sm p-2 mb-3 focus:ring-primary focus:border-primary" required>
+                                
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Upload New Screenshot <span class="text-red-500">*</span></label>
                                 <input type="file" name="payment_screenshot" accept=".jpg,.jpeg,.png,.pdf" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-primary hover:file:bg-blue-100" required>
                                 <p class="text-xs text-gray-500 mt-1">Allowed formats: JPG, PNG, PDF</p>
                             </div>

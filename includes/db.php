@@ -40,6 +40,14 @@ try {
     // Set default fetch mode to associative arrays
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
+    // Auto-migrate payment_transaction_id
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN payment_transaction_id VARCHAR(100) NULL AFTER payment_screenshot");
+    } catch(PDOException $e) { /* Ignore if exists */ }
+    try {
+        $pdo->exec("ALTER TABLE users ADD COLUMN payment_status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending' AFTER payment_transaction_id");
+    } catch(PDOException $e) { /* Ignore if exists */ }
+
     // Note: The database schema is managed externally via database.sql
     // We no longer attempt to auto-create tables on connection to improve performance
     // and maintain a strict separation of concerns for the production environment.
