@@ -40,11 +40,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (empty($couple_name) || empty($city) || empty($story_text)) {
                     $error_msg = "Please fill in all required fields.";
                 } else {
-                    if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-                        $upload_dir = '../uploads/success_stories/';
-                        if (!is_dir($upload_dir)) {
-                            mkdir($upload_dir, 0755, true);
-                        }
+                        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+                            $upload_dir = __DIR__ . '/../uploads/success_stories/';
+                            if (!is_dir($upload_dir)) {
+                                mkdir($upload_dir, 0755, true);
+                            }
                         
                         $file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
                         $allowed_exts = ['jpg', 'jpeg', 'png', 'gif'];
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             if (move_uploaded_file($_FILES['photo']['tmp_name'], $upload_path)) {
                                 $photo = 'uploads/success_stories/' . $new_filename;
                             } else {
-                                $error_msg = "Failed to upload photo.";
+                                $error_msg = "Failed to upload photo. Please check permissions.";
                             }
                         } else {
                             $error_msg = "Invalid file type. Only JPG, JPEG, PNG and GIF are allowed.";
@@ -87,7 +87,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $params = [$couple_name, $city, $story_text, $display_order];
                         
                         if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-                            $upload_dir = '../uploads/success_stories/';
+                            $upload_dir = __DIR__ . '/../uploads/success_stories/';
+                            if (!is_dir($upload_dir)) {
+                                mkdir($upload_dir, 0755, true);
+                            }
                             $file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
                             $allowed_exts = ['jpg', 'jpeg', 'png', 'gif'];
                             
@@ -107,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     $photo_query = ", photo = ?";
                                     $params[] = 'uploads/success_stories/' . $new_filename;
                                 } else {
-                                    $error_msg = "Failed to upload photo.";
+                                    $error_msg = "Failed to upload photo. Please check permissions.";
                                 }
                             } else {
                                 $error_msg = "Invalid file type. Only JPG, JPEG, PNG and GIF are allowed.";
@@ -268,15 +271,15 @@ include 'includes/sidebar.php';
 
 <!-- Add Story Modal -->
 <div id="addStoryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-1/2 max-w-2xl overflow-hidden">
-        <form method="POST" enctype="multipart/form-data">
-            <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50">
+    <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-1/2 max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+        <form method="POST" enctype="multipart/form-data" class="flex flex-col h-full">
+            <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50 shrink-0">
                 <h3 class="text-lg font-bold text-gray-800">Add New Success Story</h3>
                 <button type="button" onclick="document.getElementById('addStoryModal').classList.add('hidden')" class="text-gray-500 hover:text-red-500 focus:outline-none">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
-            <div class="p-6 space-y-4">
+            <div class="p-6 space-y-4 overflow-y-auto">
                 <input type="hidden" name="action" value="add">
                 
                 <div>
@@ -299,7 +302,7 @@ include 'includes/sidebar.php';
                     <input type="file" name="photo" accept="image/*" required class="w-full border-gray-300 rounded-md shadow-sm p-2 border bg-white">
                 </div>
             </div>
-            <div class="px-6 py-4 border-t text-right bg-gray-50 flex justify-end gap-3">
+            <div class="px-6 py-4 border-t text-right bg-gray-50 flex justify-end gap-3 shrink-0">
                 <button type="button" onclick="document.getElementById('addStoryModal').classList.add('hidden')" class="bg-gray-200 text-gray-800 px-4 py-2 rounded shadow hover:bg-gray-300 font-semibold">Cancel</button>
                 <button type="submit" class="bg-primary text-white px-6 py-2 rounded shadow hover:bg-opacity-90 font-semibold">Save Story</button>
             </div>
@@ -309,15 +312,15 @@ include 'includes/sidebar.php';
 
 <!-- Edit Story Modal -->
 <div id="editStoryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-1/2 max-w-2xl overflow-hidden">
-        <form method="POST" enctype="multipart/form-data">
-            <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50">
+    <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-1/2 max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+        <form id="editStoryForm" method="POST" enctype="multipart/form-data" class="flex flex-col h-full">
+            <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50 shrink-0">
                 <h3 class="text-lg font-bold text-gray-800">Edit Success Story</h3>
                 <button type="button" onclick="document.getElementById('editStoryModal').classList.add('hidden')" class="text-gray-500 hover:text-red-500 focus:outline-none">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
-            <div class="p-6 space-y-4">
+            <div class="p-6 space-y-4 overflow-y-auto">
                 <input type="hidden" name="action" value="edit">
                 <input type="hidden" name="id" id="edit_id">
                 
@@ -351,7 +354,7 @@ include 'includes/sidebar.php';
                     <input type="file" name="photo" accept="image/*" class="w-full border-gray-300 rounded-md shadow-sm p-2 border bg-white">
                 </div>
             </div>
-            <div class="px-6 py-4 border-t text-right bg-gray-50 flex justify-end gap-3">
+            <div class="px-6 py-4 border-t text-right bg-gray-50 flex justify-end gap-3 shrink-0">
                 <button type="button" onclick="document.getElementById('editStoryModal').classList.add('hidden')" class="bg-gray-200 text-gray-800 px-4 py-2 rounded shadow hover:bg-gray-300 font-semibold">Cancel</button>
                 <button type="submit" class="bg-primary text-white px-6 py-2 rounded shadow hover:bg-opacity-90 font-semibold">Update Story</button>
             </div>
