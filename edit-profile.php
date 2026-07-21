@@ -121,10 +121,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $father_mobile = htmlspecialchars($_POST['father_mobile'] ?? '');
     $father_income = htmlspecialchars($_POST['father_income'] ?? '');
     $father_occupation = htmlspecialchars($_POST['father_occupation'] ?? '');
+    if ($father_occupation === 'Other' && !empty($_POST['father_occupation_details'])) {
+        $father_occupation = htmlspecialchars($_POST['father_occupation_details']);
+    }
     $mother_name = htmlspecialchars($_POST['mother_name'] ?? '');
     $mother_mobile = htmlspecialchars($_POST['mother_mobile'] ?? '');
     $mother_occupation = htmlspecialchars($_POST['mother_occupation'] ?? '');
-    $mother_occupation_details = htmlspecialchars($_POST['mother_occupation_details'] ?? '');
+    if ($mother_occupation === 'Other' && !empty($_POST['mother_occupation_details'])) {
+        $mother_occupation = htmlspecialchars($_POST['mother_occupation_details']);
+    }
     $brothers = (int)($_POST['brothers'] ?? 0);
     $brothers_married = (int)($_POST['brothers_married'] ?? 0);
     $brothers_unmarried = (int)($_POST['brothers_unmarried'] ?? 0);
@@ -636,14 +641,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Father Income (Optional)</label><input type="number" name="father_income" value="<?= htmlspecialchars($current_user['father_income'] ?? '') ?>" min="0" step="1" placeholder="Optional" class="w-full border rounded-lg px-4 py-2"></div>
                         
-                        <?php $fOcc = $current_user['father_occupation'] ?? ''; ?>
+                        <?php 
+                        $fOcc = $current_user['father_occupation'] ?? '';
+                        $isOtherFOcc = !in_array($fOcc, ['Job', 'Business', 'Retired']) && !empty($fOcc);
+                        $fOccVal = $isOtherFOcc ? 'Other' : $fOcc;
+                        ?>
                         <div><label class="block text-gray-700 font-medium mb-2">Father Occupation *</label>
-                            <select name="father_occupation" required class="w-full border rounded-lg px-4 py-2">
-                                <option <?= ($fOcc === 'Job') ? 'selected' : '' ?>>Job</option>
-                                <option <?= ($fOcc === 'Business') ? 'selected' : '' ?>>Business</option>
-                                <option <?= ($fOcc === 'Retired') ? 'selected' : '' ?>>Retired</option>
-                                <option <?= ($fOcc === 'Other') ? 'selected' : '' ?>>Other</option>
+                            <select name="father_occupation" id="father_occupation" required class="w-full border rounded-lg px-4 py-2">
+                                <option <?= ($fOccVal === 'Job') ? 'selected' : '' ?>>Job</option>
+                                <option <?= ($fOccVal === 'Business') ? 'selected' : '' ?>>Business</option>
+                                <option <?= ($fOccVal === 'Retired') ? 'selected' : '' ?>>Retired</option>
+                                <option <?= ($fOccVal === 'Other') ? 'selected' : '' ?>>Other</option>
                             </select>
+                            <input type="text" name="father_occupation_details" id="father_occupation_details" value="<?= htmlspecialchars($isOtherFOcc ? $fOcc : '') ?>" placeholder="Please specify details" class="w-full border rounded-lg px-4 py-2 mt-2 <?= $isOtherFOcc ? '' : 'hidden' ?>" <?= $isOtherFOcc ? 'required' : '' ?>>
                         </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Mother Name *</label><input type="text" name="mother_name" value="<?= htmlspecialchars($current_user['mother_name'] ?? '') ?>" required class="w-full border rounded-lg px-4 py-2"></div>
                         <div>
@@ -1011,6 +1021,18 @@ document.getElementById('subcast')?.addEventListener('change', function() {
     }
 });
 
+document.getElementById('father_occupation')?.addEventListener('change', function(e) {
+    const detailsInput = document.getElementById('father_occupation_details');
+    if (this.value === 'Other') {
+        detailsInput.classList.remove('hidden');
+        detailsInput.required = true;
+    } else {
+        detailsInput.classList.add('hidden');
+        detailsInput.required = false;
+        detailsInput.value = '';
+    }
+});
+
 document.getElementById('mother_occupation')?.addEventListener('change', function(e) {
     const detailsInput = document.getElementById('mother_occupation_details');
     if (this.value !== 'House Wife') {
@@ -1202,7 +1224,6 @@ document.addEventListener("DOMContentLoaded", function() {
         'father_name' => $current_user['father_name'] ?? '',
         'father_mobile' => $current_user['father_mobile'] ?? '',
         'father_income' => $current_user['father_income'] ?? '',
-        'father_occupation' => $current_user['father_occupation'] ?? '',
         'mother_name' => $current_user['mother_name'] ?? '',
         'mother_mobile' => $current_user['mother_mobile'] ?? '',
         'mother_occupation' => $current_user['mother_occupation'] ?? '',
@@ -1241,6 +1262,22 @@ document.addEventListener("DOMContentLoaded", function() {
     } else {
         $dbData['cast'] = 'Other';
         $dbData['custom_cast'] = $cast;
+    }
+
+    $fOccDB = $current_user['father_occupation'] ?? '';
+    if (in_array($fOccDB, ['Job', 'Business', 'Retired'])) {
+        $dbData['father_occupation'] = $fOccDB;
+    } else if (!empty($fOccDB)) {
+        $dbData['father_occupation'] = 'Other';
+        $dbData['father_occupation_details'] = $fOccDB;
+    }
+
+    $mOccDB = $current_user['mother_occupation'] ?? '';
+    if (in_array($mOccDB, ['House Wife', 'Job', 'Business'])) {
+        $dbData['mother_occupation'] = $mOccDB;
+    } else if (!empty($mOccDB)) {
+        $dbData['mother_occupation'] = 'Other';
+        $dbData['mother_occupation_details'] = $mOccDB;
     }
 
     $subcast = $current_user['subcast'] ?? '';

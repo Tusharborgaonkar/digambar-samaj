@@ -29,6 +29,11 @@ if ($is_logged_in && isset($_SESSION['user_id'])) {
                 $user_status = $hdrUser['status'];
                 if ($user_status === 'account_approved') {
                     $registration_link = 'registration.php';
+                    $allowed_pages = ['registration.php', 'login.php', 'pre-register.php'];
+                    if (!in_array($current_page, $allowed_pages)) {
+                        header('Location: registration.php');
+                        exit;
+                    }
                 } elseif ($user_status === 'active' || $user_status === 'pending' || $user_status === 'account_pending' || $user_status === 'approved') {
                     $show_registration = false;
                 }

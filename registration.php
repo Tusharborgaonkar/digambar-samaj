@@ -123,10 +123,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $father_mobile = htmlspecialchars($_POST['father_mobile'] ?? '');
     $father_income = htmlspecialchars($_POST['father_income'] ?? '');
     $father_occupation = htmlspecialchars($_POST['father_occupation'] ?? '');
+    if ($father_occupation === 'Other' && !empty($_POST['father_occupation_details'])) {
+        $father_occupation = htmlspecialchars($_POST['father_occupation_details']);
+    }
     $mother_name = htmlspecialchars($_POST['mother_name'] ?? '');
     $mother_mobile = htmlspecialchars($_POST['mother_mobile'] ?? '');
     $mother_occupation = htmlspecialchars($_POST['mother_occupation'] ?? '');
-    $mother_occupation_details = htmlspecialchars($_POST['mother_occupation_details'] ?? '');
+    if ($mother_occupation === 'Other' && !empty($_POST['mother_occupation_details'])) {
+        $mother_occupation = htmlspecialchars($_POST['mother_occupation_details']);
+    }
     $brothers = (int)($_POST['brothers'] ?? 0);
     $brothers_married = (int)($_POST['brothers_married'] ?? 0);
     $brothers_unmarried = (int)($_POST['brothers_unmarried'] ?? 0);
@@ -563,9 +568,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Father Income (Optional)</label><input type="number" name="father_income" min="0" step="1" placeholder="Optional" class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Father Occupation *</label>
-                            <select name="father_occupation" required class="w-full border rounded-lg px-4 py-2">
+                            <select name="father_occupation" id="father_occupation" required class="w-full border rounded-lg px-4 py-2">
                                 <option>Job</option><option>Business</option><option>Retired</option><option>Other</option>
                             </select>
+                            <input type="text" name="father_occupation_details" id="father_occupation_details" placeholder="Please specify details" class="w-full border rounded-lg px-4 py-2 mt-2 hidden">
                         </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Mother Name *</label><input type="text" name="mother_name" required class="w-full border rounded-lg px-4 py-2"></div>
                         <div>
@@ -939,6 +945,18 @@ document.getElementById('subcast')?.addEventListener('change', function() {
         custom.classList.add('hidden');
         custom.required = false;
         custom.value = '';
+    }
+});
+
+document.getElementById('father_occupation')?.addEventListener('change', function(e) {
+    const detailsInput = document.getElementById('father_occupation_details');
+    if (this.value === 'Other') {
+        detailsInput.classList.remove('hidden');
+        detailsInput.required = true;
+    } else {
+        detailsInput.classList.add('hidden');
+        detailsInput.required = false;
+        detailsInput.value = '';
     }
 });
 
