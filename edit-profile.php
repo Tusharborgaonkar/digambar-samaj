@@ -408,7 +408,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <?php if (!isset($coreFieldsSettings['mobile']) || $coreFieldsSettings['mobile']['is_visible']): ?>
                         <div>
                             <label class="block text-gray-700 font-medium mb-2">Mobile Number *</label>
-                            <input type="tel" name="mobile" value="<?= htmlspecialchars($current_user['mobile'] ?? '') ?>" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Please enter exactly 10 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
+                            <input type="tel" name="mobile" value="<?= htmlspecialchars(preg_replace('/^\+?91/', '', $current_user['mobile'] ?? '')) ?>" pattern="[0-9]{10}" maxlength="10" minlength="10" title="Please enter exactly 10 digits" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required class="w-full border border-gray-300 rounded-lg px-4 py-2">
                             <p class="text-xs text-gray-500 mt-1">10 digits only number</p>
                         </div>
                         <?php endif; ?>
