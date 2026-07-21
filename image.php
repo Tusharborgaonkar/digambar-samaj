@@ -14,7 +14,7 @@ if (empty($file)) {
 
 // Allow public access to specific directories without login
 $is_public = false;
-if (strpos($file, 'uploads/advertisements') === 0 || strpos($file, 'uploads/ads') === 0 || strpos($file, 'uploads/gallery') === 0 || strpos($file, 'uploads/success_stories') === 0 || strpos($file, 'assets/') === 0) {
+if (stripos($file, 'uploads/advertisements') === 0 || stripos($file, 'uploads/ads') === 0 || stripos($file, 'uploads/gallery') === 0 || stripos($file, 'uploads/success_stories') === 0 || stripos($file, 'assets/') === 0) {
     $is_public = true;
 }
 
@@ -29,7 +29,7 @@ $allowed_dirs = ['uploads', 'imports', 'assets'];
 $file_parts = explode('/', str_replace('\\', '/', $file));
 $base_dir = $file_parts[0];
 
-if (!in_array($base_dir, $allowed_dirs)) {
+if (!in_array(strtolower($base_dir), $allowed_dirs)) {
     header("HTTP/1.1 403 Forbidden");
     exit('Invalid directory');
 }

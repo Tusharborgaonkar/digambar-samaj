@@ -1,0 +1,9 @@
+Array
+(
+    [0] => Array
+        (
+            [id] => 6
+            [photo] => uploads/success_stories/story_6a5f43215e07c.png
+        )
+
+)

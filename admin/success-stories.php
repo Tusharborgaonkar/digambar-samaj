@@ -198,7 +198,11 @@ include 'includes/sidebar.php';
                         <?php if (count($stories) > 0): ?>
                             <?php foreach ($stories as $story): 
                                 $cleanPath = !empty($story['photo']) ? ltrim(str_replace('../', '', $story['photo']), '/') : '';
-                                $photoPath = !empty($cleanPath) ? '../image.php?file=' . urlencode($cleanPath) : '../assets/images/placeholder-couple.png';
+                                if (!empty($story['photo']) && preg_match('/^https?:\/\//i', $story['photo'])) {
+                                    $photoPath = $story['photo'];
+                                } else {
+                                    $photoPath = !empty($cleanPath) ? '../image.php?file=' . urlencode($cleanPath) : '../assets/images/placeholder-couple.png';
+                                }
                             ?>
                                 <tr>
                                     <td class="px-6 py-4 whitespace-nowrap">

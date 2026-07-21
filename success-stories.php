@@ -37,7 +37,12 @@ if (!$is_admin_logged_in) {
                 
                 if (count($stories) > 0) {
                     foreach ($stories as $story): 
-                        $photo = !empty($story['photo']) ? 'image.php?file=' . urlencode(ltrim(str_replace('../', '', $story['photo']), '/')) : 'assets/images/placeholder-couple.png';
+                        $cleanPath = !empty($story['photo']) ? ltrim(str_replace('../', '', $story['photo']), '/') : '';
+                        if (preg_match('/^https?:\/\//i', $story['photo'])) {
+                            $photo = $story['photo'];
+                        } else {
+                            $photo = !empty($cleanPath) ? 'image.php?file=' . urlencode($cleanPath) : 'assets/images/placeholder-couple.png';
+                        }
             ?>
                         <div class="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl transition-all duration-300 group border border-gray-100" data-aos="fade-up">
                             <div class="relative overflow-hidden aspect-[3/4]">
