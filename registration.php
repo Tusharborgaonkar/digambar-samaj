@@ -117,6 +117,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $languages = !empty($languages_arr) ? implode(',', $languages_arr) : '';
     
     $occupation = $_POST['occupation'] ?? '';
+    if ($occupation === 'Other' && !empty($_POST['occupation_details'])) {
+        $occupation = htmlspecialchars($_POST['occupation_details']);
+    }
     $company_name = htmlspecialchars($_POST['company_name'] ?? '');
     $designation = htmlspecialchars($_POST['designation'] ?? '');
     $father_name = htmlspecialchars($_POST['father_name'] ?? '');
@@ -543,7 +546,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <h3 class="text-lg font-bold text-primary mb-3"><i class="fas fa-briefcase mr-2"></i>Candidate Occupation & Income Details</h3>
                         </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Candidate Occupation (व्यवसाय) *</label>
-                            <div class="flex gap-4"><label><input type="radio" name="occupation" value="Job" required> Job</label><label><input type="radio" name="occupation" value="Business"> Business</label><label><input type="radio" name="occupation" value="Other"> Other</label></div>
+                            <div class="flex gap-4">
+                                <label><input type="radio" name="occupation" value="Job" required> Job</label>
+                                <label><input type="radio" name="occupation" value="Business"> Business</label>
+                                <label><input type="radio" name="occupation" value="Other"> Other</label>
+                            </div>
+                            <input type="text" name="occupation_details" id="occupation_details" placeholder="Please specify occupation" class="w-full border rounded-lg px-4 py-2 mt-2 hidden">
                         </div>
                         <div><label class="block text-gray-700 font-medium mb-2">Candidate Annual Income (वार्षिक आय) *</label><input type="number" name="annual_income" min="0" step="1" required placeholder="Yearly income amount (e.g., 500000)" class="w-full border rounded-lg px-4 py-2"></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Company/Firm Name (Optional)</label><input type="text" name="company_name" class="w-full border rounded-lg px-4 py-2"></div>
@@ -946,6 +954,20 @@ document.getElementById('subcast')?.addEventListener('change', function() {
         custom.required = false;
         custom.value = '';
     }
+});
+
+document.querySelectorAll('input[name="occupation"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const detailsInput = document.getElementById('occupation_details');
+        if (this.value === 'Other' && this.checked) {
+            detailsInput.classList.remove('hidden');
+            detailsInput.required = true;
+        } else if (this.checked) {
+            detailsInput.classList.add('hidden');
+            detailsInput.required = false;
+            detailsInput.value = '';
+        }
+    });
 });
 
 document.getElementById('father_occupation')?.addEventListener('change', function(e) {
