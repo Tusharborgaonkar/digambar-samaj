@@ -75,70 +75,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 // Handle Screenshot Approval
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] === 'approve_screenshot') {
-        $user_id = (int)$_POST['user_id'];
-        $stmt = $pdo->prepare("UPDATE users SET payment_status = 'approved' WHERE id = ?");
-        $stmt->execute([$user_id]);
-        
-        // Update payments table if exists, else insert
-        $check = $pdo->prepare("SELECT id FROM payments WHERE user_id = ? AND payment_method = 'Screenshot'");
-        $check->execute([$user_id]);
-        if ($check->rowCount() > 0) {
-            $update = $pdo->prepare("UPDATE payments SET status = 'verified' WHERE user_id = ? AND payment_method = 'Screenshot'");
-            $update->execute([$user_id]);
-        } else {
-            $insert = $pdo->prepare("INSERT INTO payments (user_id, full_name, phone_number, email, address, dob, transaction_id, payment_method, payment_screenshot, status, created_at) SELECT id, full_name, mobile, email, COALESCE(current_address, permanent_address, ''), birth_date, payment_transaction_id, 'Screenshot', payment_screenshot, 'verified', created_at FROM users WHERE id = ?");
-            $insert->execute([$user_id]);
+        try {
+            $user_id = (int)$_POST['user_id'];
+            $stmt = $pdo->prepare("UPDATE users SET payment_status = 'approved' WHERE id = ?");
+            $stmt->execute([$user_id]);
+            
+            // Update payments table if exists, else insert
+            $check = $pdo->prepare("SELECT id FROM payments WHERE user_id = ? AND payment_method = 'Screenshot'");
+            $check->execute([$user_id]);
+            if ($check->rowCount() > 0) {
+                $update = $pdo->prepare("UPDATE payments SET status = 'verified' WHERE user_id = ? AND payment_method = 'Screenshot'");
+                $update->execute([$user_id]);
+            } else {
+                $insert = $pdo->prepare("INSERT INTO payments (user_id, full_name, phone_number, email, address, dob, transaction_id, payment_method, payment_screenshot, status) SELECT id, full_name, mobile, email, COALESCE(current_address, permanent_address, ''), CASE WHEN birth_date = '' OR birth_date = '0000-00-00' THEN NULL ELSE birth_date END, payment_transaction_id, 'Screenshot', payment_screenshot, 'verified' FROM users WHERE id = ?");
+                $insert->execute([$user_id]);
+            }
+            
+            $success_msg = "Screenshot approved successfully.";
+        } catch (Exception $e) {
+            $error_msg = "Error approving screenshot: " . $e->getMessage();
         }
-        
-        $success_msg = "Screenshot approved successfully.";
     } elseif ($_POST['action'] === 'reject_screenshot') {
-        $user_id = (int)$_POST['user_id'];
-        $stmt = $pdo->prepare("UPDATE users SET payment_status = 'rejected' WHERE id = ?");
-        $stmt->execute([$user_id]);
-        
-        // Update payments table if exists, else insert
-        $check = $pdo->prepare("SELECT id FROM payments WHERE user_id = ? AND payment_method = 'Screenshot'");
-        $check->execute([$user_id]);
-        if ($check->rowCount() > 0) {
-            $update = $pdo->prepare("UPDATE payments SET status = 'rejected' WHERE user_id = ? AND payment_method = 'Screenshot'");
-            $update->execute([$user_id]);
-        } else {
-            $insert = $pdo->prepare("INSERT INTO payments (user_id, full_name, phone_number, email, address, dob, transaction_id, payment_method, payment_screenshot, status, created_at) SELECT id, full_name, mobile, email, COALESCE(current_address, permanent_address, ''), birth_date, payment_transaction_id, 'Screenshot', payment_screenshot, 'rejected', created_at FROM users WHERE id = ?");
-            $insert->execute([$user_id]);
+        try {
+            $user_id = (int)$_POST['user_id'];
+            $stmt = $pdo->prepare("UPDATE users SET payment_status = 'rejected' WHERE id = ?");
+            $stmt->execute([$user_id]);
+            
+            // Update payments table if exists, else insert
+            $check = $pdo->prepare("SELECT id FROM payments WHERE user_id = ? AND payment_method = 'Screenshot'");
+            $check->execute([$user_id]);
+            if ($check->rowCount() > 0) {
+                $update = $pdo->prepare("UPDATE payments SET status = 'rejected' WHERE user_id = ? AND payment_method = 'Screenshot'");
+                $update->execute([$user_id]);
+            } else {
+                $insert = $pdo->prepare("INSERT INTO payments (user_id, full_name, phone_number, email, address, dob, transaction_id, payment_method, payment_screenshot, status) SELECT id, full_name, mobile, email, COALESCE(current_address, permanent_address, ''), CASE WHEN birth_date = '' OR birth_date = '0000-00-00' THEN NULL ELSE birth_date END, payment_transaction_id, 'Screenshot', payment_screenshot, 'rejected' FROM users WHERE id = ?");
+                $insert->execute([$user_id]);
+            }
+            
+            $success_msg = "Screenshot rejected.";
+        } catch (Exception $e) {
+            $error_msg = "Error rejecting screenshot: " . $e->getMessage();
         }
-        
-        $success_msg = "Screenshot rejected.";
     } elseif ($_POST['action'] === 'bulk_approve_screenshot') {
-        $user_ids = $_POST['user_ids'] ?? [];
-        if(!empty($user_ids)) {
-            $placeholders = str_repeat('?,', count($user_ids) - 1) . '?';
-            $stmt = $pdo->prepare("UPDATE users SET payment_status = 'approved' WHERE id IN ($placeholders)");
-            $stmt->execute($user_ids);
-            
-            $update = $pdo->prepare("UPDATE payments SET status = 'verified' WHERE user_id IN ($placeholders) AND payment_method = 'Screenshot'");
-            $update->execute($user_ids);
-            
-            // Insert missing
-            $insert = $pdo->prepare("INSERT INTO payments (user_id, full_name, phone_number, email, address, dob, transaction_id, payment_method, payment_screenshot, status, created_at) SELECT id, full_name, mobile, email, COALESCE(current_address, permanent_address, ''), birth_date, payment_transaction_id, 'Screenshot', payment_screenshot, 'verified', created_at FROM users WHERE id IN ($placeholders) AND id NOT IN (SELECT user_id FROM payments WHERE payment_method = 'Screenshot' AND user_id IS NOT NULL)");
-            $insert->execute(array_merge($user_ids));
-            
-            $success_msg = count($user_ids) . " screenshot(s) approved successfully.";
+        try {
+            $user_ids = $_POST['user_ids'] ?? [];
+            if(!empty($user_ids)) {
+                $placeholders = str_repeat('?,', count($user_ids) - 1) . '?';
+                $stmt = $pdo->prepare("UPDATE users SET payment_status = 'approved' WHERE id IN ($placeholders)");
+                $stmt->execute($user_ids);
+                
+                $update = $pdo->prepare("UPDATE payments SET status = 'verified' WHERE user_id IN ($placeholders) AND payment_method = 'Screenshot'");
+                $update->execute($user_ids);
+                
+                // Insert missing
+                $insert = $pdo->prepare("INSERT INTO payments (user_id, full_name, phone_number, email, address, dob, transaction_id, payment_method, payment_screenshot, status) SELECT id, full_name, mobile, email, COALESCE(current_address, permanent_address, ''), CASE WHEN birth_date = '' OR birth_date = '0000-00-00' THEN NULL ELSE birth_date END, payment_transaction_id, 'Screenshot', payment_screenshot, 'verified' FROM users WHERE id IN ($placeholders) AND id NOT IN (SELECT user_id FROM payments WHERE payment_method = 'Screenshot' AND user_id IS NOT NULL)");
+                $insert->execute(array_merge($user_ids));
+                
+                $success_msg = count($user_ids) . " screenshot(s) approved successfully.";
+            }
+        } catch (Exception $e) {
+            $error_msg = "Error in bulk approval: " . $e->getMessage();
         }
     } elseif ($_POST['action'] === 'bulk_reject_screenshot') {
-        $user_ids = $_POST['user_ids'] ?? [];
-        if(!empty($user_ids)) {
-            $placeholders = str_repeat('?,', count($user_ids) - 1) . '?';
-            $stmt = $pdo->prepare("UPDATE users SET payment_status = 'rejected' WHERE id IN ($placeholders)");
-            $stmt->execute($user_ids);
-            
-            $update = $pdo->prepare("UPDATE payments SET status = 'rejected' WHERE user_id IN ($placeholders) AND payment_method = 'Screenshot'");
-            $update->execute($user_ids);
-            
-            // Insert missing
-            $insert = $pdo->prepare("INSERT INTO payments (user_id, full_name, phone_number, email, address, dob, transaction_id, payment_method, payment_screenshot, status, created_at) SELECT id, full_name, mobile, email, COALESCE(current_address, permanent_address, ''), birth_date, payment_transaction_id, 'Screenshot', payment_screenshot, 'rejected', created_at FROM users WHERE id IN ($placeholders) AND id NOT IN (SELECT user_id FROM payments WHERE payment_method = 'Screenshot' AND user_id IS NOT NULL)");
-            $insert->execute(array_merge($user_ids));
-            
-            $success_msg = count($user_ids) . " screenshot(s) rejected.";
+        try {
+            $user_ids = $_POST['user_ids'] ?? [];
+            if(!empty($user_ids)) {
+                $placeholders = str_repeat('?,', count($user_ids) - 1) . '?';
+                $stmt = $pdo->prepare("UPDATE users SET payment_status = 'rejected' WHERE id IN ($placeholders)");
+                $stmt->execute($user_ids);
+                
+                $update = $pdo->prepare("UPDATE payments SET status = 'rejected' WHERE user_id IN ($placeholders) AND payment_method = 'Screenshot'");
+                $update->execute($user_ids);
+                
+                // Insert missing
+                $insert = $pdo->prepare("INSERT INTO payments (user_id, full_name, phone_number, email, address, dob, transaction_id, payment_method, payment_screenshot, status) SELECT id, full_name, mobile, email, COALESCE(current_address, permanent_address, ''), CASE WHEN birth_date = '' OR birth_date = '0000-00-00' THEN NULL ELSE birth_date END, payment_transaction_id, 'Screenshot', payment_screenshot, 'rejected' FROM users WHERE id IN ($placeholders) AND id NOT IN (SELECT user_id FROM payments WHERE payment_method = 'Screenshot' AND user_id IS NOT NULL)");
+                $insert->execute(array_merge($user_ids));
+                
+                $success_msg = count($user_ids) . " screenshot(s) rejected.";
+            }
+        } catch (Exception $e) {
+            $error_msg = "Error in bulk rejection: " . $e->getMessage();
         }
     }
 }

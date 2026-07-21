@@ -117,8 +117,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $languages = !empty($languages_arr) ? implode(',', $languages_arr) : '';
     
     $occupation = $_POST['occupation'] ?? '';
+    $occupation_other = '';
     if ($occupation === 'Other' && !empty($_POST['occupation_details'])) {
-        $occupation = htmlspecialchars($_POST['occupation_details']);
+        $occupation_other = htmlspecialchars($_POST['occupation_details']);
     }
     $company_name = htmlspecialchars($_POST['company_name'] ?? '');
     $designation = htmlspecialchars($_POST['designation'] ?? '');
@@ -126,14 +127,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $father_mobile = htmlspecialchars($_POST['father_mobile'] ?? '');
     $father_income = htmlspecialchars($_POST['father_income'] ?? '');
     $father_occupation = htmlspecialchars($_POST['father_occupation'] ?? '');
+    $father_occupation_other = '';
     if ($father_occupation === 'Other' && !empty($_POST['father_occupation_details'])) {
-        $father_occupation = htmlspecialchars($_POST['father_occupation_details']);
+        $father_occupation_other = htmlspecialchars($_POST['father_occupation_details']);
     }
     $mother_name = htmlspecialchars($_POST['mother_name'] ?? '');
     $mother_mobile = htmlspecialchars($_POST['mother_mobile'] ?? '');
     $mother_occupation = htmlspecialchars($_POST['mother_occupation'] ?? '');
+    $mother_occupation_other = '';
     if ($mother_occupation === 'Other' && !empty($_POST['mother_occupation_details'])) {
-        $mother_occupation = htmlspecialchars($_POST['mother_occupation_details']);
+        $mother_occupation_other = htmlspecialchars($_POST['mother_occupation_details']);
     }
     $brothers = (int)($_POST['brothers'] ?? 0);
     $brothers_married = (int)($_POST['brothers_married'] ?? 0);
@@ -235,8 +238,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $pdo->prepare("UPDATE users SET 
             full_name=?, mobile=?, email=?, `cast`=?, birth_date=?, birth_time=?, birth_place=?, native_place=?, gotra=?, mama_gotra=?, manglik=?,
             height=?, weight=?, gender=?, permanent_address=?, pin_code=?, current_address=?, higher_education=?, hobbies=?, partner_preference=?,
-            monthly_income=?, marital_status=?, handicapped=?, languages=?, occupation=?, company_name=?, designation=?, father_name=?,
-            father_mobile=?, father_income=?, father_occupation=?, mother_name=?, mother_mobile=?, mother_occupation=?,
+            monthly_income=?, marital_status=?, handicapped=?, languages=?, occupation=?, occupation_other=?, company_name=?, designation=?, father_name=?,
+            father_mobile=?, father_income=?, father_occupation=?, father_occupation_other=?, mother_name=?, mother_mobile=?, mother_occupation=?,
             mother_occupation_details=?, brothers=?, brothers_married=?, brothers_unmarried=?, sisters=?, sisters_married=?,
             sisters_unmarried=?, subcast=?, custom_subcast=?, mandir=?, custom_mandir=?, ref1_name=?, ref1_mobile=?, ref1_relation=?,
             ref2_name=?, ref2_mobile=?, ref2_relation=?, profile_photo=?, family_photo=?, payment_screenshot=?, profile_photo_drive_url=?, payment_proof_drive_url=?, status=?,
@@ -247,8 +250,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->execute([
             $full_name, $mobile, $email, $cast, $birth_date, $birth_time, $birth_place, $native, $gotra, $mama_gotra, $manglik,
             $height, $weight, $gender, $permanent_address, $pin_code, $current_address, $education, $hobbies, $partner_preference,
-            $monthly_income, $marital_status, $handicapped, $languages, $occupation, $company_name, $designation, $father_name,
-            $father_mobile, $father_income, $father_occupation, $mother_name, $mother_mobile, $mother_occupation,
+            $monthly_income, $marital_status, $handicapped, $languages, $occupation, $occupation_other, $company_name, $designation, $father_name,
+            $father_mobile, $father_income, $father_occupation, $father_occupation_other, $mother_name, $mother_mobile, $mother_occupation,
             $mother_occupation_details, $brothers, $brothers_married, $brothers_unmarried, $sisters, $sisters_married,
             $sisters_unmarried, $subcast, $custom_subcast, $mandir, $custom_mandir, $ref1_name, $ref1_mobile, $ref1_relation,
             $ref2_name, $ref2_mobile, $ref2_relation, $photo, $family_photo, $payment_screenshot, $profile_photo_drive_url, $payment_proof_drive_url, $new_status,
@@ -919,72 +922,86 @@ document.getElementById('permanent_address')?.addEventListener('input', function
     }
 });
 
-document.getElementById('language_other_checkbox')?.addEventListener('change', function() {
-    const otherLangInput = document.getElementById('other_language_input');
-    if (this.checked) {
-        otherLangInput.classList.remove('hidden');
-        otherLangInput.required = true;
+function handleOtherWithSwal(element, hiddenInputId, otherValue) {
+    const hiddenInput = document.getElementById(hiddenInputId);
+    let isOtherSelected = false;
+    
+    if (element.type === 'radio' || element.type === 'checkbox') {
+        isOtherSelected = element.checked && element.value === otherValue;
     } else {
-        otherLangInput.classList.add('hidden');
-        otherLangInput.required = false;
-        otherLangInput.value = '';
+        isOtherSelected = element.value === otherValue;
     }
+
+    if (isOtherSelected) {
+        if (!hiddenInput.value) {
+            Swal.fire({
+                title: 'Please Specify Details',
+                input: 'text',
+                inputPlaceholder: 'Enter details here...',
+                showCancelButton: true,
+                confirmButtonText: 'Save',
+                cancelButtonText: 'Cancel',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'You need to write something!'
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    hiddenInput.value = result.value;
+                    hiddenInput.classList.remove('hidden');
+                    hiddenInput.required = true;
+                    // Trigger input event to save to sessionStorage
+                    hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
+                } else {
+                    if (element.type === 'radio' || element.type === 'checkbox') {
+                        element.checked = false;
+                    } else {
+                        element.selectedIndex = 0;
+                    }
+                    hiddenInput.classList.add('hidden');
+                    hiddenInput.required = false;
+                    hiddenInput.value = '';
+                }
+            });
+        } else {
+            hiddenInput.classList.remove('hidden');
+            hiddenInput.required = true;
+        }
+    } else {
+        if ((element.type === 'radio' && element.checked) || element.type === 'select-one' || (element.type === 'checkbox' && !element.checked)) {
+            hiddenInput.classList.add('hidden');
+            hiddenInput.required = false;
+            hiddenInput.value = '';
+        }
+    }
+}
+
+document.getElementById('language_other_checkbox')?.addEventListener('change', function() {
+    handleOtherWithSwal(this, 'other_language_input', 'Other');
 });
 
 document.getElementById('cast')?.addEventListener('change', function() {
-    const custom = document.getElementById('custom_cast');
-    if (this.value === 'Other') {
-        custom.classList.remove('hidden');
-        custom.required = true;
-    } else {
-        custom.classList.add('hidden');
-        custom.required = false;
-        custom.value = '';
-    }
+    handleOtherWithSwal(this, 'custom_cast', 'Other');
 });
 
-
 document.getElementById('subcast')?.addEventListener('change', function() {
-    const custom = document.getElementById('custom_subcast');
-    if (this.value === 'Other') {
-        custom.classList.remove('hidden');
-        custom.required = true;
-    } else {
-        custom.classList.add('hidden');
-        custom.required = false;
-        custom.value = '';
-    }
+    handleOtherWithSwal(this, 'custom_subcast', 'Other');
 });
 
 document.querySelectorAll('input[name="occupation"]').forEach(radio => {
     radio.addEventListener('change', function() {
-        const detailsInput = document.getElementById('occupation_details');
-        if (this.value === 'Other' && this.checked) {
-            detailsInput.classList.remove('hidden');
-            detailsInput.required = true;
-        } else if (this.checked) {
-            detailsInput.classList.add('hidden');
-            detailsInput.required = false;
-            detailsInput.value = '';
-        }
+        handleOtherWithSwal(this, 'occupation_details', 'Other');
     });
 });
 
 document.getElementById('father_occupation')?.addEventListener('change', function(e) {
-    const detailsInput = document.getElementById('father_occupation_details');
-    if (this.value === 'Other') {
-        detailsInput.classList.remove('hidden');
-        detailsInput.required = true;
-    } else {
-        detailsInput.classList.add('hidden');
-        detailsInput.required = false;
-        detailsInput.value = '';
-    }
+    handleOtherWithSwal(this, 'father_occupation_details', 'Other');
 });
 
 document.getElementById('mother_occupation')?.addEventListener('change', function(e) {
     const detailsInput = document.getElementById('mother_occupation_details');
-    if (this.value !== 'House Wife') {
+    if (this.value !== 'House Wife' && this.value !== '') {
         detailsInput.classList.remove('hidden');
         detailsInput.required = true;
     } else {
@@ -1158,7 +1175,11 @@ document.addEventListener("DOMContentLoaded", function() {
                             input.checked = (data[key] === input.value || data[key] === true);
                         }
                     } else if (input.type !== 'file' && input.type !== 'password') {
-                        input.value = data[key];
+                        let val = data[key];
+                        if (['mobile', 'father_mobile', 'mother_mobile', 'ref1_mobile', 'ref2_mobile'].includes(key) && typeof val === 'string') {
+                            val = val.replace(/^\+?91/, '');
+                        }
+                        input.value = val;
                     }
                 }
             });
