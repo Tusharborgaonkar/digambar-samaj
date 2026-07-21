@@ -2,6 +2,25 @@
 require_once '../includes/db.php';
 $current_page = 'payment.php';
 
+// Auto-migrate payments table if columns are missing
+try {
+    $pdo->query("SELECT full_name FROM payments LIMIT 1");
+} catch (Exception $e) {
+    try {
+        $pdo->exec("ALTER TABLE payments ADD COLUMN full_name VARCHAR(255) NULL");
+        $pdo->exec("ALTER TABLE payments ADD COLUMN phone_number VARCHAR(20) NULL");
+        $pdo->exec("ALTER TABLE payments ADD COLUMN email VARCHAR(255) NULL");
+        $pdo->exec("ALTER TABLE payments ADD COLUMN address TEXT NULL");
+        $pdo->exec("ALTER TABLE payments ADD COLUMN dob DATE NULL");
+        $pdo->exec("ALTER TABLE payments ADD COLUMN transaction_id VARCHAR(255) NULL");
+        
+        // Handle rename if they previously had email_address from a wrong migration
+        $pdo->exec("ALTER TABLE payments CHANGE email_address email VARCHAR(255) NULL");
+    } catch (Exception $e2) {
+        // Ignore errors if already exist
+    }
+}
+
 $success_msg = '';
 $error_msg = '';
 
