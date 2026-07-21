@@ -67,6 +67,14 @@ $totalRevenue = array_sum($revCounts);
 include 'includes/header.php'; 
 include 'includes/sidebar.php'; 
 ?>
+<style>
+@media print {
+    aside, header, .no-print { display: none !important; }
+    body { background-color: white !important; }
+    main { padding: 0 !important; margin: 0 !important; }
+    .shadow-sm { box-shadow: none !important; border: 1px solid #ddd !important; }
+}
+</style>
 <!-- Page Header -->
 <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
@@ -74,11 +82,11 @@ include 'includes/sidebar.php';
         <p class="text-gray-500 text-sm">Visualize platform metrics and user demographics.</p>
     </div>
     
-    <div class="flex gap-3">
-        <button class="bg-white border border-green-500 text-green-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-green-50 transition shadow-sm flex items-center">
+    <div class="flex gap-3 no-print">
+        <a href="export-reports-excel.php" class="bg-white border border-green-500 text-green-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-green-50 transition shadow-sm flex items-center">
             <i class="fas fa-file-excel mr-2 text-lg"></i> Export Excel
-        </button>
-        <button class="bg-white border border-red-500 text-red-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-50 transition shadow-sm flex items-center">
+        </a>
+        <button onclick="window.print()" class="bg-white border border-red-500 text-red-600 px-4 py-2 rounded-lg text-sm font-bold hover:bg-red-50 transition shadow-sm flex items-center">
             <i class="fas fa-file-pdf mr-2 text-lg"></i> Export PDF
         </button>
     </div>

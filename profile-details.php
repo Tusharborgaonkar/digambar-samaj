@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 session_start();
 require_once 'includes/db.php';
 
@@ -280,7 +280,7 @@ include 'includes/header.php';
                     
                     <div class="mb-6">
                         <span class="block text-sm text-gray-500 mb-1">Mandir / Community</span>
-                        <span class="text-dark font-semibold"><?= htmlspecialchars($member['mandir'] ?? 'N/A') ?> <?= !empty($member['custom_mandir']) ? ' - ' . htmlspecialchars($member['custom_mandir']) : '' ?></span>
+                        <span class="text-dark font-semibold"><?= htmlspecialchars($member['mandir_name'] ?? ($member['mandir'] ?? 'N/A')) ?> <?= !empty($member['custom_mandir']) ? ' - ' . htmlspecialchars($member['custom_mandir']) : '' ?></span>
                     </div>
 
                     <h4 class="font-bold text-gray-700 mb-3 border-b border-gray-100 pb-2">Reference 1</h4>

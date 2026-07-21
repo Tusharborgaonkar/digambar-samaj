@@ -19,6 +19,9 @@ try {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
 } catch (Exception $e) {}
+try {
+    $pdo->exec("ALTER TABLE success_stories ADD COLUMN display_order INT DEFAULT 0");
+} catch (Exception $e) {}
 $success_msg = '';
 $error_msg = '';
 
@@ -71,7 +74,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             } elseif (isset($_POST['id'])) {
                 $id = (int)$_POST['id'];
-                if ($action === 'approve') {
+                if ($action === 'edit') {
+                    $couple_name = $_POST['couple_name'] ?? '';
+                    $city = $_POST['city'] ?? '';
+                    $story_text = $_POST['story'] ?? '';
+                    $display_order = (int)($_POST['display_order'] ?? 0);
+                    
+                    if (empty($couple_name) || empty($city) || empty($story_text)) {
+                        $error_msg = "Please fill in all required fields.";
+                    } else {
+                        // Check if a new photo was uploaded
+                        $photo_query = "";
+                        $params = [$couple_name, $city, $story_text, $display_order];
+                        
+                        if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+                            $upload_dir = '../uploads/success_stories/';
+                            $file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
+                            $allowed_exts = ['jpg', 'jpeg', 'png', 'gif'];
+                            
+                            if (in_array($file_ext, $allowed_exts)) {
+                                $new_filename = uniqid('story_') . '.' . $file_ext;
+                                $upload_path = $upload_dir . $new_filename;
+                                
+                                if (move_uploaded_file($_FILES['photo']['tmp_name'], $upload_path)) {
+                                    chmod($upload_path, 0644);
+                                    // Get old photo to delete
+                                    $stmt = $pdo->prepare("SELECT photo FROM success_stories WHERE id = ?");
+                                    $stmt->execute([$id]);
+                                    $old_story = $stmt->fetch();
+                                    if ($old_story && !empty($old_story['photo']) && file_exists('../' . $old_story['photo'])) {
+                                        unlink('../' . $old_story['photo']);
+                                    }
+                                    
+                                    $photo_query = ", photo = ?";
+                                    $params[] = 'uploads/success_stories/' . $new_filename;
+                                } else {
+                                    $error_msg = "Failed to upload photo.";
+                                }
+                            } else {
+                                $error_msg = "Invalid file type. Only JPG, JPEG, PNG and GIF are allowed.";
+                            }
+                        }
+                        
+                        if (empty($error_msg)) {
+                            $params[] = $id;
+                            $stmt = $pdo->prepare("UPDATE success_stories SET couple_name = ?, city = ?, story = ?, display_order = ? $photo_query WHERE id = ?");
+                            $stmt->execute($params);
+                            $success_msg = "Story updated successfully.";
+                        }
+                    }
+                } elseif ($action === 'approve') {
                     $stmt = $pdo->prepare("UPDATE success_stories SET status = 'approved' WHERE id = ?");
                     $stmt->execute([$id]);
                     $success_msg = "Story approved successfully.";
@@ -173,8 +225,17 @@ include 'includes/sidebar.php';
                                         <button type="button" class="text-blue-600 hover:text-blue-900 mr-3 view-story-btn" title="View Details" 
                                             data-name="<?= htmlspecialchars($story['couple_name']) ?>" 
                                             data-city="<?= htmlspecialchars($story['city']) ?>" 
-                                            data-story="<?= htmlspecialchars($story['story']) ?>">
+                                            data-story="<?= htmlspecialchars($story['story']) ?>"
+                                            data-photo="<?= $photoPath ?>">
                                             <i class="fas fa-eye text-lg"></i>
+                                        </button>
+                                        <button type="button" class="text-indigo-600 hover:text-indigo-900 mr-3 edit-story-btn" title="Edit Story"
+                                            data-id="<?= $story['id'] ?>"
+                                            data-name="<?= htmlspecialchars($story['couple_name']) ?>" 
+                                            data-city="<?= htmlspecialchars($story['city']) ?>" 
+                                            data-story="<?= htmlspecialchars($story['story']) ?>"
+                                            data-order="<?= $story['display_order'] ?? 0 ?>">
+                                            <i class="fas fa-edit text-lg"></i>
                                         </button>
                                         <form method="POST" class="inline-block">
                                             <input type="hidden" name="id" value="<?= $story['id'] ?>">
@@ -247,7 +308,54 @@ include 'includes/sidebar.php';
     </div>
 </div>
 
-<!-- Story Modal -->
+<!-- Edit Story Modal -->
+<div id="editStoryModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-1/2 max-w-2xl overflow-hidden">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="px-6 py-4 border-b flex justify-between items-center bg-gray-50">
+                <h3 class="text-lg font-bold text-gray-800">Edit Success Story</h3>
+                <button type="button" onclick="document.getElementById('editStoryModal').classList.add('hidden')" class="text-gray-500 hover:text-red-500 focus:outline-none">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <input type="hidden" name="action" value="edit">
+                <input type="hidden" name="id" id="edit_id">
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Couple Name <span class="text-red-500">*</span></label>
+                    <input type="text" name="couple_name" id="edit_couple_name" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2 border bg-white">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">City <span class="text-red-500">*</span></label>
+                    <input type="text" name="city" id="edit_city" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2 border bg-white">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Display Order</label>
+                    <input type="number" name="display_order" id="edit_display_order" value="0" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2 border bg-white">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Story <span class="text-red-500">*</span></label>
+                    <textarea name="story" id="edit_story" rows="4" required class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2 border bg-white"></textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Photo (Leave empty to keep existing)</label>
+                    <input type="file" name="photo" accept="image/*" class="w-full border-gray-300 rounded-md shadow-sm p-2 border bg-white">
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t text-right bg-gray-50 flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('editStoryModal').classList.add('hidden')" class="bg-gray-200 text-gray-800 px-4 py-2 rounded shadow hover:bg-gray-300 font-semibold">Cancel</button>
+                <button type="submit" class="bg-primary text-white px-6 py-2 rounded shadow hover:bg-opacity-90 font-semibold">Update Story</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Story Modal (View) -->
 <div id="storyModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
     <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-1/2 max-w-2xl overflow-hidden">
         <div class="px-6 py-4 border-b flex justify-between items-center">
@@ -256,9 +364,14 @@ include 'includes/sidebar.php';
                 <i class="fas fa-times text-xl"></i>
             </button>
         </div>
-        <div class="p-6">
-            <p class="text-sm font-semibold text-gray-500 mb-4" id="modalCity">City</p>
-            <div class="text-gray-700 whitespace-pre-wrap max-h-96 overflow-y-auto" id="modalStoryContent">Story content here...</div>
+        <div class="p-6 flex flex-col md:flex-row gap-6">
+            <div class="w-full md:w-1/3 flex-shrink-0">
+                <img id="modalPhoto" src="" alt="Couple Photo" class="w-full h-auto rounded-lg shadow-md border border-gray-200">
+            </div>
+            <div class="w-full md:w-2/3">
+                <p class="text-sm font-semibold text-gray-500 mb-4" id="modalCity">City</p>
+                <div class="text-gray-700 whitespace-pre-wrap max-h-96 overflow-y-auto" id="modalStoryContent">Story content here...</div>
+            </div>
         </div>
         <div class="px-6 py-4 border-t text-right bg-gray-50">
             <button onclick="closeModal()" class="bg-gray-200 text-gray-800 px-4 py-2 rounded shadow hover:bg-gray-300 font-semibold">Close</button>
@@ -272,7 +385,19 @@ include 'includes/sidebar.php';
             document.getElementById('modalCoupleName').innerText = this.getAttribute('data-name');
             document.getElementById('modalCity').innerText = 'City: ' + this.getAttribute('data-city');
             document.getElementById('modalStoryContent').innerText = this.getAttribute('data-story');
+            document.getElementById('modalPhoto').src = this.getAttribute('data-photo');
             document.getElementById('storyModal').classList.remove('hidden');
+        });
+    });
+
+    document.querySelectorAll('.edit-story-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.getElementById('edit_id').value = this.getAttribute('data-id');
+            document.getElementById('edit_couple_name').value = this.getAttribute('data-name');
+            document.getElementById('edit_city').value = this.getAttribute('data-city');
+            document.getElementById('edit_story').value = this.getAttribute('data-story');
+            document.getElementById('edit_display_order').value = this.getAttribute('data-order');
+            document.getElementById('editStoryModal').classList.remove('hidden');
         });
     });
 
@@ -284,6 +409,12 @@ include 'includes/sidebar.php';
     document.getElementById('storyModal').addEventListener('click', function(e) {
         if(e.target === this) {
             closeModal();
+        }
+    });
+    
+    document.getElementById('editStoryModal').addEventListener('click', function(e) {
+        if(e.target === this) {
+            this.classList.add('hidden');
         }
     });
 </script>

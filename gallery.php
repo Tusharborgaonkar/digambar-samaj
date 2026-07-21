@@ -6,6 +6,14 @@ include 'includes/header.php';
 $stmt = $pdo->prepare("SELECT * FROM gallery WHERE status = 1 ORDER BY created_at DESC");
 $stmt->execute();
 $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch videos
+try {
+    $stmt_vid = $pdo->query("SELECT * FROM video_gallery WHERE status = 'active' ORDER BY display_order ASC, created_at DESC");
+    $videos = $stmt_vid->fetchAll(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $videos = [];
+}
 ?>
 
 <section class="relative h-72 md:h-[500px] bg-cover bg-[center_20%]" style="background-image: url('assets/images/herobanner.png');">
@@ -47,7 +55,7 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </section>
 
-<!-- YouTube Videos Section -->
+<!-- Videos Section -->
 <section class="py-16 bg-white border-t border-gray-100">
     <div class="container mx-auto px-4 max-w-6xl">
         <div class="text-center mb-12">
@@ -55,35 +63,36 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="w-16 h-1 bg-primary mx-auto"></div>
             <p class="text-gray-600 mt-4">Watch highlights from our past events and programs.</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <!-- Video Placeholder 1 -->
-            <div class="bg-light rounded-xl overflow-hidden shadow-md" data-aos="fade-up">
-                <div class="aspect-w-16 aspect-h-9 h-64">
-                    <iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
-                <div class="p-4">
-                    <h3 class="font-bold text-lg text-dark">Sample Event Video 1</h3>
-                </div>
+        
+        <?php if(empty($videos)): ?>
+            <p class="text-center text-gray-500">No videos available at the moment.</p>
+        <?php else: ?>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <?php $delay = 0; foreach($videos as $vid): ?>
+                    <div class="bg-light rounded-xl overflow-hidden shadow-md" data-aos="fade-up" data-aos-delay="<?= $delay ?>">
+                        <div class="aspect-w-16 aspect-h-9 h-64 bg-black">
+                            <?php if ($vid['video_type'] === 'youtube' && !empty($vid['video_url'])): 
+                                preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/\s]{11})%i', $vid['video_url'], $match);
+                                $yt_id = $match[1] ?? '';
+                            ?>
+                                <iframe class="w-full h-full" src="https://www.youtube.com/embed/<?= $yt_id ?>" title="<?= htmlspecialchars($vid['title']) ?>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                            <?php elseif ($vid['video_type'] === 'mp4' && !empty($vid['video_file'])): ?>
+                                <video class="w-full h-full object-cover" controls <?= !empty($vid['thumbnail']) ? 'poster="'.htmlspecialchars($vid['thumbnail']).'"' : '' ?>>
+                                    <source src="<?= htmlspecialchars($vid['video_file']) ?>" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            <?php endif; ?>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-lg text-dark"><?= htmlspecialchars($vid['title']) ?></h3>
+                            <?php if(!empty($vid['description'])): ?>
+                                <p class="text-gray-600 text-sm mt-2"><?= htmlspecialchars($vid['description']) ?></p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php $delay += 100; endforeach; ?>
             </div>
-            <!-- Video Placeholder 2 -->
-            <div class="bg-light rounded-xl overflow-hidden shadow-md" data-aos="fade-up" data-aos-delay="100">
-                <div class="aspect-w-16 aspect-h-9 h-64">
-                    <iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
-                <div class="p-4">
-                    <h3 class="font-bold text-lg text-dark">Sample Event Video 2</h3>
-                </div>
-            </div>
-            <!-- Video Placeholder 3 -->
-            <div class="bg-light rounded-xl overflow-hidden shadow-md" data-aos="fade-up" data-aos-delay="200">
-                <div class="aspect-w-16 aspect-h-9 h-64">
-                    <iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
-                <div class="p-4">
-                    <h3 class="font-bold text-lg text-dark">Sample Event Video 3</h3>
-                </div>
-            </div>
-        </div>
+        <?php endif; ?>
     </div>
 </section>
 

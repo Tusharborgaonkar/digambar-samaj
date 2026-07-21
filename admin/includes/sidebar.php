@@ -83,6 +83,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <span>Photo Gallery</span>
             </a>
             
+            <a href="video-gallery.php" class="flex items-center px-3 py-2.5 rounded-md transition-colors <?= $current_page == 'video-gallery.php' ? 'bg-primary text-white font-semibold' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
+                <span>Video Gallery</span>
+            </a>
+            
             <a href="contacts.php" class="flex items-center px-3 py-2.5 rounded-md transition-colors <?= $current_page == 'contacts.php' ? 'bg-primary text-white font-semibold' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
                 <span>Contact Messages</span>
             </a>
@@ -154,11 +158,17 @@ $current_page = basename($_SERVER['PHP_SELF']);
         
         <div class="flex items-center space-x-4">
             <div class="relative">
-                <button class="flex items-center space-x-2 focus:outline-none">
+                <button id="adminProfileBtn" class="flex items-center space-x-2 focus:outline-none">
                     <img src="https://ui-avatars.com/api/?name=Admin+User&background=1E3A5F&color=fff" alt="Admin" class="w-8 h-8 rounded-full border border-gray-300">
                     <span class="text-sm font-medium text-gray-700 hidden sm:block">Super Admin</span>
                     <i class="fas fa-chevron-down text-xs text-gray-500"></i>
                 </button>
+                <!-- Dropdown Menu -->
+                <div id="adminDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-100">
+                    <a href="settings.php" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"><i class="fas fa-cog mr-2"></i> Settings</a>
+                    <hr class="my-1 border-gray-200">
+                    <a href="logout.php" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100"><i class="fas fa-sign-out-alt mr-2"></i> Logout</a>
+                </div>
             </div>
         </div>
     </header>

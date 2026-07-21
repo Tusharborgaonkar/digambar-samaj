@@ -154,6 +154,24 @@ $profile_img = (!empty($user['profile_photo']) && file_exists($user['profile_pho
                                     <p class="font-medium text-dark text-sm leading-snug"><?= nl2br(htmlspecialchars($user['native_place'] ?? 'N/A')) ?></p>
                                 </div>
                             </div>
+                            <div class="flex items-start gap-3">
+                                <div class="bg-blue-50 p-2.5 rounded-lg text-primary mt-0.5">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-0.5">Current Address</p>
+                                    <p class="font-medium text-dark text-sm leading-snug"><?= nl2br(htmlspecialchars($user['current_address'] ?? 'N/A')) ?></p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <div class="bg-blue-50 p-2.5 rounded-lg text-primary mt-0.5">
+                                    <i class="fas fa-map-marked-alt"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase tracking-wider mb-0.5">Permanent Address</p>
+                                    <p class="font-medium text-dark text-sm leading-snug"><?= nl2br(htmlspecialchars($user['permanent_address'] ?? 'N/A')) ?> <?= !empty($user['pin_code']) ? ' - ' . htmlspecialchars($user['pin_code']) : '' ?></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -215,7 +233,7 @@ $profile_img = (!empty($user['profile_photo']) && file_exists($user['profile_pho
                             </div>
                             <div>
                                 <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Manglik</p>
-                                <p class="font-medium text-dark"><?= htmlspecialchars($user['manglik_status'] ?? 'N/A') ?></p>
+                                <p class="font-medium text-dark"><?= htmlspecialchars($user['manglik'] ?? 'N/A') ?></p>
                             </div>
                             <div>
                                 <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Weight</p>
@@ -325,7 +343,7 @@ $profile_img = (!empty($user['profile_photo']) && file_exists($user['profile_pho
                             </div>
                             <div>
                                 <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Registered Mandir (मंदिर)</p>
-                                <p class="font-medium text-dark"><?= htmlspecialchars($user['mandir'] ?? 'N/A') ?> <?= !empty($user['custom_mandir']) ? ' - ' . htmlspecialchars($user['custom_mandir']) : '' ?></p>
+                                <p class="font-medium text-dark"><?= htmlspecialchars($user['mandir_name'] ?? ($user['mandir'] ?? 'N/A')) ?> <?= !empty($user['custom_mandir']) ? ' - ' . htmlspecialchars($user['custom_mandir']) : '' ?></p>
                             </div>
                         </div>
 

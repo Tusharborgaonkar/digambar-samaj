@@ -18,6 +18,24 @@
         }
     });
 
+    // Admin Profile Dropdown Toggle
+    const adminProfileBtn = document.getElementById('adminProfileBtn');
+    const adminDropdown = document.getElementById('adminDropdown');
+    
+    if (adminProfileBtn && adminDropdown) {
+        adminProfileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            adminDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!adminProfileBtn.contains(e.target) && !adminDropdown.contains(e.target)) {
+                adminDropdown.classList.add('hidden');
+            }
+        });
+    }
+
     // Prevent Form Resubmission Warning on Refresh
     if (window.history.replaceState) {
         window.history.replaceState(null, null, window.location.href);

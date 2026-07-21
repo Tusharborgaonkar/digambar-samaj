@@ -828,6 +828,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </section>
 
 <script>
+document.getElementById('registrationForm').addEventListener('submit', function(e) {
+    const mobileInput = document.querySelector('input[name="mobile"]');
+    if (!mobileInput) return; // If mobile is not visible/required, proceed
+    
+    e.preventDefault();
+    const submitBtn = document.getElementById('submitBtn');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Checking...';
+    submitBtn.disabled = true;
+
+    fetch('api_check_mobile.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ mobile: mobileInput.value })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'duplicate') {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+            Swal.fire({
+                title: 'Already Registered',
+                text: 'This mobile number is already registered.\nPlease enter a different mobile number.',
+                icon: 'warning',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#eab308'
+            });
+        } else {
+            // If OK or error from check, just proceed with normal submission
+            // Using submit() bypasses the event listener
+            document.getElementById('registrationForm').submit();
+        }
+    })
+    .catch(err => {
+        document.getElementById('registrationForm').submit();
+    });
+});
+
 document.querySelectorAll('input[name="is_digambar"]').forEach(radio => {
     radio.addEventListener('change', function() {
         const formElements = document.querySelectorAll('#registrationForm input:not([name="is_digambar"]), #registrationForm select, #registrationForm textarea, #registrationForm button[type="submit"]');
