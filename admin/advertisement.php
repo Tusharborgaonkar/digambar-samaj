@@ -190,6 +190,9 @@ include 'includes/sidebar.php';
                         <select name="position" class="text-sm border-gray-300 rounded focus:ring-primary focus:border-primary p-1 outline-none bg-white">
                             <option value="home_top" <?= $ad['position'] == 'home_top' ? 'selected' : '' ?>>Home Top</option>
                             <option value="home_bottom" <?= $ad['position'] == 'home_bottom' ? 'selected' : '' ?>>Home Bottom</option>
+                            <option value="footer" <?= $ad['position'] == 'footer' ? 'selected' : '' ?>>Footer</option>
+                            <option value="left_side" <?= $ad['position'] == 'left_side' ? 'selected' : '' ?>>Left Side (Desktop)</option>
+                            <option value="right_side" <?= $ad['position'] == 'right_side' ? 'selected' : '' ?>>Right Side (Desktop)</option>
                         </select>
                     </div>
                     <div class="flex justify-between items-center pt-2 border-t border-gray-200">
@@ -245,6 +248,9 @@ include 'includes/sidebar.php';
                         <select name="position" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none bg-white text-sm">
                             <option value="home_top">Home Top</option>
                             <option value="home_bottom">Home Bottom</option>
+                            <option value="footer">Footer</option>
+                            <option value="left_side">Left Side (Desktop)</option>
+                            <option value="right_side">Right Side (Desktop)</option>
                         </select>
                     </div>
                 </div>
@@ -292,6 +298,9 @@ include 'includes/sidebar.php';
                         <select name="position" id="edit_position" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none bg-white text-sm">
                             <option value="home_top">Home Top</option>
                             <option value="home_bottom">Home Bottom</option>
+                            <option value="footer">Footer</option>
+                            <option value="left_side">Left Side (Desktop)</option>
+                            <option value="right_side">Right Side (Desktop)</option>
                         </select>
                     </div>
                     <div>

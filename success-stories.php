@@ -5,22 +5,6 @@ include 'includes/header.php';
 
 $is_user_logged_in = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
 $is_admin_logged_in = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
-
-if (!$is_user_logged_in && !$is_admin_logged_in) {
-    echo "<script>window.location.href='login.php';</script>";
-    exit;
-}
-if (!$is_admin_logged_in) {
-    $stmtGate = $pdo->prepare("SELECT status FROM users WHERE id = ?");
-    $stmtGate->execute([$_SESSION['user_id']]);
-    $userStatusGate = $stmtGate->fetchColumn();
-    if ($userStatusGate === 'approved') {
-        $is_approved_for_stories = true;
-    } else {
-        header("Location: waiting-approval.php");
-        exit;
-    }
-}
 ?>
 <section class="py-16 bg-white">
     <div class="container mx-auto px-4">

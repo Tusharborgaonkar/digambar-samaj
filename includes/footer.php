@@ -14,10 +14,40 @@ $contact_address = $settings['contact_address'] ?? '23-A, Shubhlaxmi Palace, Opp
 // Ensure phone only has digits for whatsapp link
 $whatsapp_number = preg_replace('/[^0-9]/', '', $contact_phone);
 ?>
+<?php
+$footer_ads = [];
+if (isset($pdo)) {
+    try {
+        $stmtAds = $pdo->query("SELECT * FROM advertisements WHERE status = 1 AND position = 'footer' ORDER BY created_at DESC");
+        $footer_ads = $stmtAds->fetchAll(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {}
+}
+?>
     </main>
     
+    <!-- Footer Ads -->
+    <?php if(!empty($footer_ads)): ?>
+    <section class="container mx-auto px-4 md:px-8 mt-12 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-<?= count($footer_ads) > 4 ? 4 : (count($footer_ads) > 0 ? count($footer_ads) : 1) ?> gap-4">
+            <?php foreach($footer_ads as $ad): 
+                $img_path = ltrim(str_replace('../', '', $ad['image']), '/\\');
+            ?>
+                <div class="w-full flex justify-center items-center">
+                    <?php if(!empty($ad['link'])): ?>
+                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block w-full hover:opacity-90 transition">
+                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto object-contain max-h-48 rounded shadow-md border border-gray-200">
+                        </a>
+                    <?php else: ?>
+                        <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto object-contain max-h-48 rounded shadow-md border border-gray-200">
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </section>
+    <?php endif; ?>
+
     <!-- Footer -->
-    <footer class="bg-dark text-white border-t border-white/10 mt-20">
+    <footer class="bg-dark text-white border-t border-white/10 mt-12">
         <div class="container mx-auto px-4 md:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>

@@ -43,6 +43,22 @@ if ($is_logged_in && isset($_SESSION['user_id'])) {
 } elseif ($is_admin_logged_in) {
     $show_registration = false;
 }
+
+// Fetch side ads
+$left_ads = [];
+$right_ads = [];
+if (isset($pdo)) {
+    try {
+        $stmtAds = $pdo->query("SELECT * FROM advertisements WHERE status = 1 AND position IN ('left_side', 'right_side') ORDER BY created_at DESC");
+        while ($ad = $stmtAds->fetch(PDO::FETCH_ASSOC)) {
+            if ($ad['position'] === 'left_side') {
+                $left_ads[] = $ad;
+            } else {
+                $right_ads[] = $ad;
+            }
+        }
+    } catch (Exception $e) {}
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -291,6 +307,44 @@ if ($is_logged_in && isset($_SESSION['user_id'])) {
     </style>
 </head>
 <body class="bg-light">
+
+    <!-- Left Side Ads (Desktop Only) -->
+    <?php if(!empty($left_ads)): ?>
+    <div class="hidden xl:block fixed left-0 top-1/2 transform -translate-y-1/2 z-40 w-[160px] max-h-[80vh] overflow-y-auto" style="padding-left: 10px;">
+        <div class="flex flex-col space-y-4">
+            <?php foreach($left_ads as $ad): 
+                $img_path = ltrim(str_replace('../', '', $ad['image']), '/\\');
+            ?>
+                <?php if(!empty($ad['link'])): ?>
+                    <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block w-full hover:opacity-90 transition">
+                        <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-md border border-gray-200">
+                    </a>
+                <?php else: ?>
+                    <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-md border border-gray-200">
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
+
+    <!-- Right Side Ads (Desktop Only) -->
+    <?php if(!empty($right_ads)): ?>
+    <div class="hidden xl:block fixed right-0 top-1/2 transform -translate-y-1/2 z-40 w-[160px] max-h-[80vh] overflow-y-auto" style="padding-right: 10px;">
+        <div class="flex flex-col space-y-4">
+            <?php foreach($right_ads as $ad): 
+                $img_path = ltrim(str_replace('../', '', $ad['image']), '/\\');
+            ?>
+                <?php if(!empty($ad['link'])): ?>
+                    <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block w-full hover:opacity-90 transition">
+                        <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-md border border-gray-200">
+                    </a>
+                <?php else: ?>
+                    <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-md border border-gray-200">
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
+    <?php endif; ?>
     
     <!-- Overlay -->
     <div class="overlay" id="overlay"></div>

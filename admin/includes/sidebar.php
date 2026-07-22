@@ -54,6 +54,18 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <span class="text-sm leading-tight">Deactivation/Deletion Requests</span>
             </a>
 
+            <!-- Communications -->
+            <div class="pt-4 pb-1">
+                <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">Communications</p>
+            </div>
+            
+            <a href="bulk-email.php" class="flex items-center px-3 py-2.5 rounded-md transition-colors <?= $current_page == 'bulk-email.php' ? 'bg-primary text-white font-semibold' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
+                <span>Bulk Email</span>
+            </a>
+            <a href="bulk-whatsapp.php" class="flex items-center px-3 py-2.5 rounded-md transition-colors <?= $current_page == 'bulk-whatsapp.php' ? 'bg-primary text-white font-semibold' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
+                <span>Bulk WhatsApp</span>
+            </a>
+
             <!-- System Settings -->
             <div class="pt-4 pb-1">
                 <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">System Settings</p>
