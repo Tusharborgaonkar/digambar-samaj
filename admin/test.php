@@ -1,4 +1,6 @@
 <?php
+session_start();
+$_SESSION['admin_logged_in'] = true;
 $current_page = 'news.php';
 require_once '../includes/db.php';
 
@@ -59,15 +61,8 @@ include 'includes/header.php';
 include 'includes/sidebar.php';
 
 // Fetch news
-$news_items = [];
-try {
-    $stmt = $pdo->query("SELECT * FROM news ORDER BY created_at DESC");
-    if ($stmt) {
-        $news_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-} catch (PDOException $e) {
-    $error = "Database Error: " . $e->getMessage() . ". Please ensure the 'news' table exists by running the migration script.";
-}
+$stmt = $pdo->query("SELECT * FROM news ORDER BY created_at DESC");
+$news_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="mb-6 flex justify-between items-center">

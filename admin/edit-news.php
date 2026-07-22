@@ -10,9 +10,13 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $id = $_GET['id'];
 
 // Fetch the existing news article
-$stmt = $pdo->prepare("SELECT * FROM news WHERE id = ?");
-$stmt->execute([$id]);
-$news = $stmt->fetch(PDO::FETCH_ASSOC);
+try {
+    $stmt = $pdo->prepare("SELECT * FROM news WHERE id = ?");
+    $stmt->execute([$id]);
+    $news = $stmt->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    $news = false;
+}
 
 if (!$news) {
     header("Location: news.php");
