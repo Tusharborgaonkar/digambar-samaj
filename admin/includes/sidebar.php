@@ -99,6 +99,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <span>Video Gallery</span>
             </a>
             
+            <a href="news.php" class="flex items-center px-3 py-2.5 rounded-md transition-colors <?= $current_page == 'news.php' ? 'bg-primary text-white font-semibold' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
+                <span>News & Updates</span>
+            </a>
+            
             <a href="contacts.php" class="flex items-center px-3 py-2.5 rounded-md transition-colors <?= $current_page == 'contacts.php' ? 'bg-primary text-white font-semibold' : 'text-gray-300 hover:bg-gray-700 hover:text-white' ?>">
                 <span>Contact Messages</span>
             </a>
