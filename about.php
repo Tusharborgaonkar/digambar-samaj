@@ -137,15 +137,27 @@ include 'includes/header.php';
             document.getElementById('aboutTitleHi'),
             document.getElementById('aboutContentHi'),
             document.getElementById('disclosureTitleHi'),
-            document.getElementById('disclosureContentHi')
-        ];
+            document.getElementById('disclosureContentHi'),
+            document.getElementById('committeeQuoteHi'),
+            document.getElementById('name1Hi'), document.getElementById('desc1Hi'),
+            document.getElementById('name2Hi'), document.getElementById('desc2Hi'),
+            document.getElementById('name3Hi'), document.getElementById('desc3Hi'),
+            document.getElementById('name4Hi'), document.getElementById('desc4Hi'),
+            document.getElementById('name5Hi'), document.getElementById('desc5Hi')
+        ].filter(Boolean);
 
         const enElements = [
             document.getElementById('aboutTitleEn'),
             document.getElementById('aboutContentEn'),
             document.getElementById('disclosureTitleEn'),
-            document.getElementById('disclosureContentEn')
-        ];
+            document.getElementById('disclosureContentEn'),
+            document.getElementById('committeeQuoteEn'),
+            document.getElementById('name1En'), document.getElementById('desc1En'),
+            document.getElementById('name2En'), document.getElementById('desc2En'),
+            document.getElementById('name3En'), document.getElementById('desc3En'),
+            document.getElementById('name4En'), document.getElementById('desc4En'),
+            document.getElementById('name5En'), document.getElementById('desc5En')
+        ].filter(Boolean);
 
         if (currentLang === 'hi') {
             hiElements.forEach(el => el.classList.add('hidden'));
@@ -251,8 +263,16 @@ include 'includes/header.php';
         <div class="text-center mb-12">
             <h2 class="text-3xl font-bold text-dark mb-3">Committee Members</h2>
             <div class="w-16 h-1 bg-primary mx-auto"></div>
-            <p class="text-gray-600 mt-6 max-w-4xl mx-auto italic text-lg leading-relaxed font-medium">"स्थापना काल से ही समिति के पाँचों सदस्य इस संस्था को आगे ले जाने में जुटे हुए हैं। सभी सदस्यों के सामूहिक प्रयासों और आपसी तालमेल का ही परिणाम है कि संस्था आज इस गौरवशाली मुकाम पर खड़ी है। यह पारस्परिक सामंजस्य ही हमारी संस्था का मुख्य आधार स्तंभ है।"</p>
-            <p class="text-primary font-bold mt-2">- दिगम्बर जैन परिचय सम्मेलन समिति अहमदाबाद</p>
+            
+            <div id="committeeQuoteHi">
+                <p class="text-gray-600 mt-6 max-w-4xl mx-auto italic text-lg leading-relaxed font-medium">"स्थापना काल से ही समिति के पाँचों सदस्य इस संस्था को आगे ले जाने में जुटे हुए हैं। सभी सदस्यों के सामूहिक प्रयासों और आपसी तालमेल का ही परिणाम है कि संस्था आज इस गौरवशाली मुकाम पर खड़ी है। यह पारस्परिक सामंजस्य ही हमारी संस्था का मुख्य आधार स्तंभ है।"</p>
+                <p class="text-primary font-bold mt-2">- दिगम्बर जैन परिचय सम्मेलन समिति अहमदाबाद</p>
+            </div>
+            
+            <div id="committeeQuoteEn" class="hidden">
+                <p class="text-gray-600 mt-6 max-w-4xl mx-auto italic text-lg leading-relaxed font-medium">"Since its inception, all five members of the committee have been dedicated to taking this organization forward. It is the result of their collective efforts and mutual coordination that the organization stands at this glorious stage today. This mutual harmony is the main pillar of our organization."</p>
+                <p class="text-primary font-bold mt-2">- Digambar Jain Parichay Sammelan Samiti Ahmedabad</p>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 gap-8">
@@ -261,9 +281,11 @@ include 'includes/header.php';
                 <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary shrink-0">
                     <img src="assets/images/narendra jain.png" alt="Narendra Jain" class="w-full h-full object-cover">
                 </div>
-                <h3 class="font-bold text-xl text-dark">नरेन्द्र जैन</h3>
+                <h3 class="font-bold text-xl text-dark" id="name1Hi">नरेन्द्र जैन</h3>
+                <h3 class="font-bold text-xl text-dark hidden" id="name1En">Narendra Jain</h3>
                 <p class="text-primary font-semibold text-sm mb-2">Committee Member</p>
-                <p class="text-gray-600 text-sm mb-4 grow text-justify">केमीकल के सफल व्यवसायी, धार्मिक और बहुत सारी संस्थाओं से सम्बंधित श्री नरेंद्र जी जैन इस संस्था के बहुत ही मजबूत स्तम्भ मे से एक है इस संस्था के प्रारम्भ से ही वह अपना योगदान दे रहे हैं|</p>
+                <p class="text-gray-600 text-sm mb-4 grow text-justify" id="desc1Hi">केमीकल के सफल व्यवसायी, धार्मिक और बहुत सारी संस्थाओं से सम्बंधित श्री नरेंद्र जी जैन इस संस्था के बहुत ही मजबूत स्तम्भ मे से एक है इस संस्था के प्रारम्भ से ही वह अपना योगदान दे रहे हैं|</p>
+                <p class="text-gray-600 text-sm mb-4 grow text-justify hidden" id="desc1En">A successful chemical businessman, religious and associated with many organizations, Mr. Narendra Jain is one of the very strong pillars of this organization. He has been contributing since the beginning.</p>
             </div>
             
             <!-- Member Manoj Jain -->
@@ -271,9 +293,11 @@ include 'includes/header.php';
                 <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary shrink-0">
                     <img src="assets/images/manoj jain.jpeg" alt="Manoj Jain" class="w-full h-full object-cover">
                 </div>
-                <h3 class="font-bold text-xl text-dark">मनोज जैन <span class="text-xs font-normal text-gray-500 block mt-1">(M. COM, LLB, ACS)</span></h3>
+                <h3 class="font-bold text-xl text-dark" id="name2Hi">मनोज जैन <span class="text-xs font-normal text-gray-500 block mt-1">(M. COM, LLB, ACS)</span></h3>
+                <h3 class="font-bold text-xl text-dark hidden" id="name2En">Manoj Jain <span class="text-xs font-normal text-gray-500 block mt-1">(M. COM, LLB, ACS)</span></h3>
                 <p class="text-primary font-semibold text-sm mb-2">Committee Member</p>
-                <p class="text-gray-600 text-sm mb-4 grow text-justify">श्री मनोज जैन जी 30 वर्षों का अनुभव रखने वाले वरिष्ठ कंपनी सेक्रेटरी हैं, जो अहमदाबाद की एक रियल एस्टेट कंपनी में CFO और CS के रूप में कार्यरत हैं। सामाजिक कार्यों के प्रति समर्पित, श्री जैन इस संस्था से इसके शुरुआती दिनों से ही जुड़े हुए हैं। संस्था द्वारा दी गई हर जिम्मेदारी को उन्होंने हमेशा समय पर और सफलतापूर्वक पूरा किया है।</p>
+                <p class="text-gray-600 text-sm mb-4 grow text-justify" id="desc2Hi">श्री मनोज जैन जी 30 वर्षों का अनुभव रखने वाले वरिष्ठ कंपनी सेक्रेटरी हैं, जो अहमदाबाद की एक रियल एस्टेट कंपनी में CFO और CS के रूप में कार्यरत हैं। सामाजिक कार्यों के प्रति समर्पित, श्री जैन इस संस्था से इसके शुरुआती दिनों से ही जुड़े हुए हैं। संस्था द्वारा दी गई हर जिम्मेदारी को उन्होंने हमेशा समय पर और सफलतापूर्वक पूरा किया है।</p>
+                <p class="text-gray-600 text-sm mb-4 grow text-justify hidden" id="desc2En">Mr. Manoj Jain is a senior Company Secretary with 30 years of experience, currently working as CFO and CS in a real estate company in Ahmedabad. Dedicated to social work, Mr. Jain has been associated with this organization since its early days and successfully fulfills all responsibilities.</p>
             </div>
 
             <!-- Member Darshan Jain -->
@@ -281,9 +305,11 @@ include 'includes/header.php';
                 <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary shrink-0">
                     <img src="assets/images/darshan jain.jpeg" alt="Darshan Jain Vakharia" class="w-full h-full object-cover">
                 </div>
-                <h3 class="font-bold text-xl text-dark">श्री दर्शन जैन वखारिया</h3>
+                <h3 class="font-bold text-xl text-dark" id="name3Hi">श्री दर्शन जैन वखारिया</h3>
+                <h3 class="font-bold text-xl text-dark hidden" id="name3En">Darshan Jain Vakharia</h3>
                 <p class="text-primary font-semibold text-sm mb-2">Committee Member</p>
-                <p class="text-gray-600 text-sm mb-4 grow text-justify">श्री दर्शन जी इमीग्रेशन वीसा कंसल्टेंट है और साथ मे बहुत ही सामजिक और धार्मिक व्यक्ति है वह बहुत सारी संस्थाओं से जुड़ें हुये है दिगम्बर जैन समाज के परिचय सम्मेलन का सपना उनका ही था जिसको यह संस्था उनके साथ प्रारम्भ से कर रही है</p>
+                <p class="text-gray-600 text-sm mb-4 grow text-justify" id="desc3Hi">श्री दर्शन जी इमीग्रेशन वीसा कंसल्टेंट है और साथ मे बहुत ही सामजिक और धार्मिक व्यक्ति है वह बहुत सारी संस्थाओं से जुड़ें हुये है दिगम्बर जैन समाज के परिचय सम्मेलन का सपना उनका ही था जिसको यह संस्था उनके साथ प्रारम्भ से कर रही है</p>
+                <p class="text-gray-600 text-sm mb-4 grow text-justify hidden" id="desc3En">An immigration visa consultant and a very social and religious person, he is associated with many organizations. The dream of the Parichay Sammelan was his, which this organization has been fulfilling with him since the beginning.</p>
             </div>
 
             <!-- Member Milesh Doshi -->
@@ -291,9 +317,11 @@ include 'includes/header.php';
                 <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary shrink-0">
                     <img src="assets/images/milesh.png" alt="Milesh Doshi" class="w-full h-full object-cover">
                 </div>
-                <h3 class="font-bold text-xl text-dark">मिलेश दोशी</h3>
+                <h3 class="font-bold text-xl text-dark" id="name4Hi">मिलेश दोशी</h3>
+                <h3 class="font-bold text-xl text-dark hidden" id="name4En">Milesh Doshi</h3>
                 <p class="text-primary font-semibold text-sm mb-2">Committee Member</p>
-                <p class="text-gray-600 text-sm mb-4 grow text-justify">श्री मिलेशभाई कम्पुटर सोफ्ट्वेयर और हार्डवेयर व्यवसायी है, सभी धार्मिक कार्यो और मुनि भक्ति मे सबसे अग्रणी रहते है इस संस्था के प्रारम्भ से ही वह अपना योगदान दे रहे हैं|</p>
+                <p class="text-gray-600 text-sm mb-4 grow text-justify" id="desc4Hi">श्री मिलेशभाई कम्पुटर सोफ्ट्वेयर और हार्डवेयर व्यवसायी है, सभी धार्मिक कार्यो और मुनि भक्ति मे सबसे अग्रणी रहते है इस संस्था के प्रारम्भ से ही वह अपना योगदान दे रहे हैं|</p>
+                <p class="text-gray-600 text-sm mb-4 grow text-justify hidden" id="desc4En">Mr. Mileshbhai is a computer software and hardware businessman. He is at the forefront of all religious activities and devotion to monks. He has been contributing to this organization since its inception.</p>
             </div>
 
             <!-- Member Jitendra Shah -->
@@ -301,9 +329,11 @@ include 'includes/header.php';
                 <div class="w-32 h-32 mx-auto bg-gray-200 rounded-full mb-4 overflow-hidden border-4 border-primary shrink-0">
                     <img src="assets/images/Jitendra Shah.png" alt="Jitendra Shah" class="w-full h-full object-cover">
                 </div>
-                <h3 class="font-bold text-xl text-dark">जितेंद्र शाह</h3>
+                <h3 class="font-bold text-xl text-dark" id="name5Hi">जितेंद्र शाह</h3>
+                <h3 class="font-bold text-xl text-dark hidden" id="name5En">Jitendra Shah</h3>
                 <p class="text-primary font-semibold text-sm mb-2">Committee Member</p>
-                <p class="text-gray-600 text-sm mb-4 grow text-justify">श्री जितेंद्र जी का प्रिंटिंग का बहुत ही बड़ा कार्य है, सभी सामजिक और धार्मिक कार्यो मे हमेशा अपना योगदान देते है इस संस्था के प्रारम्भ से ही वह अपना योगदान दे रहे हैं|</p>
+                <p class="text-gray-600 text-sm mb-4 grow text-justify" id="desc5Hi">श्री जितेंद्र जी का प्रिंटिंग का बहुत ही बड़ा कार्य है, सभी सामजिक और धार्मिक कार्यो मे हमेशा अपना योगदान देते है इस संस्था के प्रारम्भ से ही वह अपना योगदान दे रहे हैं|</p>
+                <p class="text-gray-600 text-sm mb-4 grow text-justify hidden" id="desc5En">Mr. Jitendra has a large printing business. He always contributes to social and religious activities and has been contributing to this organization since the beginning.</p>
             </div>
         </div>
     </div>

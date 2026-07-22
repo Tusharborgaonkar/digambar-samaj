@@ -5,10 +5,25 @@ include 'includes/header.php';
 $is_user_logged_in = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
 $is_admin_logged_in = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true;
 
-// Fetch all approved gallery images
+// Fetch all approved gallery items
 $stmt = $pdo->prepare("SELECT * FROM gallery WHERE status = 1 ORDER BY created_at DESC");
 $stmt->execute();
-$photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$gallery_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$photos = [];
+$pdfs = [];
+$gallery_videos = [];
+
+foreach ($gallery_items as $item) {
+    $type = $item['media_type'] ?? 'image';
+    if ($type === 'image' || empty($type)) {
+        $photos[] = $item;
+    } elseif ($type === 'pdf') {
+        $pdfs[] = $item;
+    } elseif ($type === 'video' || $type === 'youtube') {
+        $gallery_videos[] = $item;
+    }
+}
 
 // Fetch videos
 try {
@@ -16,6 +31,18 @@ try {
     $videos = $stmt_vid->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $videos = [];
+}
+
+// Merge gallery videos into the main videos array
+foreach ($gallery_videos as $gv) {
+    $videos[] = [
+        'title' => $gv['title'] ?: 'Video',
+        'video_type' => $gv['media_type'] === 'video' ? 'mp4' : 'youtube',
+        'video_url' => $gv['media_url'],
+        'video_file' => str_replace('../', '', $gv['image_path'] ?? ''),
+        'thumbnail' => '',
+        'description' => $gv['category'] ?? ''
+    ];
 }
 ?>
 
@@ -57,6 +84,34 @@ try {
         <?php endif; ?>
     </div>
 </section>
+
+<!-- Documents Section -->
+<?php if(!empty($pdfs)): ?>
+<section class="py-16 bg-white border-t border-gray-100">
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-dark mb-3">Documents & PDFs</h2>
+            <div class="w-16 h-1 bg-primary mx-auto"></div>
+            <p class="text-gray-600 mt-4">Downloadable resources and documents.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <?php foreach($pdfs as $pdf): 
+                $clean_path = ltrim(str_replace('../', '', $pdf['image_path']), '/');
+            ?>
+            <a href="<?= htmlspecialchars($clean_path) ?>" target="_blank" class="bg-light p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition flex items-start gap-4 group">
+                <div class="bg-red-100 text-red-500 rounded-lg p-3 group-hover:bg-red-500 group-hover:text-white transition">
+                    <i class="fas fa-file-pdf text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-gray-800 mb-1"><?= htmlspecialchars($pdf['title'] ?: 'Document') ?></h3>
+                    <p class="text-sm text-gray-500"><?= htmlspecialchars($pdf['category'] ?? '') ?></p>
+                </div>
+            </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
 
 <!-- Videos Section -->
 <section class="py-16 bg-white border-t border-gray-100">

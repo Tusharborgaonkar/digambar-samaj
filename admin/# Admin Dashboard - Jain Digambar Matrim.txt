@@ -1,0 +1,47 @@
+# Admin Dashboard - Jain Digambar Matrimony
+
+[Jain Digambar
+            Admin Panel](http://localhost/digambar-samaj/admin/dashboard.php)
+[Dashboard](http://localhost/digambar-samaj/admin/dashboard.php)
+User Management
+[All Members](http://localhost/digambar-samaj/admin/members.php)
+[Account Approvals](http://localhost/digambar-samaj/admin/account-approvals.php)
+[Incomplete Registrations](http://localhost/digambar-samaj/admin/members-incomplete.php)
+[Profile Approvals](http://localhost/digambar-samaj/admin/members-approval.php)
+[Approved Members](http://localhost/digambar-samaj/admin/members-approved.php)
+[Denied Members](http://localhost/digambar-samaj/admin/members-rejected.php)
+[Blocked Members](http://localhost/digambar-samaj/admin/members-blocked.php)
+[Paid Members](http://localhost/digambar-samaj/admin/members-paid.php)
+[Deactivation/Deletion Requests](http://localhost/digambar-samaj/admin/members-requests.php)
+Communications
+[Bulk Email](http://localhost/digambar-samaj/admin/bulk-email.php)
+[Bulk WhatsApp](http://localhost/digambar-samaj/admin/bulk-whatsapp.php)
+System Settings
+[Membership Plans](http://localhost/digambar-samaj/admin/membership-plans.php)
+[Payment Management](http://localhost/digambar-samaj/admin/payment.php)
+[Registration Form Setup](http://localhost/digambar-samaj/admin/registration-visibility.php)
+[Hero Advertisements](http://localhost/digambar-samaj/admin/advertisement.php)
+[Success Stories](http://localhost/digambar-samaj/admin/success-stories.php)
+[Photo Gallery](http://localhost/digambar-samaj/admin/gallery-manage.php)
+[Video Gallery](http://localhost/digambar-samaj/admin/video-gallery.php)
+[News & Updates](http://localhost/digambar-samaj/admin/news.php)
+[Contact Messages](http://localhost/digambar-samaj/admin/contacts.php)
+Analytics
+[Reports & Stats](http://localhost/digambar-samaj/admin/reports.php)
+Admin
+[Settings](http://localhost/digambar-samaj/admin/settings.php)
+[Logout](http://localhost/digambar-samaj/admin/login.php)
+[Jain Digambar](http://localhost/digambar-samaj/admin/dashboard.php)
+
+## test
+[Settings](http://localhost/digambar-samaj/admin/settings.php)
+[Logout](http://localhost/digambar-samaj/admin/logout.php)
+
+### Manage News & Updates
+Add, remove, and manage news articles for the community.
+
+#### Add New Article
+
+#### Existing News
+[Edit](http://localhost/digambar-samaj/admin/edit-news.php?id=2)
+[Edit](http://localhost/digambar-samaj/admin/edit-news.php?id=1)
