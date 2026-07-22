@@ -22,7 +22,7 @@ try {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle File Uploads
     if (isset($_FILES['payment_qr_code_file']) && $_FILES['payment_qr_code_file']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = '../uploads/';
+        $upload_dir = __DIR__ . '/../uploads/';
         if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
         
         $ext = pathinfo($_FILES['payment_qr_code_file']['name'], PATHINFO_EXTENSION);
@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (isset($_FILES['hero_banner_file']) && $_FILES['hero_banner_file']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = '../uploads/';
+        $upload_dir = __DIR__ . '/../uploads/';
         if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
         
         $ext = pathinfo($_FILES['hero_banner_file']['name'], PATHINFO_EXTENSION);

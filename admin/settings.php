@@ -100,8 +100,11 @@ $hero_banner = $settings['hero_banner'] ?? '';
                     <p class="text-xs text-gray-500 mt-1">Upload the QR code image for payments. (Shown on homepage and registration)</p>
                     <?php if (!empty($payment_qr_code)): ?>
                         <div class="mt-2">
-                            <?php if (file_exists('../' . $payment_qr_code)): ?>
-                                <img src="../image.php?file=<?= urlencode($payment_qr_code) ?>" alt="Current QR Code" class="w-24 h-24 object-cover border rounded">
+                            <?php 
+                            $clean_qr_code = ltrim(str_replace('../', '', $payment_qr_code), '/\\');
+                            if (file_exists(__DIR__ . '/../' . $clean_qr_code)): 
+                            ?>
+                                <img src="../image.php?file=<?= urlencode($clean_qr_code) ?>" alt="Current QR Code" class="w-24 h-24 object-cover border rounded">
                             <?php else: ?>
                                 <img src="https://placehold.co/200x200/fef08a/854d0e?text=Missing" alt="Missing QR Code" class="w-24 h-24 object-cover border rounded">
                                 <p class="text-xs text-red-500 mt-1">Image file not found on server.</p>
@@ -174,8 +177,11 @@ $hero_banner = $settings['hero_banner'] ?? '';
                         <p class="text-xs text-gray-500 mb-2">Upload the main image for the hero section.</p>
                         <?php if (!empty($hero_banner)): ?>
                             <div class="mt-2">
-                                <?php if (file_exists('../' . $hero_banner)): ?>
-                                    <img src="../image.php?file=<?= urlencode($hero_banner) ?>" alt="Hero Banner" class="w-32 h-auto object-cover border rounded">
+                            <?php 
+                            $clean_hero_banner = ltrim(str_replace('../', '', $hero_banner), '/\\');
+                            if (file_exists(__DIR__ . '/../' . $clean_hero_banner)): 
+                            ?>
+                                <img src="../image.php?file=<?= urlencode($clean_hero_banner) ?>" alt="Hero Banner" class="w-32 h-auto object-cover border rounded">
                                 <?php else: ?>
                                     <p class="text-xs text-red-500">Image file not found on server.</p>
                                 <?php endif; ?>
