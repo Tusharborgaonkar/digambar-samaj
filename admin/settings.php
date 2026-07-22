@@ -19,7 +19,15 @@ $support_email = $settings['support_email'] ?? 'support@jaindigambarmatrimony.co
 $about_youtube = $settings['about_youtube'] ?? '';
 $about_us = $settings['about_us'] ?? '';
 $terms = $settings['terms_conditions'] ?? '';
+if (empty(trim(strip_tags($terms)))) {
+    require_once '../includes/default_terms.php';
+    $terms = $default_terms;
+}
 $privacy = $settings['privacy_policy'] ?? '';
+if (empty(trim(strip_tags($privacy)))) {
+    require_once '../includes/default_privacy.php';
+    $privacy = $default_privacy;
+}
 $contact_phone = $settings['contact_phone'] ?? '+91 7575005121';
 $contact_email = $settings['contact_email'] ?? 'digambarjainparichay@gmail.com';
 $contact_address = $settings['contact_address'] ?? '23-A, Shubhlaxmi Palace, Opp. Money Plant Junction, Bhuyangdev Cross Road, Sola Road, Ahmedabad-380061.';

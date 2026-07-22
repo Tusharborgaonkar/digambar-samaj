@@ -29,6 +29,9 @@ if (!$is_public && !isset($_SESSION['user_logged_in']) && !isset($_SESSION['admi
     exit('Access Denied');
 }
 
+// Close session to prevent blocking concurrent image loads
+session_write_close();
+
 // Ensure the path is within allowed directories (uploads/ or imports/ or assets/)
 $allowed_dirs = ['uploads', 'imports', 'assets'];
 $file_parts = explode('/', str_replace('\\', '/', $file));

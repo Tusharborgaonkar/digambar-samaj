@@ -39,7 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'], $_POST['use
         $stmt->execute([$userId]);
     }
     
-    header("Location: members.php?page=" . (isset($_GET['page']) ? $_GET['page'] : 1));
+    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+    header("Location: members.php?page=" . $page);
     exit;
 }
 

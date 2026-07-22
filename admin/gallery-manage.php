@@ -20,8 +20,8 @@ try {
 } catch (Exception $e) {}
 
 // Handle Delete
-if (isset($_GET['delete'])) {
-    $id = $_GET['delete'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_photo']) && is_numeric($_POST['delete_id'])) {
+    $id = $_POST['delete_id'];
     $stmt = $pdo->prepare("SELECT image_path FROM gallery WHERE id = ?");
     $stmt->execute([$id]);
     $img = $stmt->fetchColumn();
@@ -146,9 +146,12 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <img src="../image.php?file=<?= urlencode($clean_path) ?>" alt="<?= htmlspecialchars($p['title']) ?>" class="w-full h-32 object-cover">
                     <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-center items-center">
                         <span class="text-white text-xs text-center px-2 mb-2 font-bold"><?= htmlspecialchars($p['title'] ?: 'No Title') ?></span>
-                        <a href="?delete=<?= $p['id'] ?>" onclick="return confirm('Are you sure you want to delete this photo?')" class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600">
-                            <i class="fas fa-trash"></i>
-                        </a>
+                        <form method="POST" action="" class="inline" onsubmit="return confirm('Are you sure you want to delete this photo?')">
+                            <input type="hidden" name="delete_id" value="<?= $p['id'] ?>">
+                            <button type="submit" name="delete_photo" class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
             <?php endforeach; ?>

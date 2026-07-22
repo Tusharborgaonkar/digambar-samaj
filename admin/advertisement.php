@@ -23,8 +23,8 @@ try {
 } catch (Exception $e) {}
 
 // Handle Delete
-if (isset($_GET['delete'])) {
-    $id = $_GET['delete'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_ad'])) {
+    $id = $_POST['delete_id'];
     $stmt = $pdo->prepare("SELECT image FROM advertisements WHERE id = ?");
     $stmt->execute([$id]);
     $img = $stmt->fetchColumn();
@@ -163,7 +163,10 @@ include 'includes/sidebar.php';
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <a href="<?= $img_src ?>" target="_blank" class="bg-white text-gray-800 p-2 rounded-full mx-1 hover:bg-gray-100 transition shadow" title="Preview"><i class="fas fa-eye w-5 h-5 flex items-center justify-center"></i></a>
                 <button type="button" onclick="openEditModal(<?= $ad['id'] ?>, '<?= htmlspecialchars(addslashes($ad['title'])) ?>', '<?= htmlspecialchars(addslashes($ad['link'])) ?>', '<?= $ad['position'] ?>', <?= $ad['status'] ?>)" class="bg-white text-blue-600 p-2 rounded-full mx-1 hover:bg-blue-50 transition shadow" title="Edit"><i class="fas fa-edit w-5 h-5 flex items-center justify-center"></i></button>
-                <a href="?delete=<?= $ad['id'] ?>" onclick="return confirm('Delete this ad?');" class="bg-white text-red-600 p-2 rounded-full mx-1 hover:bg-red-50 transition shadow" title="Delete"><i class="fas fa-trash w-5 h-5 flex items-center justify-center"></i></a>
+                <form method="POST" action="" class="inline" onsubmit="return confirm('Delete this ad?');">
+                    <input type="hidden" name="delete_id" value="<?= $ad['id'] ?>">
+                    <button type="submit" name="delete_ad" class="bg-white text-red-600 p-2 rounded-full mx-1 hover:bg-red-50 transition shadow" title="Delete"><i class="fas fa-trash w-5 h-5 flex items-center justify-center"></i></button>
+                </form>
             </div>
             <div class="absolute top-3 right-3">
                 <?php if($ad['status'] == 1): ?>

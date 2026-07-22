@@ -15,15 +15,10 @@ include 'includes/header.php';
             <?php if(!empty($dynamic_privacy)): ?>
                 <?= $dynamic_privacy ?>
             <?php else: ?>
-                <p>Welcome to Jain Digambar Matrimony. We are committed to protecting your privacy.</p>
-                <h3 class="text-xl font-semibold mt-6 mb-2">1. Information Collection</h3>
-                <p>We collect personal information such as your name, contact details, marital status, education, and occupation when you register on our platform. This information is necessary to provide our matchmaking services.</p>
-                <h3 class="text-xl font-semibold mt-6 mb-2">2. Use of Information</h3>
-                <p>Your information is used solely for the purpose of helping you find a suitable match within the Digambar Jain community. We do not sell or rent your personal information to third parties.</p>
-                <h3 class="text-xl font-semibold mt-6 mb-2">3. Data Security</h3>
-                <p>We implement strict security measures to protect your data from unauthorized access or disclosure. Profile photos and sensitive information are protected and only visible to registered and approved members.</p>
-                <h3 class="text-xl font-semibold mt-6 mb-2">4. Contact Us</h3>
-                <p>If you have any questions about this Privacy Policy, please contact us at help@digambarjainparichay.com.</p>
+                <?php 
+                    require_once 'includes/default_privacy.php';
+                    echo $default_privacy; 
+                ?>
             <?php endif; ?>
         </div>
     </div>
