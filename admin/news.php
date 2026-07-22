@@ -72,7 +72,11 @@ $news_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 <?php if(isset($_GET['msg'])): ?>
     <div class="bg-green-100 text-green-700 p-3 rounded mb-4">
-        <?= $_GET['msg'] === 'deleted' ? 'News article deleted.' : 'News article added successfully!' ?>
+        <?php 
+            if ($_GET['msg'] === 'deleted') echo 'News article deleted.';
+            elseif ($_GET['msg'] === 'updated') echo 'News article updated successfully!';
+            else echo 'News article added successfully!';
+        ?>
     </div>
 <?php endif; ?>
 <?php if(isset($error)): ?>
@@ -102,7 +106,8 @@ $news_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <label for="status" class="text-sm font-medium text-gray-700">Publish immediately (Active)</label>
         </div>
         <div>
-            <button type="submit" name="add_news" class="bg-primary text-white py-2 px-6 rounded-lg font-bold shadow-sm hover:bg-opacity-90 transition inline-flex items-center justify-center min-w-[120px]">
+            <input type="hidden" name="add_news" value="1">
+            <button type="submit" class="bg-primary text-white py-2 px-6 rounded-lg font-bold shadow-sm hover:bg-opacity-90 transition inline-flex items-center justify-center min-w-[120px]">
                 Add News
             </button>
         </div>
@@ -159,6 +164,9 @@ $news_items = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </td>
                             <td class="p-3 text-sm text-gray-500"><?= date('M d, Y', strtotime($news['created_at'])) ?></td>
                             <td class="p-3">
+                                <a href="edit-news.php?id=<?= $news['id'] ?>" class="text-blue-500 hover:text-blue-700 p-1 mr-2 inline-block">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
                                 <form method="POST" action="" class="inline" onsubmit="return confirm('Are you sure you want to delete this news article?')">
                                     <input type="hidden" name="delete_id" value="<?= $news['id'] ?>">
                                     <button type="submit" name="delete_news" class="text-red-500 hover:text-red-700 p-1">
