@@ -412,7 +412,7 @@ include 'includes/header.php';
         </div>
 
         <?php
-        if (!isset($latest_gender)) $latest_gender = 'Girl';
+        $latest_gender = isset($_GET['latest_gender']) ? $_GET['latest_gender'] : 'Girl';
         if (!in_array($latest_gender, ['Girl', 'Boy'])) {
             $latest_gender = 'Girl';
         }
