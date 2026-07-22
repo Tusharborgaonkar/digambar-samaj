@@ -1,9 +1,9 @@
-<?php
-require_once 'includes/db.php';
+<!-- <?php
+// require_once 'includes/db.php';
 
-$pageTitle = 'Community Initiatives';
-include 'includes/header.php';
-?>
+// $pageTitle = 'Community Initiatives';
+// include 'includes/header.php';
+// ?>
 
 <div class="bg-gray-50 py-12">
     <div class="container mx-auto px-4 max-w-4xl text-center">
@@ -35,4 +35,4 @@ include 'includes/header.php';
     </div>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+<?php include 'includes/footer.php'; ?> -->
