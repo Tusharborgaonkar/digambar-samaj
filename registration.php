@@ -245,7 +245,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             height=?, weight=?, gender=?, permanent_address=?, pin_code=?, current_address=?, higher_education=?, hobbies=?, partner_preference=?,
             monthly_income=?, marital_status=?, handicapped=?, languages=?, occupation=?, occupation_other=?, company_name=?, designation=?, father_name=?,
             father_mobile=?, father_income=?, father_occupation=?, father_occupation_other=?, mother_name=?, mother_mobile=?, mother_occupation=?,
-            mother_occupation_details=?, brothers=?, brothers_married=?, brothers_unmarried=?, sisters=?, sisters_married=?,
+            mother_occupation_other=?, brothers=?, brothers_married=?, brothers_unmarried=?, sisters=?, sisters_married=?,
             sisters_unmarried=?, subcast=?, custom_subcast=?, mandir=?, custom_mandir=?, ref1_name=?, ref1_mobile=?, ref1_relation=?,
             ref2_name=?, ref2_mobile=?, ref2_relation=?, profile_photo=?, family_photo=?, payment_screenshot=?, profile_photo_drive_url=?, payment_proof_drive_url=?, status=?,
             filled_by=?, id_proof_type=?, id_proof_path=?, mandir_name=?, mandir_address=?, mandir_pincode=?
@@ -257,7 +257,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $height, $weight, $gender, $permanent_address, $pin_code, $current_address, $education, $hobbies, $partner_preference,
             $monthly_income, $marital_status, $handicapped, $languages, $occupation, $occupation_other, $company_name, $designation, $father_name,
             $father_mobile, $father_income, $father_occupation, $father_occupation_other, $mother_name, $mother_mobile, $mother_occupation,
-            $mother_occupation_details, $brothers, $brothers_married, $brothers_unmarried, $sisters, $sisters_married,
+            $mother_occupation_other, $brothers, $brothers_married, $brothers_unmarried, $sisters, $sisters_married,
             $sisters_unmarried, $subcast, $custom_subcast, $mandir, $custom_mandir, $ref1_name, $ref1_mobile, $ref1_relation,
             $ref2_name, $ref2_mobile, $ref2_relation, $photo, $family_photo, $payment_screenshot, $profile_photo_drive_url, $payment_proof_drive_url, $new_status,
             $filled_by, $id_proof_type, $id_proof_path, $mandir_name, $mandir_address, $mandir_pincode,
