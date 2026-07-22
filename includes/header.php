@@ -397,8 +397,8 @@ $site_tagline = htmlspecialchars($settings['home_tagline'] ?? 'Matrimony Est. 20
                 <!-- Logo -->
                 <div data-aos="fade-right">
                     <a href="index.php" class="flex flex-col">
-                        <h1 class="text-2xl md:text-3xl font-bold text-[#8B2323]">दिगम्बर जैन युवक-युवती परिचय</h1>
-                        <span class="text-[0.65rem] md:text-[0.75rem] text-[#8B2323] font-medium mt-1">समाज के विवाह योग्य युवक-युवतियों के जीवनसाथी चयन में सहायक एकमात्र माध्यम</span>
+                        <h1 class="text-2xl md:text-3xl font-bold text-[#8B2323]">Digambar Jain Matrimony</h1>
+                        <span class="text-sm md:text-base text-[#8B2323] font-medium mt-1">(established in 2026)</span>
                     </a>
                 </div>
                 
