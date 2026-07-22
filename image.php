@@ -14,7 +14,12 @@ if (empty($file)) {
 
 // Allow public access to specific directories without login
 $is_public = false;
-if (stripos($file, 'uploads/advertisements') === 0 || stripos($file, 'uploads/ads') === 0 || stripos($file, 'uploads/gallery') === 0 || stripos($file, 'uploads/success_stories') === 0 || stripos($file, 'assets/') === 0) {
+if (stripos($file, 'uploads/advertisements') === 0 || 
+    stripos($file, 'uploads/ads') === 0 || 
+    stripos($file, 'uploads/gallery') === 0 || 
+    stripos($file, 'uploads/success_stories') === 0 || 
+    stripos($file, 'uploads/qr_code') === 0 || 
+    stripos($file, 'assets/') === 0) {
     $is_public = true;
 }
 
