@@ -25,7 +25,7 @@ include 'includes/header.php';
             <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <i class="fas fa-ring text-3xl text-accent mb-4"></i>
                 <h3 class="text-xl font-bold text-dark mb-2">Parichay Sammelan</h3>
-                <p class="text-gray-600 text-sm">Hosting matchmaking events for prospective brides and grooms.</p>
+                <p class="text-gray-600 text-sm">Hosting matchmaking events for prospective girls and boys.</p>
             </div>
         </div>
 

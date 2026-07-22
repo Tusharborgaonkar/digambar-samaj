@@ -47,18 +47,32 @@ if ($is_logged_in && isset($_SESSION['user_id'])) {
 // Fetch side ads
 $left_ads = [];
 $right_ads = [];
-if (isset($pdo)) {
+$settings = [];
+$scrolling_news = [];
+if (isset($pdo) || file_exists('includes/db.php')) {
+    if (!isset($pdo)) require_once 'includes/db.php';
     try {
-        $stmtAds = $pdo->query("SELECT * FROM advertisements WHERE status = 1 AND position IN ('left_side', 'right_side') ORDER BY created_at DESC");
+        $stmtAds = $pdo->query("SELECT * FROM advertisements WHERE status = 1 AND position IN ('left_sidebar', 'right_sidebar') ORDER BY created_at DESC");
         while ($ad = $stmtAds->fetch(PDO::FETCH_ASSOC)) {
-            if ($ad['position'] === 'left_side') {
+            if ($ad['position'] === 'left_sidebar') {
                 $left_ads[] = $ad;
             } else {
                 $right_ads[] = $ad;
             }
         }
+        
+        $stmtSettings = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
+        while ($row = $stmtSettings->fetch(PDO::FETCH_ASSOC)) {
+            $settings[$row['setting_key']] = $row['setting_value'];
+        }
+
+        $stmtScroll = $pdo->query("SELECT * FROM scrolling_news WHERE status = 1 ORDER BY created_at DESC");
+        $scrolling_news = $stmtScroll->fetchAll(PDO::FETCH_ASSOC);
     } catch (Exception $e) {}
 }
+
+$site_title = htmlspecialchars($settings['home_title'] ?? 'Digambar Jain Matrimony');
+$site_tagline = htmlspecialchars($settings['home_tagline'] ?? 'Matrimony Est. 2026');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -66,7 +80,7 @@ if (isset($pdo)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="Jain Digambar Matrimony - India's most trusted matrimony platform exclusively for the Digambar Jain Samaj. Find your perfect life partner within the community. Established 2026.">
-    <meta name="keywords" content="Jain Matrimony, Digambar Jain, Jain Marriage, Jain Brides, Jain Grooms, Digambar Jain Samaj, Matrimony Website">
+    <meta name="keywords" content="Jain Matrimony, Digambar Jain, Jain Marriage, Jain Girls, Jain Boys, Digambar Jain Samaj, Matrimony Website">
     <meta name="author" content="Jain Digambar Matrimony">
     <meta name="robots" content="index, follow">
     
@@ -383,8 +397,8 @@ if (isset($pdo)) {
                 <!-- Logo -->
                 <div data-aos="fade-right">
                     <a href="index.php" class="flex flex-col">
-                        <h1 class="text-2xl md:text-3xl font-bold text-primary">Digambar Jain Matrimony</h1>
-                        <span class="text-sm text-secondary">Matrimony <span class="text-xs text-gray-500">Est. 2026</span></span>
+                        <h1 class="text-2xl md:text-3xl font-bold text-[#8B2323]">दिगम्बर जैन युवक-युवती परिचय</h1>
+                        <span class="text-[0.65rem] md:text-[0.75rem] text-[#8B2323] font-medium mt-1">समाज के विवाह योग्य युवक-युवतियों के जीवनसाथी चयन में सहायक एकमात्र माध्यम</span>
                     </a>
                 </div>
                 
@@ -420,6 +434,28 @@ if (isset($pdo)) {
                 </div>
             </div>
         </nav>
+        
+        <!-- Scrolling News -->
+        <?php if (!empty($scrolling_news)): ?>
+        <div class="bg-primary text-white text-sm py-2 overflow-hidden">
+            <div class="container mx-auto px-4 flex items-center">
+                <span class="font-bold whitespace-nowrap bg-secondary px-3 py-1 rounded mr-3 shadow text-xs uppercase tracking-wider">News Updates</span>
+                <marquee behavior="scroll" direction="left" onmouseover="this.stop();" onmouseout="this.start();" class="flex-grow">
+                    <?php foreach ($scrolling_news as $s_news): ?>
+                        <span class="mx-4">
+                            <?php if (!empty($s_news['link'])): ?>
+                                <a href="<?= htmlspecialchars($s_news['link']) ?>" target="_blank" class="hover:underline text-white font-medium">
+                                    <i class="fas fa-bell text-secondary text-xs mr-1"></i> <?= htmlspecialchars($s_news['content']) ?>
+                                </a>
+                            <?php else: ?>
+                                <i class="fas fa-bell text-secondary text-xs mr-1"></i> <?= htmlspecialchars($s_news['content']) ?>
+                            <?php endif; ?>
+                        </span>
+                    <?php endforeach; ?>
+                </marquee>
+            </div>
+        </div>
+        <?php endif; ?>
     </header>
     
     <main class="overflow-x-hidden">

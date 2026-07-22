@@ -23,6 +23,22 @@ if (stripos($file, 'uploads/advertisements') === 0 ||
     $is_public = true;
 }
 
+// Allow specific files from settings to be public
+if (!$is_public) {
+    try {
+        $stmt = $pdo->query("SELECT setting_value FROM site_settings WHERE setting_key IN ('payment_qr_code', 'hero_banner')");
+        $public_settings_files = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        foreach ($public_settings_files as $public_file) {
+            if (!empty($public_file) && $file === ltrim($public_file, '/\\')) {
+                $is_public = true;
+                break;
+            }
+        }
+    } catch (PDOException $e) {
+        // Ignore DB errors here, fallback to default behavior
+    }
+}
+
 // Ensure user is logged in for protected files
 if (!$is_public && !isset($_SESSION['user_logged_in']) && !isset($_SESSION['admin_logged_in'])) {
     header("HTTP/1.1 403 Forbidden");

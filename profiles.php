@@ -66,9 +66,9 @@ if (!$is_approved) {
 $where = ["status IN ('approved', 'pending')", "is_public = 1"];
 $params = [];
 
-$genderFilter = $_GET['gender'] ?? 'Bride';
-if ($genderFilter === 'Bride' || $genderFilter === 'Groom') {
-    $genderVal = ($genderFilter === 'Bride') ? 'Female' : 'Male';
+$genderFilter = $_GET['gender'] ?? '';
+if ($genderFilter === 'Girl' || $genderFilter === 'Boy') {
+    $genderVal = ($genderFilter === 'Girl') ? 'Female' : 'Male';
     $where[] = "gender = ?";
     $params[] = $genderVal;
 }
@@ -212,14 +212,20 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     </div>
 
                     <div class="p-5">
-                        <!-- Bride / Groom Radio -->
-                        <div class="flex items-center gap-6 mb-4 text-sm text-gray-700 font-medium">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="gender" value="Bride" <?= $genderFilter === 'Bride' ? 'checked' : '' ?> class="accent-primary w-4 h-4"> Bride
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="gender" value="Groom" <?= $genderFilter === 'Groom' ? 'checked' : '' ?> class="accent-primary w-4 h-4"> Groom
-                            </label>
+                        <!-- Girl / Boy Radio -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Looking For</label>
+                            <div class="flex gap-4 items-center bg-gray-50 p-3 rounded border">
+                                <label class="flex items-center gap-2 cursor-pointer text-gray-700 font-medium">
+                                    <input type="radio" name="gender" value="" <?= empty($genderFilter) ? 'checked' : '' ?> class="accent-primary w-4 h-4"> Both
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer text-gray-700 font-medium">
+                                    <input type="radio" name="gender" value="Girl" <?= $genderFilter === 'Girl' ? 'checked' : '' ?> class="accent-primary w-4 h-4"> Girl
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer text-gray-700 font-medium">
+                                    <input type="radio" name="gender" value="Boy" <?= $genderFilter === 'Boy' ? 'checked' : '' ?> class="accent-primary w-4 h-4"> Boy
+                                </label>
+                            </div>
                         </div>
                         
                         <!-- Match ID -->
@@ -291,25 +297,24 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </form>
 
                 <!-- Latest Profile Section -->
-                <div class="bg-white border border-gray-200 rounded-sm mt-6 shadow-sm">
-                    <div class="bg-gray-50 text-primary text-center font-semibold text-base py-3 border-b border-gray-200 rounded-t-sm">
-                        Latest Profile
-                    </div>
-                    <div class="p-5 space-y-3 text-sm font-medium">
-                        <a href="profiles.php?gender=Bride" class="block text-gray-600 hover:text-primary hover:underline transition">All Bride</a>
-                        <a href="profiles.php?gender=Groom" class="block text-gray-600 hover:text-primary hover:underline transition">All Groom</a>
-                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=Doctorate" class="block text-gray-600 hover:text-primary hover:underline transition">All Doctors</a>
-                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=LLB" class="block text-gray-600 hover:text-primary hover:underline transition">All LLB, LLM</a>
-                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=Engineer" class="block text-gray-600 hover:text-primary hover:underline transition">All Engineers</a>
-                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=MBA" class="block text-gray-600 hover:text-primary hover:underline transition">All MBA, MCA</a>
-                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=CA" class="block text-gray-600 hover:text-primary hover:underline transition">All CA, CS, ICWAI</a>
-                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&manglik=yes" class="block text-gray-600 hover:text-primary hover:underline transition">All Manglik</a>
-                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&occupation=Service" class="block text-gray-600 hover:text-primary hover:underline transition">All Service</a>
-                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&occupation=Business" class="block text-gray-600 hover:text-primary hover:underline transition">All Business</a>
-                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&occupation=Profession" class="block text-gray-600 hover:text-primary hover:underline transition">All Profession</a>
-                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&marital=Widow" class="block text-gray-600 hover:text-primary hover:underline transition">All Widow</a>
-                        <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&marital=Divorce" class="block text-gray-600 hover:text-primary hover:underline transition">All Divorcee</a>
-                    </div>
+                <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4 sticky top-24 hidden lg:block">
+                    <h3 class="font-bold text-gray-800 mb-3 border-b pb-2"><i class="fas fa-link text-primary mr-2"></i>Quick Links</h3>
+                    <ul class="space-y-2 text-sm font-medium">
+                        <li><a href="profiles.php" class="block text-gray-600 hover:text-primary hover:underline transition">All Profiles</a></li>
+                        <li><a href="profiles.php?gender=Girl" class="block text-gray-600 hover:text-primary hover:underline transition">All Girls</a></li>
+                        <li><a href="profiles.php?gender=Boy" class="block text-gray-600 hover:text-primary hover:underline transition">All Boys</a></li>
+                        <li><a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=Doctorate" class="block text-gray-600 hover:text-primary hover:underline transition">All Doctors</a></li>
+                        <li><a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=LLB" class="block text-gray-600 hover:text-primary hover:underline transition">All LLB, LLM</a></li>
+                        <li><a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=Engineer" class="block text-gray-600 hover:text-primary hover:underline transition">All Engineers</a></li>
+                        <li><a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=MBA" class="block text-gray-600 hover:text-primary hover:underline transition">All MBA, MCA</a></li>
+                        <li><a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=CA" class="block text-gray-600 hover:text-primary hover:underline transition">All CA, CS, ICWAI</a></li>
+                        <li><a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&manglik=yes" class="block text-gray-600 hover:text-primary hover:underline transition">All Manglik</a></li>
+                        <li><a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&occupation=Service" class="block text-gray-600 hover:text-primary hover:underline transition">All Service</a></li>
+                        <li><a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&occupation=Business" class="block text-gray-600 hover:text-primary hover:underline transition">All Business</a></li>
+                        <li><a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&occupation=Profession" class="block text-gray-600 hover:text-primary hover:underline transition">All Profession</a></li>
+                        <li><a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&marital=Widow" class="block text-gray-600 hover:text-primary hover:underline transition">All Widow</a></li>
+                        <li><a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&marital=Divorce" class="block text-gray-600 hover:text-primary hover:underline transition">All Divorcee</a></li>
+                    </ul>
                 </div>
             </div>
 

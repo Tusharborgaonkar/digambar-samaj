@@ -13,6 +13,11 @@ $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$user_id]);
 $current_user = $stmt->fetch();
 
+// Fetch site settings for QR code
+$stmt_settings = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
+$settings = $stmt_settings->fetchAll(PDO::FETCH_KEY_PAIR);
+$payment_qr_code = $settings['payment_qr_code'] ?? 'assets/images/qr_code.jpg';
+
 $full_name = '';
 
 $is_edit = ($current_user !== false && $current_user['status'] === 'approved');
@@ -793,40 +798,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 
                 <!-- Documents & Payment -->
-                <?php if (false && (
-                    (isset($coreFieldsSettings['payment_screenshot']) && $coreFieldsSettings['payment_screenshot']['is_visible']) || 
-                    (isset($coreFieldsSettings['payment_proof_drive_url']) && $coreFieldsSettings['payment_proof_drive_url']['is_visible'])
-                )): ?>
                 <div class="mb-8 pb-4 border-b border-gray-200">
-                    <h2 class="text-xl font-bold text-primary mb-4">Documents & Payment</h2>
-                    <div class="grid grid-cols-1 gap-4">
+                    <h2 class="text-xl font-bold text-primary mb-2">Documents & Payment (Presently not compulsory)</h2>
+                    <p class="text-gray-500 text-sm mb-4">You can optionally make a payment and upload the screenshot. This is not mandatory at the moment.</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                        
+                        <!-- QR Code Display -->
+                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 flex flex-col items-center">
+                            <h3 class="font-bold text-gray-700 mb-2">Payment QR Code</h3>
+                            <img src="image.php?file=<?= urlencode($payment_qr_code) ?>" alt="Payment QR Code" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover bg-white">
+                            <p class="text-xs text-gray-500 mt-2 text-center">Scan to pay securely.</p>
+                        </div>
 
-                        <?php if (isset($coreFieldsSettings['payment_screenshot']) && $coreFieldsSettings['payment_screenshot']['is_visible']): ?>
-                        <div id="payment_screenshot_container" class="<?= ($is_edit && !empty($current_user['payment_screenshot'])) ? '' : 'hidden' ?>">
-                            <label class="block text-gray-700 font-medium mb-2">Payment Screenshot (Transaction ID) <?= $is_edit ? '' : '*' ?></label>
-                            <?php if ($is_edit && !empty($current_user['payment_screenshot'])): ?>
-                                <div class="mb-2">
-                                    <a href="image.php?file=<?= urlencode(str_replace('../', '', $current_user['payment_screenshot'])) ?>" target="_blank" class="text-blue-500 underline text-sm">View Current Payment Screenshot</a>
-                                </div>
+                        <div class="space-y-4">
+                            <?php if (!isset($coreFieldsSettings['payment_screenshot']) || $coreFieldsSettings['payment_screenshot']['is_visible']): ?>
+                            <div id="payment_screenshot_container">
+                                <label class="block text-gray-700 font-medium mb-2">Payment Screenshot (Transaction ID) (Optional)</label>
+                                <?php if ($is_edit && !empty($current_user['payment_screenshot'])): ?>
+                                    <div class="mb-2">
+                                        <a href="image.php?file=<?= urlencode(str_replace('../', '', $current_user['payment_screenshot'])) ?>" target="_blank" class="text-blue-500 underline text-sm"><i class="fas fa-external-link-alt"></i> View Current Payment Screenshot</a>
+                                    </div>
+                                <?php endif; ?>
+                                <input type="file" name="payment_screenshot" id="payment_screenshot" accept="image/*" class="w-full border rounded-lg px-4 py-2 bg-white">
+                            </div>
                             <?php endif; ?>
-                            <input type="file" name="payment_screenshot" id="payment_screenshot" accept="image/*" class="w-full border rounded-lg px-4 py-2">
-                        </div>
-                        <?php endif; ?>
 
-                        <?php if (isset($coreFieldsSettings['payment_proof_drive_url']) && $coreFieldsSettings['payment_proof_drive_url']['is_visible']): ?>
-                        <div>
-                            <label class="block text-gray-700 font-medium mb-2">Payment Proof Drive URL <?= $coreFieldsSettings['payment_proof_drive_url']['is_required'] ? '*' : '' ?></label>
-                            <input type="url" name="payment_proof_drive_url" <?= $coreFieldsSettings['payment_proof_drive_url']['is_required'] ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
+                            <?php if (isset($coreFieldsSettings['payment_proof_drive_url']) && $coreFieldsSettings['payment_proof_drive_url']['is_visible']): ?>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Payment Proof Drive URL (Optional)</label>
+                                <input type="url" name="payment_proof_drive_url" class="w-full border rounded-lg px-4 py-2 bg-white">
+                            </div>
+                            <?php endif; ?>
+                            
+                            <?php 
+                            if (!empty($customFieldsByGroup['Documents & Payment'])) {
+                                foreach ($customFieldsByGroup['Documents & Payment'] as $f) echo renderCustomFieldHTML($f);
+                            }
+                            ?>
                         </div>
-                        <?php endif; ?>
-                        <?php 
-                        if (!empty($customFieldsByGroup['Documents & Payment'])) {
-                            foreach ($customFieldsByGroup['Documents & Payment'] as $f) echo renderCustomFieldHTML($f);
-                        }
-                        ?>
                     </div>
                 </div>
-                <?php endif; ?>
 
                 <!-- Additional Information Section -->
                 <?php if (!empty($customFieldsByGroup['Additional Information'])): ?>

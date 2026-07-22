@@ -29,7 +29,23 @@ $home_top_ads = array_filter($advertisements, function($ad) {
 });
 
 $home_bottom_ads = array_filter($advertisements, function($ad) { 
-    if ($ad['position'] != 'home_bottom') return false;
+    if ($ad['position'] != 'bottom_banner') return false;
+    $img = $ad['image_path'] ?? ($ad['image'] ?? '');
+    if (!$img) return false;
+    $img_path = ltrim(str_replace('../', '', $img), '/\\');
+    return file_exists(__DIR__ . '/' . $img_path);
+});
+
+$left_sidebar_ads = array_filter($advertisements, function($ad) { 
+    if ($ad['position'] != 'left_sidebar') return false;
+    $img = $ad['image_path'] ?? ($ad['image'] ?? '');
+    if (!$img) return false;
+    $img_path = ltrim(str_replace('../', '', $img), '/\\');
+    return file_exists(__DIR__ . '/' . $img_path);
+});
+
+$right_sidebar_ads = array_filter($advertisements, function($ad) { 
+    if ($ad['position'] != 'right_sidebar') return false;
     $img = $ad['image_path'] ?? ($ad['image'] ?? '');
     if (!$img) return false;
     $img_path = ltrim(str_replace('../', '', $img), '/\\');
@@ -108,28 +124,110 @@ include 'includes/header.php';
     });
 </script>
 
-<!-- Hero Section -->
-<section
-    class="relative min-h-[100vw] md:min-h-[85vh] flex flex-col justify-start items-start overflow-hidden bg-gray-900">
-    <!-- Solid Background instead of image -->
+<!-- Hero Section (3-Column Layout) -->
+<section class="relative min-h-[100vw] md:min-h-[85vh] flex flex-col justify-start items-center overflow-hidden bg-gray-900 pt-4 pb-8">
     <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-primary/20 z-0"></div>
 
-    <div class="container mx-auto px-4 relative z-20 w-full pt-32 pb-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start" data-aos="fade-up">
-            <!-- Left Side: Content -->
-            <div class="text-left">
-                <h1 class="text-4xl md:text-6xl md:text-[4.5rem] font-bold text-white mb-6 leading-tight">दिगंबर जैन युवक-युवती परिचय</h1>
-                <p class="text-2xl md:text-3xl text-yellow-400 font-bold mb-6 drop-shadow-lg tracking-wide">The most trusted matrimony service for Digambar Jain!</p>
-                <p class="text-lg md:text-xl text-gray-200 leading-relaxed max-w-xl md:mx-0">This website is created only for the Digambar Jain community to help eligible young men and women of the entire Digambar Jain society find their suitable life partner.</p>
+    <div class="container mx-auto px-4 relative z-20 w-full flex flex-col xl:flex-row gap-6">
+        
+        <!-- Left Ad Panel -->
+        <div class="hidden xl:flex flex-col w-64 space-y-4 flex-shrink-0">
+            <?php if (!empty($left_sidebar_ads)): ?>
+                <?php foreach($left_sidebar_ads as $ad): 
+                    $img_path = ltrim(str_replace('../', '', $ad['image'] ?? $ad['image_path'] ?? ''), '/\\');
+                ?>
+                    <?php if(!empty($ad['link'])): ?>
+                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block w-full hover:opacity-90 transition">
+                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-lg border border-gray-700">
+                        </a>
+                    <?php else: ?>
+                        <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-lg border border-gray-700">
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <!-- Unsplash Placeholder Ad -->
+                <div class="relative w-full h-full min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden group">
+                    <img src="https://images.unsplash.com/photo-1583939000148-f75e1140984f?auto=format&fit=crop&w=400&q=80" alt="Advertise" class="absolute inset-0 w-full h-full object-cover">
+                    <div class="absolute inset-0 flex items-center justify-center bg-black/40">
+                        <span class="text-white font-bold text-2xl tracking-widest uppercase">Advertise</span>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <!-- Center Section (Content & Banner) -->
+        <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-0 items-stretch bg-[#1a2942] rounded-2xl overflow-hidden shadow-2xl" data-aos="fade-up">
+            <div class="flex flex-col justify-between p-8 md:p-12 text-left h-full">
+                <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight">
+                    The most trusted<br>matrimony<br>service for<br>Digambar Jain!
+                </h2>
+                <p class="text-base md:text-lg text-gray-300 leading-relaxed max-w-xl mt-8">
+                    This website is created only for the Digambar Jain community to help eligible young men and women of the entire Digambar Jain society find their suitable life partner.
+                </p>
             </div>
             
-            <!-- Right Side: Image -->
-            <div class="flex justify-center md:justify-end mt-12 md:mt-0 relative w-full max-w-[650px] mx-auto md:ml-auto md:mr-0">
-                <img src="assets/images/gallery/TEMP1.jpg" alt="Matrimony Couple" class="w-full h-auto rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-4 border-white/30 transform hover:scale-[1.02] transition duration-500">
+            <div class="relative w-full h-full min-h-[300px] flex items-center justify-center bg-[#1a2942] p-4">
+                <img src="assets/images/gallery/TEMP1.jpg" alt="Matrimony Couple" class="w-full h-full object-contain max-h-[500px]">
             </div>
+        </div>
+
+        <!-- Right Ad Panel -->
+        <div class="hidden xl:flex flex-col w-64 space-y-4 flex-shrink-0">
+            <?php if (!empty($right_sidebar_ads)): ?>
+                <?php foreach($right_sidebar_ads as $ad): 
+                    $img_path = ltrim(str_replace('../', '', $ad['image'] ?? $ad['image_path'] ?? ''), '/\\');
+                ?>
+                    <?php if(!empty($ad['link'])): ?>
+                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block w-full hover:opacity-90 transition">
+                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-lg border border-gray-700">
+                        </a>
+                    <?php else: ?>
+                        <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-lg border border-gray-700">
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <!-- Unsplash Placeholder Ad -->
+                <div class="relative w-full h-full min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden group">
+                    <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=400&q=80" alt="Advertise" class="absolute inset-0 w-full h-full object-cover">
+                    <div class="absolute inset-0 flex items-center justify-center bg-black/40">
+                        <span class="text-white font-bold text-2xl tracking-widest uppercase">Advertise</span>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+        
+        
+    </div>
+
+    <!-- Bottom Ad Panel (Moved into Hero Section) -->
+    <div class="container mx-auto px-4 relative z-20 w-full mt-6">
+        <div class="flex flex-wrap justify-center gap-4 w-full">
+            <?php if (!empty($home_bottom_ads)): ?>
+                <?php foreach($home_bottom_ads as $ad): 
+                    $img_path = ltrim(str_replace('../', '', $ad['image'] ?? $ad['image_path'] ?? ''), '/\\');
+                ?>
+                    <?php if(!empty($ad['link'])): ?>
+                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block w-full hover:opacity-90 transition">
+                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-lg border border-gray-700">
+                        </a>
+                    <?php else: ?>
+                        <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-lg border border-gray-700">
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <!-- Unsplash Placeholder Ad -->
+                <div class="relative w-full h-[150px] rounded shadow-lg border border-gray-700 overflow-hidden group">
+                    <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80" alt="Advertise" class="absolute inset-0 w-full h-full object-cover">
+                    <div class="absolute inset-0 flex items-center justify-center bg-black/40">
+                        <span class="text-white font-bold text-3xl tracking-widest uppercase">Advertise</span>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
     </div>
 </section>
+
+
 
 <!-- Quick Search Section -->
 <section class="bg-light relative z-20 mt-36">
@@ -157,8 +255,8 @@ include 'includes/header.php';
                             <label class="block text-sm font-semibold text-gray-700 mb-1">Looking For</label>
                             <select name="gender"
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
-                                <option value="bride">Bride</option>
-                                <option value="groom">Groom</option>
+                                <option value="girl">Girl (Female)</option>
+                                <option value="boy">Boy (Male)</option>
                             </select>
                         </div>
                         <!-- Age Group -->
@@ -314,18 +412,20 @@ include 'includes/header.php';
         </div>
 
         <?php
-        $latest_gender = $_GET['latest_gender'] ?? 'Bride';
-        if (!in_array($latest_gender, ['Bride', 'Groom'])) {
-            $latest_gender = 'Bride';
+        if (!isset($latest_gender)) $latest_gender = 'Girl';
+        if (!in_array($latest_gender, ['Girl', 'Boy'])) {
+            $latest_gender = 'Girl';
         }
         ?>
         <div class="flex flex-wrap justify-center mb-8" data-aos="fade-up" data-aos-delay="100">
-            <a href="?latest_gender=Bride#latest"
-                class="<?= $latest_gender === 'Bride' ? 'bg-primary text-white' : 'bg-white text-dark hover:bg-gray-100 border border-r-0' ?> px-8 py-2.5 rounded-l-full font-bold focus:outline-none transition shadow-md">Latest
-                Brides</a>
-            <a href="?latest_gender=Groom#latest"
-                class="<?= $latest_gender === 'Groom' ? 'bg-primary text-white' : 'bg-white text-dark hover:bg-gray-100 border border-l-0' ?> px-8 py-2.5 rounded-r-full font-bold focus:outline-none transition shadow-md">Latest
-                Grooms</a>
+            <div class="inline-flex rounded-md shadow-sm mb-8" role="group">
+                <a href="?latest_gender=Girl#latest"
+                    class="<?= $latest_gender === 'Girl' ? 'bg-primary text-white' : 'bg-white text-dark hover:bg-gray-100 border border-r-0' ?> px-8 py-2.5 rounded-l-full font-bold focus:outline-none transition shadow-md">Latest
+                    Girls</a>
+                <a href="?latest_gender=Boy#latest"
+                    class="<?= $latest_gender === 'Boy' ? 'bg-primary text-white' : 'bg-white text-dark hover:bg-gray-100 border border-l-0' ?> px-8 py-2.5 rounded-r-full font-bold focus:outline-none transition shadow-md">Latest
+                    Boys</a>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
@@ -351,7 +451,7 @@ include 'includes/header.php';
             // Fetch 4 latest profiles based on selected gender
             // Show 'approved' profiles + 'pending' (form submitted, awaiting profile approval)
             // Cards show as blurred/locked for non-logged-in visitors
-            $gender_db = ($latest_gender === 'Bride') ? 'Female' : 'Male';
+            $gender_db = ($latest_gender === 'Girl') ? 'Female' : 'Male';
             $stmt = $pdo->prepare("SELECT * FROM users WHERE status IN ('approved', 'pending') AND gender = ? ORDER BY id DESC LIMIT 4");
             $stmt->execute([$gender_db]);
             $index_profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -450,13 +550,15 @@ include 'includes/header.php';
             <p class="text-gray-600 mt-4">Find matches based on your specific preferences</p>
         </div>
 
-        <div class="flex flex-wrap justify-center gap-4" data-aos="fade-up" data-aos-delay="100">
-            <a href="profiles.php?gender=Bride"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
-                    class="fas fa-female mr-2 text-primary group-hover:text-white"></i> All Brides</a>
-            <a href="profiles.php?gender=Groom"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
-                    class="fas fa-male mr-2 text-primary group-hover:text-white"></i> All Grooms</a>
+        <div class="mt-12 text-center" data-aos="fade-up">
+            <a href="profiles.php?gender=Girl"
+                class="inline-flex items-center justify-center bg-white border-2 border-primary text-primary px-6 py-3 rounded-md font-bold hover:bg-primary hover:text-white transition shadow-sm group mx-2 mb-2">
+                <i class="fas fa-female mr-2 text-primary group-hover:text-white"></i> All Girls</a>
+            <a href="profiles.php?gender=Boy"
+                class="inline-flex items-center justify-center bg-white border-2 border-primary text-primary px-6 py-3 rounded-md font-bold hover:bg-primary hover:text-white transition shadow-sm group mx-2 mb-2">
+                <i class="fas fa-male mr-2 text-primary group-hover:text-white"></i> All Boys</a>
+        </div>
+        <div class="flex flex-wrap justify-center gap-4 mt-8" data-aos="fade-up" data-aos-delay="100">
             <a href="profiles.php?education=Doctorate"
                 class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
                     class="fas fa-user-md mr-2 text-primary"></i> Doctors</a>

@@ -68,7 +68,7 @@ if (isset($pdo)) {
                         <li><a href="contact.php" class="text-gray-300 hover:text-accent transition">Contact Us</a></li>
                         <li><a href="privacy.php" class="text-gray-300 hover:text-accent transition">Privacy Policy</a></li>
                         <li><a href="terms.php" class="text-gray-300 hover:text-accent transition">Terms & Conditions</a></li>
-                        <li><a href="faq.php" class="text-gray-300 hover:text-accent transition">FAQs</a></li>
+                        <!-- <li><a href="faq.php" class="text-gray-300 hover:text-accent transition">FAQs</a></li> -->
                     </ul>
                 </div>
                 <div>

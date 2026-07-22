@@ -69,12 +69,12 @@ include 'includes/header.php';
                 <div id="aboutContentEn" class="text-gray-600 leading-relaxed text-lg space-y-4 hidden">
                     <p>Marriage plays an important role in maintaining the prestige of religion, society, culture, and
                         the nation. Marriage is not just a union of two individuals but also plays a vital role in
-                        building future generations. If the right bride and groom are selected at the right time and the
+                        building future generations. If the right girl and boy are selected at the right time and the
                         marriage takes place, it will certainly create a healthy environment for society and the
                         country.</p>
                     <p>For the past 5 years, our organization has been very successfully organizing the Parichay
                         Sammelan for the young men and women of the entire Digambar Jain community in Ahmedabad. This is
-                        the most successful event in the state of Gujarat. Today, selecting a suitable bride and groom
+                        the most successful event in the state of Gujarat. Today, selecting a suitable girl and boy
                         in society has become very complex and difficult. Keeping this in mind, this program is
                         organized by the committee. In the same series, taking a step forward, our organization has
                         created this website so that a suitable life partner is always available for the young men and
@@ -122,7 +122,7 @@ include 'includes/header.php';
                 details of the candidate.</p>
             <p>This work is being done by the organizing committee in the interest of the society completely selflessly.
                 It has been our constant endeavor that no society member faces any trouble and our only sentiment is
-                that everyone finds a suitable bride/groom soon.</p>
+                that everyone finds a suitable girl/boy soon.</p>
             <p class="font-bold text-primary mt-4">Digambar Jain Parichay Sammelan Samiti Ahmedabad</p>
         </div>
     </div>

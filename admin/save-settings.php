@@ -36,6 +36,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if (isset($_FILES['hero_banner_file']) && $_FILES['hero_banner_file']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = '../uploads/';
+        if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
+        
+        $ext = pathinfo($_FILES['hero_banner_file']['name'], PATHINFO_EXTENSION);
+        $filename = 'hero_banner_' . time() . '.' . $ext;
+        $destination = $upload_dir . $filename;
+        
+        if (move_uploaded_file($_FILES['hero_banner_file']['tmp_name'], $destination)) {
+            $hero_path = 'uploads/' . $filename; // Relative to front-end root
+            $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?");
+            $stmt->execute(['hero_banner', $hero_path, $hero_path]);
+        }
+    }
+
     foreach ($_POST as $key => $value) {
         // Sanitize key (only allow alphanumeric and underscore)
         $key = preg_replace('/[^a-zA-Z0-9_]/', '', $key);

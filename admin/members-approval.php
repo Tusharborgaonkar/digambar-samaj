@@ -121,8 +121,8 @@ if (!function_exists('buildQueryString')) {
         <div>
             <select name="gender" class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-primary outline-none bg-white">
                 <option value="">All Genders</option>
-                <option value="Male" <?= $gender === 'Male' ? 'selected' : '' ?>>Groom (Male)</option>
-                <option value="Female" <?= $gender === 'Female' ? 'selected' : '' ?>>Bride (Female)</option>
+                <option value="Male" <?= $gender === 'Male' ? 'selected' : '' ?>>Boy (Male)</option>
+                <option value="Female" <?= $gender === 'Female' ? 'selected' : '' ?>>Girl (Female)</option>
             </select>
         </div>
         <div>
