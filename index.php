@@ -365,11 +365,12 @@ include 'includes/header.php';
         </p>
         <?php 
         $payment_qr_code = $settings['payment_qr_code'] ?? 'assets/images/qr_code.jpg';
-        $qr_exists = !empty($payment_qr_code) && file_exists($payment_qr_code);
+        $clean_qr_code = ltrim(str_replace('../', '', $payment_qr_code), '/\\');
+        $qr_exists = !empty($clean_qr_code) && file_exists(__DIR__ . '/' . $clean_qr_code);
         ?>
         <div class="mt-4 flex justify-center">
             <?php if ($qr_exists): ?>
-                <img src="image.php?file=<?= urlencode($payment_qr_code) ?>" alt="Payment QR" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover">
+                <img src="image.php?file=<?= urlencode($clean_qr_code) ?>" alt="Payment QR" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover">
             <?php else: ?>
                 <img src="https://placehold.co/200x200/fef08a/854d0e?text=QR+Code+Not+Found" alt="Payment QR Placeholder" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover">
             <?php endif; ?>
