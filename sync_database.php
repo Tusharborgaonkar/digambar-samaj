@@ -29,6 +29,8 @@ safeQuery($pdo, "ALTER TABLE users ADD COLUMN father_occupation_other VARCHAR(25
 safeQuery($pdo, "ALTER TABLE users ADD COLUMN occupation_other VARCHAR(255) NULL", "Add occupation_other to users");
 safeQuery($pdo, "ALTER TABLE users ADD COLUMN mother_occupation_other VARCHAR(255) NULL", "Add mother_occupation_other to users");
 safeQuery($pdo, "ALTER TABLE users ADD COLUMN language_other VARCHAR(255) NULL", "Add language_other to users");
+safeQuery($pdo, "ALTER TABLE users ADD COLUMN is_digambar VARCHAR(10) NULL", "Add is_digambar to users");
+safeQuery($pdo, "ALTER TABLE users ADD COLUMN registration_step INT DEFAULT 1", "Add registration_step to users");
 
 // 2. Gallery table
 safeQuery($pdo, "CREATE TABLE IF NOT EXISTS gallery (

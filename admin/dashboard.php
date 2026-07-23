@@ -15,6 +15,9 @@ $pendingApprovals = $stmt->fetchColumn();
 $stmt = $pdo->query("SELECT SUM(amount) FROM payments WHERE status = 'verified' AND MONTH(created_at) = MONTH(CURRENT_DATE()) AND YEAR(created_at) = YEAR(CURRENT_DATE())");
 $monthlyRevenue = $stmt->fetchColumn() ?: 0;
 
+$stmt = $pdo->query("SELECT setting_value FROM site_settings WHERE setting_key = 'visitor_count'");
+$websiteVisitors = $stmt->fetchColumn() ?: 0;
+
 // Fetch Recent Registrations
 $stmt = $pdo->query("SELECT profile_id, full_name, created_at, status FROM users ORDER BY created_at DESC LIMIT 5");
 $recentRegistrations = $stmt->fetchAll();
@@ -83,6 +86,18 @@ include 'includes/sidebar.php';
         </div>
         <div class="w-12 h-12 bg-green-50 text-green-500 rounded-lg flex items-center justify-center text-xl">
             <i class="fas fa-rupee-sign"></i>
+        </div>
+    </div>
+
+    <!-- Website Visitors -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center justify-between">
+        <div>
+            <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-1">Website Visitors</p>
+            <h4 class="text-3xl font-bold text-gray-800"><?= number_format((int)$websiteVisitors) ?></h4>
+            <p class="text-xs text-gray-400 font-medium mt-1">Total unique visits</p>
+        </div>
+        <div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-lg flex items-center justify-center text-xl">
+            <i class="fas fa-globe"></i>
         </div>
     </div>
 

@@ -1233,7 +1233,7 @@ document.addEventListener("DOMContentLoaded", function() {
         'mama_gotra' => $current_user['mama_gotra'] ?? '',
         'manglik' => $current_user['manglik'] ?? '',
         'height' => $current_user['height'] ?? '',
-        'weight' => $current_user['weight'] ?? '',
+        'weight' => (!empty($current_user['weight']) && is_numeric($current_user['weight'])) ? (int)$current_user['weight'] . ' kg' : ($current_user['weight'] ?? ''),
         'permanent_address' => $current_user['permanent_address'] ?? '',
         'pin_code' => $current_user['pin_code'] ?? '',
         'current_address' => $current_user['current_address'] ?? '',
