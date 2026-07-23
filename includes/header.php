@@ -69,11 +69,8 @@ if (isset($pdo) || file_exists('includes/db.php')) {
         $stmtScroll = $pdo->query("SELECT * FROM scrolling_news WHERE status = 1 ORDER BY created_at DESC");
         $scrolling_news = $stmtScroll->fetchAll(PDO::FETCH_ASSOC);
 
-        // Visitor Counter Logic
-        if (!isset($_SESSION['website_visited'])) {
-            $pdo->exec("INSERT INTO site_settings (setting_key, setting_value) VALUES ('visitor_count', '1') ON DUPLICATE KEY UPDATE setting_value = setting_value + 1");
-            $_SESSION['website_visited'] = true;
-        }
+        // Visitor Counter Logic - Increment on every page load
+        $pdo->exec("INSERT INTO site_settings (setting_key, setting_value) VALUES ('visitor_count', '1') ON DUPLICATE KEY UPDATE setting_value = CAST(setting_value AS UNSIGNED) + 1");
 
         // Fetch updated counter if needed (optional, but good if displaying in frontend)
     } catch (Exception $e) {}
