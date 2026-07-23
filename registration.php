@@ -878,7 +878,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <label class="block text-gray-700 font-medium mb-2">Candidate Photo <?= !empty($current_user['profile_photo']) ? '' : '*' ?> (Passport size photo, max 10MB)</label>
                                 <?php if (!empty($current_user['profile_photo'])): ?>
                                     <div class="mb-2">
-                                        <img src="image.php?file=<?= urlencode(str_replace('../', '', $current_user['profile_photo'])) ?>" class="w-24 h-24 object-cover border rounded" alt="Profile Photo">
+                                        <img src="image.php?file=<?= urlencode(str_replace('../', '', $current_user['profile_photo'])) ?>&t=<?= time() ?>" class="w-24 h-24 object-cover border rounded" alt="Profile Photo">
                                     </div>
                                 <?php endif; ?>
                                 <input type="file" name="photo" accept="image/*" <?= !empty($current_user['profile_photo']) ? '' : 'required' ?> class="w-full border rounded-lg px-4 py-2">
@@ -889,7 +889,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <label class="block text-gray-700 font-medium mb-2">Family Photo <?= (isset($coreFieldsSettings['family_photo']) && $coreFieldsSettings['family_photo']['is_required'] && empty($current_user['family_photo'])) ? '*' : '(Optional)' ?> (Max 10MB)</label>
                                 <?php if (!empty($current_user['family_photo'])): ?>
                                     <div class="mb-2">
-                                        <img src="image.php?file=<?= urlencode(str_replace('../', '', $current_user['family_photo'])) ?>" class="w-32 h-24 object-cover border rounded" alt="Family Photo">
+                                        <img src="image.php?file=<?= urlencode(str_replace('../', '', $current_user['family_photo'])) ?>&t=<?= time() ?>" class="w-32 h-24 object-cover border rounded" alt="Family Photo">
                                     </div>
                                 <?php endif; ?>
                                 <input type="file" name="family_photo" accept="image/*" <?= (isset($coreFieldsSettings['family_photo']) && $coreFieldsSettings['family_photo']['is_required'] && empty($current_user['family_photo'])) ? 'required' : '' ?> class="w-full border rounded-lg px-4 py-2">
@@ -921,7 +921,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         <label class="block text-gray-700 font-medium mb-2">Upload ID Proof <?= !empty($current_user['id_proof_path']) ? '' : '*' ?> (Max 5MB)</label>
                                         <?php if (!empty($current_user['id_proof_path'])): ?>
                                             <div class="mb-2">
-                                                <a href="image.php?file=<?= urlencode(str_replace('../', '', $current_user['id_proof_path'])) ?>" target="_blank" class="text-blue-500 underline text-sm">View Current ID Proof</a>
+                                                <a href="image.php?file=<?= urlencode(str_replace('../', '', $current_user['id_proof_path'])) ?>&t=<?= time() ?>" target="_blank" class="text-blue-500 underline text-sm">View Current ID Proof</a>
                                             </div>
                                         <?php endif; ?>
                                         <input type="file" name="id_proof_path" accept="image/*,.pdf" <?= !empty($current_user['id_proof_path']) ? '' : 'required' ?> class="w-full border rounded-lg px-4 py-2">
@@ -946,7 +946,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <!-- QR Code Display -->
                         <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 flex flex-col items-center">
                             <h3 class="font-bold text-gray-700 mb-2">Payment QR Code</h3>
-                            <img src="image.php?file=<?= urlencode($payment_qr_code) ?>" alt="Payment QR Code" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover bg-white">
+                            <img src="image.php?file=<?= urlencode($payment_qr_code) ?>&t=<?= time() ?>" alt="Payment QR Code" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover bg-white">
                             <p class="text-xs text-gray-500 mt-2 text-center">Scan to pay securely.</p>
                         </div>
 
@@ -956,7 +956,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <label class="block text-gray-700 font-medium mb-2">Payment Screenshot (Transaction ID) (Optional)</label>
                                 <?php if (!empty($current_user['payment_screenshot'])): ?>
                                     <div class="mb-2">
-                                        <a href="image.php?file=<?= urlencode(str_replace('../', '', $current_user['payment_screenshot'])) ?>" target="_blank" class="text-blue-500 underline text-sm"><i class="fas fa-external-link-alt"></i> View Current Payment Screenshot</a>
+                                        <a href="image.php?file=<?= urlencode(str_replace('../', '', $current_user['payment_screenshot'])) ?>&t=<?= time() ?>" target="_blank" class="text-blue-500 underline text-sm"><i class="fas fa-external-link-alt"></i> View Current Payment Screenshot</a>
                                     </div>
                                 <?php endif; ?>
                                 <input type="file" name="payment_screenshot" id="payment_screenshot" accept="image/*" class="w-full border rounded-lg px-4 py-2 bg-white">
