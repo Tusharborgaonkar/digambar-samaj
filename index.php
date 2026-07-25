@@ -566,10 +566,10 @@ include 'includes/header.php';
             <a href="profiles.php?education=Engineer"
                 class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
                     class="fas fa-hard-hat mr-2 text-primary"></i> Engineers</a>
-            <a href="profiles.php?education=MBA"
+            <a href="profiles.php?education=MBA/MCA"
                 class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
                     class="fas fa-user-graduate mr-2 text-primary"></i> MBA/MCA</a>
-            <a href="profiles.php?education=CA"
+            <a href="profiles.php?education=CA/CS"
                 class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
                     class="fas fa-calculator mr-2 text-primary"></i> CA/CS</a>
             <a href="profiles.php?occupation=Business"

@@ -84,8 +84,27 @@ if (!empty($_GET['city'])) {
 }
 
 if (!empty($_GET['education']) && $_GET['education'] !== 'Education All') {
-    $where[] = "higher_education LIKE ?";
-    $params[] = "%" . $_GET['education'] . "%";
+    $edu = $_GET['education'];
+    if ($edu === 'Doctorate' || $edu === 'Doctor') {
+        $where[] = "(higher_education LIKE '%Doctor%' OR higher_education LIKE '%MBBS%' OR higher_education LIKE '%BDS%' OR higher_education LIKE '%MD%' OR higher_education LIKE '%MS%' OR higher_education LIKE '%BAMS%' OR higher_education LIKE '%BHMS%' OR higher_education LIKE '%MDS%' OR higher_education LIKE '%Ph.D%')";
+    } elseif ($edu === 'Engineer') {
+        $where[] = "(higher_education LIKE '%Engineer%' OR higher_education LIKE '%B.E%' OR higher_education LIKE '%B.Tech%' OR higher_education LIKE '%M.Tech%' OR higher_education LIKE '%B Tech%' OR higher_education LIKE '%M Tech%' OR higher_education LIKE '%B. E%')";
+    } elseif ($edu === 'MBA') {
+        $where[] = "(higher_education LIKE '%MBA%' OR higher_education LIKE '%PGBDM%' OR higher_education LIKE '%PGDM%')";
+    } elseif ($edu === 'MCA') {
+        $where[] = "(higher_education LIKE '%MCA%')";
+    } elseif ($edu === 'MBA/MCA') {
+        $where[] = "(higher_education LIKE '%MBA%' OR higher_education LIKE '%MCA%' OR higher_education LIKE '%PGBDM%' OR higher_education LIKE '%PGDM%')";
+    } elseif ($edu === 'CA') {
+        $where[] = "(higher_education LIKE '% CA %' OR higher_education LIKE 'CA %' OR higher_education LIKE '% CA' OR higher_education = 'CA' OR higher_education LIKE '%Chartered Accountant%')";
+    } elseif ($edu === 'CS') {
+        $where[] = "(higher_education LIKE '% CS %' OR higher_education LIKE 'CS %' OR higher_education LIKE '% CS' OR higher_education = 'CS' OR higher_education LIKE '%Company Secretary%')";
+    } elseif ($edu === 'CA/CS') {
+        $where[] = "(higher_education LIKE '% CA %' OR higher_education LIKE 'CA %' OR higher_education LIKE '% CA' OR higher_education = 'CA' OR higher_education LIKE '%Chartered Accountant%' OR higher_education LIKE '% CS %' OR higher_education LIKE 'CS %' OR higher_education LIKE '% CS' OR higher_education = 'CS' OR higher_education LIKE '%Company Secretary%')";
+    } else {
+        $where[] = "higher_education LIKE ?";
+        $params[] = "%" . $edu . "%";
+    }
 }
 
 // Manglik filter
