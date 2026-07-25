@@ -140,12 +140,20 @@ if (!empty($_GET['age_to']) && is_numeric($_GET['age_to'])) {
     $where[] = "birth_date >= ?";
     $params[] = $minBirthDate;
 }
+// NRI filter
+if (!empty($_GET['nri']) && strtolower($_GET['nri']) === 'yes') {
+    $nriRegex = '[[:<:]](USA|United States|America|Canada|Dubai|UAE|Australia|United Kingdom|London|Singapore|New Zealand|Germany|France|Kuwait|Oman|Qatar|California|Texas|New York|Toronto|Melbourne|Sydney)[[:>:]]';
+    $where[] = "(
+        (country_code NOT IN ('91', '+91', ' 91', ' +91', '091', '+091') AND country_code IS NOT NULL AND country_code != '') 
+        OR current_address REGEXP '" . $nriRegex . "'
+    )";
+}
 
 $whereClause = implode(" AND ", $where);
 
 // Build query string for pagination (preserve all filters)
 $filterParams = [];
-foreach (['gender', 'match_id', 'city', 'education', 'manglik', 'marital', 'occupation', 'age_from', 'age_to'] as $key) {
+foreach (['gender', 'match_id', 'city', 'education', 'manglik', 'marital', 'occupation', 'age_from', 'age_to', 'nri'] as $key) {
     if (!empty($_GET[$key])) {
         $filterParams[$key] = $_GET[$key];
     }

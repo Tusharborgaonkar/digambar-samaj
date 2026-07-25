@@ -578,7 +578,7 @@ include 'includes/header.php';
             <a href="profiles.php?occupation=Service"
                 class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
                     class="fas fa-laptop-house mr-2 text-primary"></i> Service</a>
-            <a href="profiles.php"
+            <a href="profiles.php?nri=yes"
                 class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
                     class="fas fa-plane mr-2 text-primary"></i> NRI</a>
             <a href="profiles.php?manglik=yes"

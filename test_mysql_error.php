@@ -1,15 +1,15 @@
 <?php
 require_once 'includes/db.php';
-// Drop the column first
-$pdo->exec("ALTER TABLE users DROP COLUMN is_digambar");
-echo "Dropped.\n";
-
-// Try to update it (this should fail)
 try {
-    $pdo->exec("UPDATE users SET is_digambar = 'Yes' WHERE id = 1");
+    $stmt = $pdo->query("
+        SELECT id, current_address 
+        FROM users 
+        WHERE current_address REGEXP '[[:<:]](USA|Canada|Dubai|UK|UAE|Australia|London|Singapore|New Zealand|Germany|Kuwait|Oman|Qatar|Toronto)[[:>:]]'
+        LIMIT 50
+    ");
+    $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    echo json_encode($res, JSON_PRETTY_PRINT);
 } catch (Exception $e) {
-    echo "UPDATE Error: " . $e->getMessage() . "\n";
+    echo "ERROR: " . $e->getMessage();
 }
-
-// Now try to run the exact logic from sync_database.php with a different column name or something, or just run it directly.
-require_once 'sync_database.php';
+?>
