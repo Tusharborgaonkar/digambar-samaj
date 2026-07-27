@@ -169,7 +169,14 @@ include 'includes/header.php';
             </div>
             
             <div class="relative w-full h-full min-h-[300px] flex items-center justify-center bg-[#1a2942] p-4">
-                <img src="assets/images/gallery/TEMP1.jpg" alt="Matrimony Couple" class="w-full h-full object-contain max-h-[500px]">
+                <?php
+                $hero_img_src = 'assets/images/gallery/TEMP1.jpg';
+                if (!empty($settings['hero_banner'])) {
+                    $clean_banner = ltrim(str_replace('../', '', $settings['hero_banner']), '/\\');
+                    $hero_img_src = 'image.php?file=' . urlencode($clean_banner);
+                }
+                ?>
+                <img src="<?= $hero_img_src ?>" alt="Matrimony Hero" class="w-full h-full object-contain max-h-[500px]">
             </div>
         </div>
 
