@@ -58,6 +58,13 @@ if ($handle !== FALSE) {
             }
         }
 
+        $brothersTotal = (int)trim($data[36]) ?: 0;
+        $brothersMarried = (int)trim($data[37]) ?: 0;
+        $brothersUnmarried = (int)trim($data[38]) ?: 0;
+        $sistersTotal = (int)trim($data[39]) ?: 0;
+        $sistersMarried = (int)trim($data[40]) ?: 0;
+        $sistersUnmarried = (int)trim($data[41]) ?: 0;
+
         $stmt = $pdo->prepare("UPDATE users SET 
             marital_status = :marital_status,
             handicapped = :handicapped,
@@ -66,7 +73,13 @@ if ($handle !== FALSE) {
             company_name = :company_name,
             designation = :designation,
             height = :height,
-            birth_date = :birth_date
+            birth_date = :birth_date,
+            brothers = :brothers_total,
+            brothers_married = :brothers_married,
+            brothers_unmarried = :brothers_unmarried,
+            sisters = :sisters_total,
+            sisters_married = :sisters_married,
+            sisters_unmarried = :sisters_unmarried
             WHERE mobile LIKE :mobile
         ");
         
@@ -79,6 +92,12 @@ if ($handle !== FALSE) {
             ':designation' => $designation,
             ':height' => $heightRaw,
             ':birth_date' => $birthDate,
+            ':brothers_total' => $brothersTotal,
+            ':brothers_married' => $brothersMarried,
+            ':brothers_unmarried' => $brothersUnmarried,
+            ':sisters_total' => $sistersTotal,
+            ':sisters_married' => $sistersMarried,
+            ':sisters_unmarried' => $sistersUnmarried,
             ':mobile' => '%' . $mobileNumber
         ]);
         
