@@ -78,6 +78,7 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Manage Photo Gallery - Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -113,15 +114,30 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
 
                 <?php if ($success_msg): ?>
-                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
-                    <p><?= htmlspecialchars($success_msg) ?></p>
-                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: '<?= addslashes($success_msg) ?>',
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                    });
+                </script>
                 <?php endif; ?>
 
                 <?php if ($error_msg): ?>
-                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
-                    <p><?= htmlspecialchars($error_msg) ?></p>
-                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error!',
+                            text: '<?= addslashes($error_msg) ?>',
+                            confirmButtonColor: '#1E3A5F'
+                        });
+                    });
+                </script>
                 <?php endif; ?>
 
                 <!-- Upload Form -->
@@ -172,7 +188,7 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     </div>
                                     
                                     <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
-                                        <form method="POST" action="" class="inline" onsubmit="return confirm('Are you sure you want to delete this photo?');">
+                                        <form method="POST" action="" class="inline delete-form">
                                             <input type="hidden" name="delete_id" value="<?= $photo['id'] ?>">
                                             <button type="submit" name="delete_photo" class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 shadow-lg">
                                                 <i class="fas fa-trash-alt"></i>
@@ -188,5 +204,32 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </main>
     </div>
+    
+    <script>
+        document.querySelectorAll('.delete-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "Do you really want to delete this photo? This cannot be undone.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Simulate the button click
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'delete_photo';
+                        hiddenInput.value = '1';
+                        form.appendChild(hiddenInput);
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

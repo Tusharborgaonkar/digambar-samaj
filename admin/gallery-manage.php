@@ -120,12 +120,33 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </div>
 
 <?php if(isset($_GET['msg'])): ?>
-    <div class="bg-green-100 text-green-700 p-3 rounded mb-4">
-        <?= $_GET['msg'] === 'deleted' ? 'Photo deleted.' : 'Photo uploaded successfully!' ?>
-    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '<?= $_GET['msg'] === 'deleted' ? 'Media deleted successfully.' : 'Media uploaded successfully!' ?>',
+                timer: 3000,
+                showConfirmButton: false
+            });
+            // Clean up the URL
+            const url = new URL(window.location);
+            url.searchParams.delete('msg');
+            window.history.replaceState({}, document.title, url);
+        });
+    </script>
 <?php endif; ?>
 <?php if(isset($error)): ?>
-    <div class="bg-red-100 text-red-700 p-3 rounded mb-4"><?= $error ?></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: '<?= addslashes($error) ?>',
+                confirmButtonColor: '#1E3A5F'
+            });
+        });
+    </script>
 <?php endif; ?>
 
 <!-- Upload Form -->
@@ -240,7 +261,7 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     
                     <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-center items-center">
                         <span class="text-white text-xs text-center px-2 mb-2 font-bold"><?= htmlspecialchars($p['title'] ?: ucfirst($type)) ?></span>
-                        <form method="POST" action="" class="inline" onsubmit="return confirm('Are you sure you want to delete this item?')">
+                        <form method="POST" action="" class="inline delete-form">
                             <input type="hidden" name="delete_id" value="<?= $p['id'] ?>">
                             <button type="submit" name="delete_photo" class="bg-red-500 text-white p-2 rounded-full hover:bg-red-600">
                                 <i class="fas fa-trash"></i>
@@ -252,5 +273,32 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     <?php endif; ?>
 </div>
+
+<script>
+    document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you really want to delete this item? This cannot be undone.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Create a hidden input to simulate the button click, since form.submit() doesn't include button name
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'delete_photo';
+                    hiddenInput.value = '1';
+                    form.appendChild(hiddenInput);
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>
 
 <?php include 'includes/footer.php'; ?>
