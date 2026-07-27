@@ -238,9 +238,9 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <!-- Search Sidebar -->
             <div class="w-full md:w-1/4">
                 
-                <button onclick="history.back()" class="w-full bg-white border border-gray-300 text-gray-700 font-semibold py-2.5 rounded-md hover:bg-gray-50 transition shadow-sm mb-4 flex items-center justify-center gap-2">
+                <a href="index.php" class="w-full bg-white border border-gray-300 text-gray-700 font-semibold py-2.5 rounded-md hover:bg-gray-50 transition shadow-sm mb-4 flex items-center justify-center gap-2">
                     <i class="fas fa-arrow-left"></i> Go Back
-                </button>
+                </a>
 
                 <form method="GET" action="profiles.php" class="bg-white border border-gray-200 rounded-sm shadow-sm">
                     <div class="bg-primary text-white text-center font-bold text-lg py-3 rounded-t-sm">
