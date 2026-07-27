@@ -53,13 +53,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $allowed_exts = ['jpg', 'jpeg', 'png', 'gif'];
             
             if (in_array($file_ext, $allowed_exts)) {
-                $new_filename = uniqid('story_') . '.' . $file_ext;
-                $upload_path = $upload_dir . $new_filename;
-                
-                if (move_uploaded_file($_FILES['photo']['tmp_name'], $upload_path)) {
-                    $photo = $upload_path;
+                $image_data = file_get_contents($_FILES['photo']['tmp_name']);
+                $mime_type = mime_content_type($_FILES['photo']['tmp_name']);
+                if ($image_data !== false && strpos($mime_type, 'image/') === 0) {
+                    $base64 = base64_encode($image_data);
+                    $photo = 'data:' . $mime_type . ';base64,' . $base64;
                 } else {
-                    $error_msg = "Failed to upload photo.";
+                    $error_msg = "Failed to process photo.";
                 }
             } else {
                 $error_msg = "Invalid file type. Only JPG, JPEG, PNG and GIF are allowed.";

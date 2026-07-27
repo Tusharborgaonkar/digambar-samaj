@@ -22,7 +22,7 @@ $is_admin_logged_in = isset($_SESSION['admin_logged_in']) && $_SESSION['admin_lo
                 if (count($stories) > 0) {
                     foreach ($stories as $story): 
                         $cleanPath = !empty($story['photo']) ? ltrim(str_replace('../', '', $story['photo']), '/') : '';
-                        if (preg_match('/^https?:\/\//i', $story['photo'])) {
+                        if (preg_match('/^https?:\/\//i', $story['photo']) || strpos($story['photo'], 'data:image/') === 0) {
                             $photo = $story['photo'];
                         } else {
                             $photo = !empty($cleanPath) ? 'image.php?file=' . urlencode($cleanPath) : 'assets/images/placeholder-couple.png';
