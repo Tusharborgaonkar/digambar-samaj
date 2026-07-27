@@ -53,11 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $allowed_exts = ['jpg', 'jpeg', 'png', 'gif'];
                         
                         if (in_array($file_ext, $allowed_exts)) {
-                            $image_data = file_get_contents($_FILES['photo']['tmp_name']);
-                            $mime_type = mime_content_type($_FILES['photo']['tmp_name']);
-                            if ($image_data !== false && strpos($mime_type, 'image/') === 0) {
-                                $base64 = base64_encode($image_data);
-                                $photo = 'data:' . $mime_type . ';base64,' . $base64;
+                            $filename = uniqid('story_') . '.' . $file_ext;
+                            $destination = $upload_dir . $filename;
+                            
+                            if (move_uploaded_file($_FILES['photo']['tmp_name'], $destination)) {
+                                $photo = 'uploads/success_stories/' . $filename;
                             } else {
                                 $error_msg = "Failed to process photo.";
                             }
@@ -98,11 +98,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $allowed_exts = ['jpg', 'jpeg', 'png', 'gif'];
                             
                             if (in_array($file_ext, $allowed_exts)) {
-                                $image_data = file_get_contents($_FILES['photo']['tmp_name']);
-                                $mime_type = mime_content_type($_FILES['photo']['tmp_name']);
-                                if ($image_data !== false && strpos($mime_type, 'image/') === 0) {
-                                    $base64 = base64_encode($image_data);
-                                    $new_photo = 'data:' . $mime_type . ';base64,' . $base64;
+                                $filename = uniqid('story_') . '.' . $file_ext;
+                                $destination = $upload_dir . $filename;
+                                
+                                if (move_uploaded_file($_FILES['photo']['tmp_name'], $destination)) {
+                                    $new_photo = 'uploads/success_stories/' . $filename;
                                     
                                     // We intentionally do NOT delete the old photo because it might be a base64 string
                                     // or a legacy file path that might still be needed as a backup or if other things reference it.

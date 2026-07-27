@@ -21,11 +21,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (in_array($_FILES['image']['type'], $allowedTypes)) {
-            $image_data = file_get_contents($_FILES['image']['tmp_name']);
-            $mime_type = mime_content_type($_FILES['image']['tmp_name']);
-            if ($image_data !== false && strpos($mime_type, 'image/') === 0) {
-                $base64 = base64_encode($image_data);
-                $dbPath = 'data:' . $mime_type . ';base64,' . $base64;
+            $upload_dir = '../uploads/gallery/';
+            if (!is_dir($upload_dir)) {
+                mkdir($upload_dir, 0755, true);
+            }
+            $file_ext = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+            $filename = uniqid('img_') . '.' . $file_ext;
+            $destination = $upload_dir . $filename;
+            
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $destination)) {
+                $dbPath = 'uploads/gallery/' . $filename;
                 
                 $stmt = $pdo->prepare("INSERT INTO gallery (title, image_path) VALUES (?, ?)");
                 if ($stmt->execute([$title, $dbPath])) {

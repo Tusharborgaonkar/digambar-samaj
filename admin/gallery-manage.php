@@ -77,13 +77,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_media'])) {
                 elseif ($file_ext === 'mp4') $media_type = 'video';
                 else $media_type = 'image';
 
-                // Store as base64 instead of moving file
-                $file_data = file_get_contents($_FILES['photo']['tmp_name']);
-                $mime_type = mime_content_type($_FILES['photo']['tmp_name']);
+                // Save file to disk instead of base64
+                $filename = uniqid('media_') . '.' . $file_ext;
+                $destination = $upload_dir . $filename;
                 
-                if ($file_data !== false) {
-                    $base64 = base64_encode($file_data);
-                    $db_path = 'data:' . $mime_type . ';base64,' . $base64;
+                if (move_uploaded_file($_FILES['photo']['tmp_name'], $destination)) {
+                    $db_path = 'uploads/gallery/' . $filename;
                     
                     $stmt = $pdo->prepare("INSERT INTO gallery (title, category, image_path, media_type) VALUES (?, ?, ?, ?)");
                     $stmt->execute([$title, $category, $db_path, $media_type]);
