@@ -85,7 +85,7 @@ if (!empty($member['birth_date'])) {
 }
 
 $heightDisplay = htmlspecialchars($member['height'] ?? 'N/A');
-$maritalStatus = htmlspecialchars($member['marital_status'] ?? 'N/A');
+$maritalStatus = !empty($member['marital_status']) ? htmlspecialchars($member['marital_status']) : 'Never Married';
 $location = htmlspecialchars($member['native_place'] ?? 'N/A');
 $education = htmlspecialchars($member['higher_education'] ?? 'N/A');
 $occupation = htmlspecialchars($member['occupation'] ?? 'N/A');

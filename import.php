@@ -49,11 +49,17 @@ if ($handle !== FALSE) {
         $mobileNumber = trim($data[4]);
         
         // Date mapping M/D/YYYY to YYYY-MM-DD
-        $birthDateRaw = trim($data[5]);
+        $birthDateRaw = str_replace('-', '/', trim($data[5]));
         $birthDate = null;
         if (!empty($birthDateRaw)) {
-            $ts = strtotime($birthDateRaw);
-            if ($ts !== false) $birthDate = date('Y-m-d', $ts);
+            $parts = explode('/', $birthDateRaw);
+            if (count($parts) === 3) {
+                $m = str_pad($parts[0], 2, '0', STR_PAD_LEFT);
+                $d = str_pad($parts[1], 2, '0', STR_PAD_LEFT);
+                $y = $parts[2];
+                if (strlen($y) == 2) $y = ($y > 30 ? '19' : '20') . $y;
+                $birthDate = "$y-$m-$d";
+            }
         }
 
         // Time mapping H:MM:SS A to HH:MM:SS
@@ -74,12 +80,7 @@ if ($handle !== FALSE) {
 
         // Height mapping
         $heightRaw = trim($data[12]);
-        $heightCm = null;
-        if (preg_match('/(\d+)\s*ft\s*(\d+)?/', $heightRaw, $m)) {
-            $ft = (int)$m[1];
-            $in = isset($m[2]) ? (int)$m[2] : 0;
-            $heightCm = round(($ft * 12 + $in) * 2.54);
-        }
+        $heightCm = $heightRaw; // We store the string (e.g. "5 ft 3 inch") as the height column is VARCHAR(20)
 
         $weightKg = (float)trim($data[13]) ?: null;
         
@@ -97,9 +98,9 @@ if ($handle !== FALSE) {
         $monthlyIncome = (float)preg_replace('/[^0-9.]/', '', trim($data[22])) ?: 0;
 
         $widowRaw = strtolower(trim($data[23]));
-        $widowDivorce = 'none';
-        if (strpos($widowRaw, 'widow') !== false) $widowDivorce = 'widow';
-        elseif (strpos($widowRaw, 'divorce') !== false) $widowDivorce = 'divorcee';
+        $widowDivorce = 'Never Married';
+        if (strpos($widowRaw, 'widow') !== false) $widowDivorce = 'Widow';
+        elseif (strpos($widowRaw, 'divorce') !== false) $widowDivorce = 'Divorce';
 
         $handicapped = trim($data[24]);
         $languagesKnown = trim($data[25]);
