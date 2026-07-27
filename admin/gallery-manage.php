@@ -27,6 +27,10 @@ try {
     $pdo->exec("ALTER TABLE gallery ADD COLUMN media_url VARCHAR(500) NULL");
 } catch (Exception $e) {}
 
+try {
+    $pdo->exec("ALTER TABLE gallery MODIFY COLUMN image_path LONGTEXT NULL");
+} catch (Exception $e) {}
+
 // Handle Delete
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_photo']) && is_numeric($_POST['delete_id'])) {
     $id = $_POST['delete_id'];
@@ -73,11 +77,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_media'])) {
                 elseif ($file_ext === 'mp4') $media_type = 'video';
                 else $media_type = 'image';
 
-                $filename = uniqid() . '.' . $file_ext;
-                $target_file = $upload_dir . $filename;
+                // Store as base64 instead of moving file
+                $file_data = file_get_contents($_FILES['photo']['tmp_name']);
+                $mime_type = mime_content_type($_FILES['photo']['tmp_name']);
                 
-                if (move_uploaded_file($_FILES['photo']['tmp_name'], $target_file)) {
-                    $db_path = 'uploads/gallery/' . $filename;
+                if ($file_data !== false) {
+                    $base64 = base64_encode($file_data);
+                    $db_path = 'data:' . $mime_type . ';base64,' . $base64;
                     
                     $stmt = $pdo->prepare("INSERT INTO gallery (title, category, image_path, media_type) VALUES (?, ?, ?, ?)");
                     $stmt->execute([$title, $category, $db_path, $media_type]);
@@ -85,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_media'])) {
                     header("Location: gallery-manage.php?msg=uploaded");
                     exit;
                 } else {
-                    $error = "Failed to move uploaded file.";
+                    $error = "Failed to process uploaded file.";
                 }
             } else {
                 $error = "Invalid file type. Allowed: JPG, PNG, GIF, WebP, PDF, MP4.";
@@ -217,8 +223,15 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $type = $p['media_type'] ?? 'image';
             ?>
                 <div class="relative group rounded-lg overflow-hidden border border-gray-200 bg-gray-50 h-32 flex items-center justify-center">
-                    <?php if($type === 'image' && !empty($clean_path)): ?>
-                        <img src="../image.php?file=<?= urlencode($clean_path) ?>" alt="<?= htmlspecialchars($p['title']) ?>" class="w-full h-full object-cover">
+                    <?php if($type === 'image' && !empty($p['image_path'])): ?>
+                        <?php 
+                            if (strpos($p['image_path'], 'data:image/') === 0 || preg_match('/^https?:\/\//i', $p['image_path'])) {
+                                $img_src = $p['image_path'];
+                            } else {
+                                $img_src = '../image.php?file=' . urlencode($clean_path);
+                            }
+                        ?>
+                        <img src="<?= htmlspecialchars($img_src) ?>" alt="<?= htmlspecialchars($p['title']) ?>" class="w-full h-full object-cover">
                     <?php elseif($type === 'pdf'): ?>
                         <div class="text-red-500 text-4xl"><i class="fas fa-file-pdf"></i></div>
                     <?php elseif($type === 'video' || $type === 'youtube'): ?>

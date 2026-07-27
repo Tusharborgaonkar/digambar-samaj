@@ -68,10 +68,15 @@ foreach ($gallery_videos as $gv) {
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 <?php foreach($photos as $p): 
                     $clean_path = ltrim(str_replace('../', '', $p['image_path']), '/');
+                    if (strpos($p['image_path'], 'data:image/') === 0 || preg_match('/^https?:\/\//i', $p['image_path'])) {
+                        $img_src = $p['image_path'];
+                    } else {
+                        $img_src = 'image.php?file=' . urlencode($clean_path);
+                    }
                 ?>
-                    <a href="image.php?file=<?= urlencode($clean_path) ?>" data-fancybox="gallery" data-caption="<?= htmlspecialchars($p['title']) ?>" class="group block overflow-hidden rounded-xl shadow-sm hover:shadow-md transition">
+                    <a href="<?= htmlspecialchars($img_src) ?>" data-fancybox="gallery" data-caption="<?= htmlspecialchars($p['title']) ?>" class="group block overflow-hidden rounded-xl shadow-sm hover:shadow-md transition">
                         <div class="aspect-w-4 aspect-h-3">
-                            <img src="image.php?file=<?= urlencode($clean_path) ?>" alt="<?= htmlspecialchars($p['title']) ?>" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
+                            <img src="<?= htmlspecialchars($img_src) ?>" alt="<?= htmlspecialchars($p['title']) ?>" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
                         </div>
                         <?php if(!empty($p['title'])): ?>
                             <div class="p-3 bg-white">

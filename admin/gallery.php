@@ -10,6 +10,10 @@ require_once '../includes/db.php';
 $success_msg = '';
 $error_msg = '';
 
+try {
+    $pdo->exec("ALTER TABLE gallery MODIFY COLUMN image_path LONGTEXT NULL");
+} catch (Exception $e) {}
+
 // Handle Image Upload
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'upload') {
     $title = trim($_POST['title'] ?? '');
@@ -17,26 +21,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         if (in_array($_FILES['image']['type'], $allowedTypes)) {
-            $uploadDir = '../assets/images/gallery/';
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
-            }
-            
-            $fileExtension = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
-            $fileName = uniqid('img_') . '.' . $fileExtension;
-            $uploadFile = $uploadDir . $fileName;
-            
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $uploadFile)) {
-                $dbPath = 'assets/images/gallery/' . $fileName;
+            $image_data = file_get_contents($_FILES['image']['tmp_name']);
+            $mime_type = mime_content_type($_FILES['image']['tmp_name']);
+            if ($image_data !== false && strpos($mime_type, 'image/') === 0) {
+                $base64 = base64_encode($image_data);
+                $dbPath = 'data:' . $mime_type . ';base64,' . $base64;
                 
                 $stmt = $pdo->prepare("INSERT INTO gallery (title, image_path) VALUES (?, ?)");
                 if ($stmt->execute([$title, $dbPath])) {
                     $success_msg = "Image uploaded successfully!";
                 } else {
-                    $error_msg = "Failed to save image path in database.";
+                    $error_msg = "Failed to save image in database.";
                 }
             } else {
-                $error_msg = "Failed to upload image.";
+                $error_msg = "Failed to process image.";
             }
         } else {
             $error_msg = "Invalid file type. Only JPG, PNG, GIF, and WEBP are allowed.";
@@ -160,7 +158,13 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
                             <?php foreach ($photos as $photo): ?>
                                 <div class="border rounded-lg overflow-hidden group relative">
-                                    <img src="../<?= htmlspecialchars($photo['image_path']) ?>" alt="<?= htmlspecialchars($photo['title']) ?>" class="w-full h-48 object-cover">
+                                    <?php
+                                        $imageSrc = $photo['image_path'];
+                                        if (strpos($imageSrc, 'data:image/') !== 0 && !preg_match('/^https?:\/\//i', $imageSrc)) {
+                                            $imageSrc = '../' . $imageSrc;
+                                        }
+                                    ?>
+                                    <img src="<?= htmlspecialchars($imageSrc) ?>" alt="<?= htmlspecialchars($photo['title']) ?>" class="w-full h-48 object-cover">
                                     
                                     <div class="p-3 bg-white">
                                         <p class="text-sm font-semibold truncate" title="<?= htmlspecialchars($photo['title']) ?>"><?= htmlspecialchars($photo['title'] ?: 'Untitled') ?></p>
