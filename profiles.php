@@ -2,6 +2,9 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+// Store the current search URL in session so profile-details.php can go back to it
+$_SESSION['last_search_url'] = $_SERVER['REQUEST_URI'];
+
 require_once 'includes/db.php';
 // Check if user is logged in and approved
 $is_approved = false;

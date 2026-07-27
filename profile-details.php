@@ -98,10 +98,11 @@ include 'includes/header.php';
     <div class="container mx-auto px-4 max-w-5xl">
         
         <!-- Breadcrumb -->
+        <?php $back_url = $_SESSION['last_search_url'] ?? 'profiles.php'; ?>
         <nav class="text-sm text-gray-500 mb-6 flex items-center gap-2">
             <a href="index.php" class="hover:text-primary transition">Home</a>
             <i class="fas fa-chevron-right text-xs"></i>
-            <a href="profiles.php" class="hover:text-primary transition">Search Profiles</a>
+            <a href="<?= htmlspecialchars($back_url) ?>" class="hover:text-primary transition">Search Profiles</a>
             <i class="fas fa-chevron-right text-xs"></i>
             <span class="text-dark font-medium"><?= $fullName ?> [MID: <?= $memberId ?>]</span>
         </nav>
