@@ -153,7 +153,7 @@ $whereClause = implode(" AND ", $where);
 
 // Build query string for pagination (preserve all filters)
 $filterParams = [];
-foreach (['gender', 'match_id', 'city', 'education', 'manglik', 'marital', 'occupation', 'age_from', 'age_to', 'nri'] as $key) {
+foreach (['gender', 'match_id', 'city', 'education', 'manglik', 'marital', 'occupation', 'age_from', 'age_to', 'nri', 'sort_by'] as $key) {
     if (!empty($_GET[$key])) {
         $filterParams[$key] = $_GET[$key];
     }
@@ -175,6 +175,16 @@ $countStmt->execute($params);
 $total_profiles = $countStmt->fetchColumn();
 $total_pages = ceil($total_profiles / $limit);
 
+$sort_by = $_GET['sort_by'] ?? 'name_asc';
+$orderClause = "u.full_name ASC, TIMESTAMPDIFF(YEAR, u.birth_date, CURDATE()) ASC"; // Default: Name A-Z, then Age
+if ($sort_by === 'age_asc') {
+    $orderClause = "TIMESTAMPDIFF(YEAR, u.birth_date, CURDATE()) ASC, u.full_name ASC"; // Youngest First, then A-Z
+} elseif ($sort_by === 'age_desc') {
+    $orderClause = "TIMESTAMPDIFF(YEAR, u.birth_date, CURDATE()) DESC, u.full_name ASC"; // Oldest First, then A-Z
+} elseif ($sort_by === 'latest') {
+    $orderClause = "u.id DESC"; // Recently Added
+}
+
 // Build the query with liked profiles on top
 $current_user_id = $_SESSION['user_id'] ?? 0;
 
@@ -183,11 +193,12 @@ if ($is_logged_in && $current_user_id > 0) {
               FROM users u 
               LEFT JOIN user_likes ul ON ul.liked_user_id = u.id AND ul.user_id = ? 
               WHERE $whereClause 
-              ORDER BY is_liked DESC, u.id DESC 
+              ORDER BY is_liked DESC, $orderClause 
               LIMIT $limit OFFSET $offset";
     $stmtParams = array_merge([$current_user_id], $params);
 } else {
-    $query = "SELECT * FROM users WHERE $whereClause ORDER BY id DESC LIMIT $limit OFFSET $offset";
+    // For non-logged in, u. prefix is not needed if we just SELECT *, but since $orderClause uses u., we alias it.
+    $query = "SELECT u.* FROM users u WHERE $whereClause ORDER BY $orderClause LIMIT $limit OFFSET $offset";
     $stmtParams = $params;
 }
 
@@ -309,13 +320,22 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <input type="number" name="age_to" placeholder="Age To" min="18" max="80" value="<?= htmlspecialchars($_GET['age_to'] ?? '') ?>" class="w-1/2 border border-gray-300 rounded-md p-2.5 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
                         </div>
                         
+                        <!-- Sort By -->
+                        <?php $selectedSort = $_GET['sort_by'] ?? 'name_asc'; ?>
+                        <select name="sort_by" class="w-full border border-gray-300 rounded-md p-2.5 mb-5 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-white">
+                            <option value="name_asc" <?= $selectedSort === 'name_asc' ? 'selected' : '' ?>>Sort By: Name (A to Z)</option>
+                            <option value="age_asc" <?= $selectedSort === 'age_asc' ? 'selected' : '' ?>>Sort By: Age (Youngest First)</option>
+                            <option value="age_desc" <?= $selectedSort === 'age_desc' ? 'selected' : '' ?>>Sort By: Age (Oldest First)</option>
+                            <option value="latest" <?= $selectedSort === 'latest' ? 'selected' : '' ?>>Sort By: Recently Added</option>
+                        </select>
+                        
                         <!-- Search Button -->
                         <button type="submit" class="w-full bg-primary text-white font-semibold py-2.5 rounded-md hover:bg-opacity-90 transition shadow-sm">
                             Search
                         </button>
                         
                         <!-- Reset Link -->
-                        <?php if (!empty($_GET['match_id']) || !empty($_GET['city']) || !empty($_GET['education']) || !empty($_GET['manglik']) || !empty($_GET['marital']) || !empty($_GET['occupation']) || !empty($_GET['age_from']) || !empty($_GET['age_to'])): ?>
+                        <?php if (!empty($_GET['match_id']) || !empty($_GET['city']) || !empty($_GET['education']) || !empty($_GET['manglik']) || !empty($_GET['marital']) || !empty($_GET['occupation']) || !empty($_GET['age_from']) || !empty($_GET['age_to']) || !empty($_GET['sort_by'])): ?>
                         <a href="profiles.php?gender=<?= urlencode($genderFilter) ?>" class="block text-center text-sm text-gray-500 hover:text-primary mt-3 transition">
                             <i class="fas fa-times-circle mr-1"></i> Clear All Filters
                         </a>
