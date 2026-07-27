@@ -84,7 +84,7 @@ if (isset($pdo) || file_exists('includes/db.php')) {
 }
 
 $site_title = htmlspecialchars($settings['home_title'] ?? 'Digambar Jain Matrimony');
-$site_tagline = htmlspecialchars($settings['home_tagline'] ?? 'Matrimony Est. 2026');
+$site_tagline = htmlspecialchars($settings['home_tagline'] ?? '(established in 2026)');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -110,7 +110,7 @@ $site_tagline = htmlspecialchars($settings['home_tagline'] ?? 'Matrimony Est. 20
     <meta name="twitter:description" content="Find your perfect life partner within the Digambar Jain community.">
     <meta name="twitter:image" content="https://images.unsplash.com/photo-1516594798947-e65505dbb29d?w=1200">
     
-    <title>Jain Digambar Matrimony - Exclusive Matrimony for Digambar Jain Samaj</title>
+    <title><?= $site_title ?> - Exclusive Matrimony for Digambar Jain Samaj</title>
     
     <!-- Tailwind CSS CDN -->
     <script>
@@ -410,8 +410,8 @@ $site_tagline = htmlspecialchars($settings['home_tagline'] ?? 'Matrimony Est. 20
                 <!-- Logo -->
                 <div data-aos="fade-right">
                     <a href="index.php" class="flex flex-col">
-                        <h1 class="text-2xl md:text-3xl font-bold text-[#8B2323]">Digambar Jain Matrimony</h1>
-                        <span class="text-sm md:text-base text-[#8B2323] font-medium mt-1">(established in 2026)</span>
+                        <h1 class="text-2xl md:text-3xl font-bold text-[#8B2323]"><?= $site_title ?></h1>
+                        <span class="text-sm md:text-base text-[#8B2323] font-medium mt-1"><?= $site_tagline ?></span>
                     </a>
                 </div>
                 

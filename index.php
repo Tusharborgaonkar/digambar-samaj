@@ -161,10 +161,10 @@ include 'includes/header.php';
         <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-0 items-stretch bg-[#1a2942] rounded-2xl overflow-hidden shadow-2xl" data-aos="fade-up">
             <div class="flex flex-col justify-between p-8 md:p-12 text-left h-full">
                 <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight">
-                    The most trusted<br>matrimony<br>service for<br>Digambar Jain!
+                    <?= strip_tags($settings['hero_heading'] ?? 'The most trusted<br>matrimony<br>service for<br>Digambar Jain!', '<br>') ?>
                 </h2>
                 <p class="text-base md:text-lg text-gray-300 leading-relaxed max-w-xl mt-8">
-                    This website is created only for the Digambar Jain community to help eligible young men and women of the entire Digambar Jain society find their suitable life partner.
+                    <?= nl2br(htmlspecialchars($settings['hero_description'] ?? 'This website is created only for the Digambar Jain community to help eligible young men and women of the entire Digambar Jain society find their suitable life partner.')) ?>
                 </p>
             </div>
             

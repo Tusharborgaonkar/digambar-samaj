@@ -35,10 +35,10 @@ $payment_qr_code = $settings['payment_qr_code'] ?? 'assets/images/qr_code.jpg';
 $show_home_top_ads = $settings['show_home_top_ads'] ?? '1';
 
 // Homepage/Hero Settings
-$home_title = $settings['home_title'] ?? 'Digambar Jain Parichay';
-$home_tagline = $settings['home_tagline'] ?? 'The most trusted matrimony service for Digambar Jain!';
-$hero_heading = $settings['hero_heading'] ?? 'दिगंबर जैन युवक-युवती परिचय';
-$hero_description = $settings['hero_description'] ?? 'This website is created only for the Digambar Jain community to help eligible young men and women find their suitable life partner.';
+$home_title = $settings['home_title'] ?? 'Digambar Jain Matrimony';
+$home_tagline = $settings['home_tagline'] ?? '(established in 2026)';
+$hero_heading = $settings['hero_heading'] ?? 'The most trusted<br>matrimony<br>service for<br>Digambar Jain!';
+$hero_description = $settings['hero_description'] ?? 'This website is created only for the Digambar Jain community to help eligible young men and women of the entire Digambar Jain society find their suitable life partner.';
 $hero_banner = $settings['hero_banner'] ?? '';
 ?>
 
