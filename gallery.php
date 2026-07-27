@@ -36,6 +36,8 @@ try {
 // Merge gallery videos into the main videos array
 foreach ($gallery_videos as $gv) {
     $videos[] = [
+        'id' => $gv['id'],
+        'source' => 'gallery',
         'title' => $gv['title'] ?: 'Video',
         'video_type' => $gv['media_type'] === 'video' ? 'mp4' : 'youtube',
         'video_url' => $gv['media_url'],
@@ -102,8 +104,9 @@ foreach ($gallery_videos as $gv) {
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <?php foreach($pdfs as $pdf): 
                 $clean_path = ltrim(str_replace('../', '', $pdf['image_path']), '/');
+                $pdf_link = (strpos($pdf['image_path'], 'data:') === 0) ? "view_media.php?type=gallery&id=" . $pdf['id'] : htmlspecialchars($clean_path);
             ?>
-            <a href="<?= htmlspecialchars($clean_path) ?>" target="_blank" class="bg-light p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition flex items-start gap-4 group">
+            <a href="<?= $pdf_link ?>" target="_blank" class="bg-light p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition flex items-start gap-4 group">
                 <div class="bg-red-100 text-red-500 rounded-lg p-3 group-hover:bg-red-500 group-hover:text-white transition">
                     <i class="fas fa-file-pdf text-2xl"></i>
                 </div>
@@ -139,9 +142,11 @@ foreach ($gallery_videos as $gv) {
                                 $yt_id = $match[1] ?? '';
                             ?>
                                 <iframe class="w-full h-full" src="https://www.youtube.com/embed/<?= $yt_id ?>" title="<?= htmlspecialchars($vid['title']) ?>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                            <?php elseif ($vid['video_type'] === 'mp4' && !empty($vid['video_file'])): ?>
+                            <?php elseif ($vid['video_type'] === 'mp4' && !empty($vid['video_file'])): 
+                                $vid_src = (strpos($vid['video_file'], 'data:') === 0 && isset($vid['source']) && $vid['source'] === 'gallery') ? "view_media.php?type=gallery&id=" . $vid['id'] : htmlspecialchars($vid['video_file']);
+                            ?>
                                 <video class="w-full h-full object-cover" controls <?= !empty($vid['thumbnail']) ? 'poster="'.htmlspecialchars($vid['thumbnail']).'"' : '' ?>>
-                                    <source src="<?= htmlspecialchars($vid['video_file']) ?>" type="video/mp4">
+                                    <source src="<?= $vid_src ?>" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>
                             <?php endif; ?>
