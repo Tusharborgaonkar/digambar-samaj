@@ -9,7 +9,7 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 require_once '../includes/db.php';
 $current_page = 'advertisement.php';
 
-// Ensure table exists
+// Ensure table exists and position column is VARCHAR
 try {
     $pdo->exec("CREATE TABLE IF NOT EXISTS advertisements (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -20,6 +20,9 @@ try {
         status TINYINT(1) DEFAULT 1,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )");
+    
+    // Force column to VARCHAR just in case it was an ENUM
+    $pdo->exec("ALTER TABLE advertisements MODIFY position VARCHAR(50) DEFAULT 'home_top'");
 } catch (Exception $e) {}
 
 // Handle Delete

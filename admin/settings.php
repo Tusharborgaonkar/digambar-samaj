@@ -174,7 +174,7 @@ $hero_banner = $settings['hero_banner'] ?? '';
                 <div class="flex items-center justify-between mt-4">
                     <div class="flex-grow">
                         <label class="block font-medium text-gray-700 mb-1">Hero Banner Image</label>
-                        <p class="text-xs text-gray-500 mb-2">Upload the main image for the hero section.</p>
+                        <p class="text-xs text-gray-500 mb-2">Upload the main image for the center of the hero section.</p>
                         <?php if (!empty($hero_banner)): ?>
                             <div class="mt-2">
                             <?php 
@@ -190,6 +190,43 @@ $hero_banner = $settings['hero_banner'] ?? '';
                     </div>
                     <div class="ml-4">
                         <input type="file" name="hero_banner_file" accept="image/*" class="text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 mt-6">
+                <h5 class="font-bold text-blue-800 mb-2"><i class="fas fa-bullhorn mr-2"></i> Hero Section Advertisements (Left, Right, Bottom)</h5>
+                <p class="text-sm text-blue-700 mb-3">To add, edit, or delete advertisements on the 3 sides of the Hero section, please use the dedicated Advertisement manager.</p>
+                <a href="advertisement.php" class="inline-block bg-blue-600 text-white px-4 py-2 rounded shadow-sm text-sm hover:bg-blue-700 transition">Manage Advertisements</a>
+                
+                <hr class="border-blue-200 my-4">
+                
+                <h6 class="font-semibold text-blue-800 mb-3">Display Settings for Hero Ads:</h6>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="flex items-center justify-between bg-white p-3 rounded shadow-sm">
+                        <span class="text-sm font-medium text-gray-700">Left Side Ads</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="hidden" name="show_hero_left_ad" value="0">
+                            <input type="checkbox" name="show_hero_left_ad" value="1" <?= ($settings['show_hero_left_ad'] ?? '1') == '1' ? 'checked' : '' ?> class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between bg-white p-3 rounded shadow-sm">
+                        <span class="text-sm font-medium text-gray-700">Right Side Ads</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="hidden" name="show_hero_right_ad" value="0">
+                            <input type="checkbox" name="show_hero_right_ad" value="1" <?= ($settings['show_hero_right_ad'] ?? '1') == '1' ? 'checked' : '' ?> class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between bg-white p-3 rounded shadow-sm">
+                        <span class="text-sm font-medium text-gray-700">Bottom Ads</span>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="hidden" name="show_hero_bottom_ad" value="0">
+                            <input type="checkbox" name="show_hero_bottom_ad" value="1" <?= ($settings['show_hero_bottom_ad'] ?? '1') == '1' ? 'checked' : '' ?> class="sr-only peer">
+                            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
                     </div>
                 </div>
             </div>

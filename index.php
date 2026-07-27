@@ -23,33 +23,31 @@ try {
 $home_top_ads = array_filter($advertisements, function($ad) { 
     if ($ad['position'] != 'home_top') return false;
     $img = $ad['image_path'] ?? ($ad['image'] ?? '');
-    if (!$img) return false;
-    $img_path = ltrim(str_replace('../', '', $img), '/\\');
-    return file_exists(__DIR__ . '/' . $img_path);
+    return !empty($img);
 });
 
 $home_bottom_ads = array_filter($advertisements, function($ad) { 
-    if ($ad['position'] != 'bottom_banner') return false;
+    if ($ad['position'] != 'home_bottom') return false;
     $img = $ad['image_path'] ?? ($ad['image'] ?? '');
-    if (!$img) return false;
-    $img_path = ltrim(str_replace('../', '', $img), '/\\');
-    return file_exists(__DIR__ . '/' . $img_path);
+    return !empty($img);
 });
 
 $left_sidebar_ads = array_filter($advertisements, function($ad) { 
-    if ($ad['position'] != 'left_sidebar') return false;
+    if ($ad['position'] != 'left_side') return false;
     $img = $ad['image_path'] ?? ($ad['image'] ?? '');
-    if (!$img) return false;
-    $img_path = ltrim(str_replace('../', '', $img), '/\\');
-    return file_exists(__DIR__ . '/' . $img_path);
+    return !empty($img);
 });
 
 $right_sidebar_ads = array_filter($advertisements, function($ad) { 
-    if ($ad['position'] != 'right_sidebar') return false;
+    if ($ad['position'] != 'right_side') return false;
     $img = $ad['image_path'] ?? ($ad['image'] ?? '');
-    if (!$img) return false;
-    $img_path = ltrim(str_replace('../', '', $img), '/\\');
-    return file_exists(__DIR__ . '/' . $img_path);
+    return !empty($img);
+});
+
+$footer_ads = array_filter($advertisements, function($ad) { 
+    if ($ad['position'] != 'footer') return false;
+    $img = $ad['image_path'] ?? ($ad['image'] ?? '');
+    return !empty($img);
 });
 
 $is_logged_in = false;
@@ -131,17 +129,20 @@ include 'includes/header.php';
     <div class="container mx-auto px-4 relative z-20 w-full flex flex-col xl:flex-row gap-6">
         
         <!-- Left Ad Panel -->
+        <?php if (!isset($settings['show_hero_left_ad']) || $settings['show_hero_left_ad'] == '1'): ?>
         <div class="hidden xl:flex flex-col w-64 space-y-4 flex-shrink-0">
             <?php if (!empty($left_sidebar_ads)): ?>
                 <?php foreach($left_sidebar_ads as $ad): 
                     $img_path = ltrim(str_replace('../', '', $ad['image'] ?? $ad['image_path'] ?? ''), '/\\');
                 ?>
                     <?php if(!empty($ad['link'])): ?>
-                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block w-full hover:opacity-90 transition">
-                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-lg border border-gray-700">
+                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
+                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </a>
                     <?php else: ?>
-                        <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-lg border border-gray-700">
+                        <div class="relative w-full h-full min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
+                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
+                        </div>
                     <?php endif; ?>
                 <?php endforeach; ?>
             <?php else: ?>
@@ -154,6 +155,7 @@ include 'includes/header.php';
                 </div>
             <?php endif; ?>
         </div>
+        <?php endif; ?>
 
         <!-- Center Section (Content & Banner) -->
         <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-0 items-stretch bg-[#1a2942] rounded-2xl overflow-hidden shadow-2xl" data-aos="fade-up">
@@ -172,17 +174,20 @@ include 'includes/header.php';
         </div>
 
         <!-- Right Ad Panel -->
+        <?php if (!isset($settings['show_hero_right_ad']) || $settings['show_hero_right_ad'] == '1'): ?>
         <div class="hidden xl:flex flex-col w-64 space-y-4 flex-shrink-0">
             <?php if (!empty($right_sidebar_ads)): ?>
                 <?php foreach($right_sidebar_ads as $ad): 
                     $img_path = ltrim(str_replace('../', '', $ad['image'] ?? $ad['image_path'] ?? ''), '/\\');
                 ?>
                     <?php if(!empty($ad['link'])): ?>
-                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block w-full hover:opacity-90 transition">
-                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-lg border border-gray-700">
+                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
+                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </a>
                     <?php else: ?>
-                        <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-lg border border-gray-700">
+                        <div class="relative w-full h-full min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
+                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
+                        </div>
                     <?php endif; ?>
                 <?php endforeach; ?>
             <?php else: ?>
@@ -195,11 +200,13 @@ include 'includes/header.php';
                 </div>
             <?php endif; ?>
         </div>
+        <?php endif; ?>
         
         
     </div>
 
     <!-- Bottom Ad Panel (Moved into Hero Section) -->
+    <?php if (!isset($settings['show_hero_bottom_ad']) || $settings['show_hero_bottom_ad'] == '1'): ?>
     <div class="container mx-auto px-4 relative z-20 w-full mt-6">
         <div class="flex flex-wrap justify-center gap-4 w-full">
             <?php if (!empty($home_bottom_ads)): ?>
@@ -207,11 +214,13 @@ include 'includes/header.php';
                     $img_path = ltrim(str_replace('../', '', $ad['image'] ?? $ad['image_path'] ?? ''), '/\\');
                 ?>
                     <?php if(!empty($ad['link'])): ?>
-                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block w-full hover:opacity-90 transition">
-                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-lg border border-gray-700">
+                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-[150px] rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
+                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </a>
                     <?php else: ?>
-                        <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-lg border border-gray-700">
+                        <div class="relative w-full h-[150px] rounded shadow-lg border border-gray-700 overflow-hidden">
+                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
+                        </div>
                     <?php endif; ?>
                 <?php endforeach; ?>
             <?php else: ?>
@@ -225,6 +234,7 @@ include 'includes/header.php';
             <?php endif; ?>
         </div>
     </div>
+    <?php endif; ?>
 </section>
 
 
@@ -727,12 +737,12 @@ include 'includes/header.php';
     </div>
 </section>
 
-<?php if (!empty($home_bottom_ads) && (isset($settings['show_home_top_ads']) ? $settings['show_home_top_ads'] == '1' : false)): ?>
-<!-- Advertisements (Home Bottom) -->
+<?php if (!empty($footer_ads)): ?>
+<!-- Advertisements (Footer) -->
 <section class="py-8 bg-gray-50 border-t border-gray-200">
     <div class="container mx-auto px-4">
         <div class="flex flex-wrap justify-center gap-6 items-center">
-            <?php foreach($home_bottom_ads as $ad): ?>
+            <?php foreach($footer_ads as $ad): ?>
                 <?php 
                 $img_path = ltrim(str_replace('../', '', $ad['image_path'] ?? ($ad['image'] ?? '')), '/\\'); 
                 $img_src = 'image.php?file=' . urlencode($img_path);
