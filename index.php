@@ -561,38 +561,38 @@ include 'includes/header.php';
         </div>
         <div class="flex flex-wrap justify-center gap-4 mt-8" data-aos="fade-up" data-aos-delay="100">
             <a href="profiles.php?education=Doctorate"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
-                    class="fas fa-user-md mr-2 text-primary"></i> Doctors</a>
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                    class="fas fa-user-md mr-2 text-primary group-hover:text-white"></i> Doctors</a>
             <a href="profiles.php?education=Engineer"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
-                    class="fas fa-hard-hat mr-2 text-primary"></i> Engineers</a>
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                    class="fas fa-hard-hat mr-2 text-primary group-hover:text-white"></i> Engineers</a>
             <a href="profiles.php?education=MBA/MCA"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
-                    class="fas fa-user-graduate mr-2 text-primary"></i> MBA/MCA</a>
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                    class="fas fa-user-graduate mr-2 text-primary group-hover:text-white"></i> MBA/MCA</a>
             <a href="profiles.php?education=CA/CS"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
-                    class="fas fa-calculator mr-2 text-primary"></i> CA/CS</a>
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                    class="fas fa-calculator mr-2 text-primary group-hover:text-white"></i> CA/CS</a>
             <a href="profiles.php?occupation=Business"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
-                    class="fas fa-briefcase mr-2 text-primary"></i> Business</a>
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                    class="fas fa-briefcase mr-2 text-primary group-hover:text-white"></i> Business</a>
             <a href="profiles.php?occupation=Service"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
-                    class="fas fa-laptop-house mr-2 text-primary"></i> Service</a>
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                    class="fas fa-laptop-house mr-2 text-primary group-hover:text-white"></i> Service</a>
             <a href="profiles.php?nri=yes"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
-                    class="fas fa-plane mr-2 text-primary"></i> NRI</a>
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                    class="fas fa-plane mr-2 text-primary group-hover:text-white"></i> NRI</a>
             <a href="profiles.php?manglik=yes"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
-                    class="fas fa-om mr-2 text-primary"></i> Manglik</a>
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                    class="fas fa-om mr-2 text-primary group-hover:text-white"></i> Manglik</a>
             <a href="profiles.php?marital=Widow"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
-                    class="fas fa-user-alt-slash mr-2 text-primary"></i> Widow</a>
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                    class="fas fa-user-alt-slash mr-2 text-primary group-hover:text-white"></i> Widow</a>
             <a href="profiles.php?marital=Divorce"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
-                    class="fas fa-heart-broken mr-2 text-primary"></i> Divorcee</a>
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                    class="fas fa-heart-broken mr-2 text-primary group-hover:text-white"></i> Divorcee</a>
             <a href="profiles.php?marital=Widower"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center"><i
-                    class="fas fa-user-slash mr-2 text-primary"></i> Widower</a>
+                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                    class="fas fa-user-slash mr-2 text-primary group-hover:text-white"></i> Widower</a>
         </div>
     </div>
 </section>
