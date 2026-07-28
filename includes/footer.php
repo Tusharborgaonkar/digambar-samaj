@@ -30,15 +30,20 @@ if (isset($pdo)) {
     <section class="container mx-auto px-4 md:px-8 mt-12 mb-8">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-<?= count($footer_ads) > 4 ? 4 : (count($footer_ads) > 0 ? count($footer_ads) : 1) ?> gap-4">
             <?php foreach($footer_ads as $ad): 
-                $img_path = ltrim(str_replace('../', '', $ad['image']), '/\\');
+                $ad_img = $ad['image'] ?? $ad['image_path'] ?? '';
+                if (strpos($ad_img, 'data:image/') === 0) {
+                    $img_src = $ad_img;
+                } else {
+                    $img_src = 'image.php?file=' . urlencode(ltrim(str_replace('../', '', $ad_img), '/\\'));
+                }
             ?>
                 <div class="w-full flex justify-center items-center">
                     <?php if(!empty($ad['link'])): ?>
                         <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block w-full hover:opacity-90 transition">
-                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto object-contain max-h-48 rounded shadow-md border border-gray-200">
+                            <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto object-contain max-h-48 rounded shadow-md border border-gray-200">
                         </a>
                     <?php else: ?>
-                        <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto object-contain max-h-48 rounded shadow-md border border-gray-200">
+                        <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto object-contain max-h-48 rounded shadow-md border border-gray-200">
                     <?php endif; ?>
                 </div>
             <?php endforeach; ?>

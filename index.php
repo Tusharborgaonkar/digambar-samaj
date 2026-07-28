@@ -133,15 +133,20 @@ include 'includes/header.php';
         <div class="hidden xl:flex flex-col w-64 space-y-4 flex-shrink-0">
             <?php if (!empty($left_sidebar_ads)): ?>
                 <?php foreach($left_sidebar_ads as $ad): 
-                    $img_path = ltrim(str_replace('../', '', $ad['image'] ?? $ad['image_path'] ?? ''), '/\\');
+                    $ad_img = $ad['image'] ?? $ad['image_path'] ?? '';
+                    if (strpos($ad_img, 'data:image/') === 0) {
+                        $img_src = $ad_img;
+                    } else {
+                        $img_src = 'image.php?file=' . urlencode(ltrim(str_replace('../', '', $ad_img), '/\\'));
+                    }
                 ?>
                     <?php if(!empty($ad['link'])): ?>
                         <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
-                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
+                            <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </a>
                     <?php else: ?>
                         <div class="relative w-full h-full min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
-                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
+                            <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </div>
                     <?php endif; ?>
                 <?php endforeach; ?>
@@ -193,15 +198,20 @@ include 'includes/header.php';
         <div class="hidden xl:flex flex-col w-64 space-y-4 flex-shrink-0">
             <?php if (!empty($right_sidebar_ads)): ?>
                 <?php foreach($right_sidebar_ads as $ad): 
-                    $img_path = ltrim(str_replace('../', '', $ad['image'] ?? $ad['image_path'] ?? ''), '/\\');
+                    $ad_img = $ad['image'] ?? $ad['image_path'] ?? '';
+                    if (strpos($ad_img, 'data:image/') === 0) {
+                        $img_src = $ad_img;
+                    } else {
+                        $img_src = 'image.php?file=' . urlencode(ltrim(str_replace('../', '', $ad_img), '/\\'));
+                    }
                 ?>
                     <?php if(!empty($ad['link'])): ?>
                         <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
-                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
+                            <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </a>
                     <?php else: ?>
                         <div class="relative w-full h-full min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
-                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
+                            <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </div>
                     <?php endif; ?>
                 <?php endforeach; ?>
@@ -226,10 +236,15 @@ include 'includes/header.php';
         <div class="flex flex-wrap justify-center gap-4 w-full">
             <?php if (!empty($home_bottom_ads)): ?>
                 <?php foreach($home_bottom_ads as $ad): 
-                    $img_path = ltrim(str_replace('../', '', $ad['image'] ?? $ad['image_path'] ?? ''), '/\\');
+                    $ad_img = $ad['image'] ?? $ad['image_path'] ?? '';
+                    if (strpos($ad_img, 'data:image/') === 0) {
+                        $img_src = $ad_img;
+                    } else {
+                        $img_src = 'image.php?file=' . urlencode(ltrim(str_replace('../', '', $ad_img), '/\\'));
+                    }
                 ?>
                         <div class="relative w-full h-[150px] rounded shadow-lg border border-gray-700 overflow-hidden">
-                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
+                            <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </div>
                 <?php endforeach; ?>
             <?php else: ?>
@@ -414,12 +429,23 @@ include 'includes/header.php';
         <div class="flex flex-wrap justify-center gap-6 items-center">
             <?php foreach($home_top_ads as $ad): ?>
                 <?php 
-                $img_path = ltrim(str_replace('../', '', $ad['image_path'] ?? $ad['image']), '/\\'); 
-                $img_src = 'image.php?file=' . urlencode($img_path);
+                $ad_img = $ad['image'] ?? $ad['image_path'] ?? '';
+                if (strpos($ad_img, 'data:image/') === 0) {
+                    $img_src = $ad_img;
+                } else {
+                    $img_src = 'image.php?file=' . urlencode(ltrim(str_replace('../', '', $ad_img), '/\\'));
+                }
                 ?>
-                <a href="<?= htmlspecialchars($ad['link_url'] ?? $ad['link'] ?? '#') ?>" target="_blank" class="block w-full max-w-[295px] aspect-[2/3] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition bg-white">
-                    <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
-                </a>
+                <?php $ad_link = $ad['link_url'] ?? $ad['link'] ?? ''; ?>
+                <?php if(!empty($ad_link) && $ad_link !== '#'): ?>
+                    <a href="<?= htmlspecialchars($ad_link) ?>" target="_blank" class="block w-full max-w-[295px] aspect-[2/3] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition bg-white">
+                        <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
+                    </a>
+                <?php else: ?>
+                    <div class="block w-full max-w-[295px] aspect-[2/3] rounded-xl overflow-hidden shadow-md transition bg-white">
+                        <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
+                    </div>
+                <?php endif; ?>
             <?php endforeach; ?>
         </div>
     </div>
@@ -758,12 +784,23 @@ include 'includes/header.php';
         <div class="flex flex-wrap justify-center gap-6 items-center">
             <?php foreach($footer_ads as $ad): ?>
                 <?php 
-                $img_path = ltrim(str_replace('../', '', $ad['image_path'] ?? ($ad['image'] ?? '')), '/\\'); 
-                $img_src = 'image.php?file=' . urlencode($img_path);
+                $ad_img = $ad['image'] ?? $ad['image_path'] ?? '';
+                if (strpos($ad_img, 'data:image/') === 0) {
+                    $img_src = $ad_img;
+                } else {
+                    $img_src = 'image.php?file=' . urlencode(ltrim(str_replace('../', '', $ad_img), '/\\'));
+                }
                 ?>
-                <a href="<?= htmlspecialchars($ad['link'] ?? '#') ?>" target="_blank" class="block w-full max-w-[295px] aspect-[2/3] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition bg-white">
-                    <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
-                </a>
+                <?php $ad_link = $ad['link'] ?? ''; ?>
+                <?php if(!empty($ad_link) && $ad_link !== '#'): ?>
+                    <a href="<?= htmlspecialchars($ad_link) ?>" target="_blank" class="block w-full max-w-[295px] aspect-[2/3] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition bg-white">
+                        <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
+                    </a>
+                <?php else: ?>
+                    <div class="block w-full max-w-[295px] aspect-[2/3] rounded-xl overflow-hidden shadow-md transition bg-white">
+                        <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
+                    </div>
+                <?php endif; ?>
             <?php endforeach; ?>
         </div>
     </div>

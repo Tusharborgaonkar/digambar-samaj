@@ -339,14 +339,19 @@ $site_tagline = htmlspecialchars($settings['home_tagline'] ?? '(established in 2
     <div class="hidden xl:block fixed left-0 top-1/2 transform -translate-y-1/2 z-40 w-[160px] max-h-[80vh] overflow-y-auto" style="padding-left: 10px;">
         <div class="flex flex-col space-y-4">
             <?php foreach($left_ads as $ad): 
-                $img_path = ltrim(str_replace('../', '', $ad['image']), '/\\');
+                $ad_img = $ad['image'] ?? $ad['image_path'] ?? '';
+                if (strpos($ad_img, 'data:image/') === 0) {
+                    $img_src = $ad_img;
+                } else {
+                    $img_src = 'image.php?file=' . urlencode(ltrim(str_replace('../', '', $ad_img), '/\\'));
+                }
             ?>
                 <?php if(!empty($ad['link'])): ?>
                     <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block w-full hover:opacity-90 transition">
-                        <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-md border border-gray-200">
+                        <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-md border border-gray-200">
                     </a>
                 <?php else: ?>
-                    <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-md border border-gray-200">
+                    <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-md border border-gray-200">
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
@@ -358,14 +363,19 @@ $site_tagline = htmlspecialchars($settings['home_tagline'] ?? '(established in 2
     <div class="hidden xl:block fixed right-0 top-1/2 transform -translate-y-1/2 z-40 w-[160px] max-h-[80vh] overflow-y-auto" style="padding-right: 10px;">
         <div class="flex flex-col space-y-4">
             <?php foreach($right_ads as $ad): 
-                $img_path = ltrim(str_replace('../', '', $ad['image']), '/\\');
+                $ad_img = $ad['image'] ?? $ad['image_path'] ?? '';
+                if (strpos($ad_img, 'data:image/') === 0) {
+                    $img_src = $ad_img;
+                } else {
+                    $img_src = 'image.php?file=' . urlencode(ltrim(str_replace('../', '', $ad_img), '/\\'));
+                }
             ?>
                 <?php if(!empty($ad['link'])): ?>
                     <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block w-full hover:opacity-90 transition">
-                        <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-md border border-gray-200">
+                        <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-md border border-gray-200">
                     </a>
                 <?php else: ?>
-                    <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-md border border-gray-200">
+                    <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="w-full h-auto rounded shadow-md border border-gray-200">
                 <?php endif; ?>
             <?php endforeach; ?>
         </div>
