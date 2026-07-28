@@ -34,31 +34,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_news'])) {
 
     // Handle new image upload
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = '../uploads/news/';
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0755, true);
-        }
+        $image_data = file_get_contents($_FILES['photo']['tmp_name']);
+        $mime_type = mime_content_type($_FILES['photo']['tmp_name']);
         
-        $file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
-        $allowed_exts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        $allowed_mimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         
-        if (in_array($file_ext, $allowed_exts)) {
-            $filename = uniqid() . '.' . $file_ext;
-            $target_file = $upload_dir . $filename;
+        if ($image_data !== false && in_array($mime_type, $allowed_mimes)) {
+            $base64 = base64_encode($image_data);
+            $db_path = 'data:' . $mime_type . ';base64,' . $base64;
             
-            if (move_uploaded_file($_FILES['photo']['tmp_name'], $target_file)) {
-                $db_path = 'uploads/news/' . $filename;
-                
-                // Delete old image if it exists
-                if ($news['image'] && file_exists('../' . $news['image'])) {
-                    unlink('../' . $news['image']);
-                }
-                
-                $update_image_sql = ", image = ?";
-                $params[] = $db_path;
-            } else {
-                $error = "Failed to move uploaded file.";
+            // Delete old image if it exists on disk
+            if ($news['image'] && strpos($news['image'], 'data:image/') !== 0 && file_exists('../' . $news['image'])) {
+                unlink('../' . $news['image']);
             }
+            
+            $update_image_sql = ", image = ?";
+            $params[] = $db_path;
         } else {
             $error = "Invalid file type. Only JPG, PNG, GIF, and WebP are allowed.";
         }
@@ -103,7 +94,12 @@ include 'includes/sidebar.php';
                 <label class="block text-sm font-medium text-gray-700 mb-1">Update Image (Optional)</label>
                 <input type="file" name="photo" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white">
                 <p class="text-xs text-gray-500 mt-1">Leave empty to keep the current image.</p>
-                <?php if($news['image'] && file_exists('../' . ltrim(str_replace('../', '', $news['image']), '/'))): ?>
+                <?php if($news['image'] && strpos($news['image'], 'data:image/') === 0): ?>
+                    <div class="mt-2">
+                        <p class="text-xs font-semibold mb-1">Current Image:</p>
+                        <img src="<?= $news['image'] ?>" alt="Current Image" class="h-20 rounded border">
+                    </div>
+                <?php elseif($news['image'] && file_exists('../' . ltrim(str_replace('../', '', $news['image']), '/'))): ?>
                     <div class="mt-2">
                         <p class="text-xs font-semibold mb-1">Current Image:</p>
                         <img src="../image.php?file=<?= urlencode(ltrim(str_replace('../', '', $news['image']), '/')) ?>" alt="Current Image" class="h-20 rounded border">

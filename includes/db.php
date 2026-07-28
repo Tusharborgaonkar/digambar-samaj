@@ -47,6 +47,14 @@ try {
     try {
         $pdo->exec("ALTER TABLE users ADD COLUMN payment_status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending' AFTER payment_transaction_id");
     } catch(PDOException $e) { /* Ignore if exists */ }
+    
+    // Auto-migrate image columns to support Base64 strings
+    try {
+        $pdo->exec("ALTER TABLE advertisements MODIFY COLUMN image LONGTEXT NULL");
+    } catch(PDOException $e) { /* Ignore if table doesn't exist yet */ }
+    try {
+        $pdo->exec("ALTER TABLE news MODIFY COLUMN image LONGTEXT NULL");
+    } catch(PDOException $e) { /* Ignore if table doesn't exist yet */ }
 
     // Note: The database schema is managed externally via database.sql
     // We no longer attempt to auto-create tables on connection to improve performance

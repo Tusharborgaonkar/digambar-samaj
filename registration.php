@@ -946,7 +946,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <!-- QR Code Display -->
                         <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 flex flex-col items-center">
                             <h3 class="font-bold text-gray-700 mb-2">Payment QR Code</h3>
-                            <img src="image.php?file=<?= urlencode($payment_qr_code) ?>&t=<?= time() ?>" alt="Payment QR Code" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover bg-white">
+                            <?php if (strpos($payment_qr_code, 'data:image/') === 0): ?>
+                                <img src="<?= $payment_qr_code ?>" alt="Payment QR Code" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover bg-white">
+                            <?php else: ?>
+                                <img src="image.php?file=<?= urlencode($payment_qr_code) ?>&t=<?= time() ?>" alt="Payment QR Code" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover bg-white">
+                            <?php endif; ?>
                             <p class="text-xs text-gray-500 mt-2 text-center">Scan to pay securely.</p>
                         </div>
 

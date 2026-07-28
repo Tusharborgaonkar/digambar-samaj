@@ -172,8 +172,12 @@ include 'includes/header.php';
                 <?php
                 $hero_img_src = 'assets/images/gallery/TEMP1.jpg';
                 if (!empty($settings['hero_banner'])) {
-                    $clean_banner = ltrim(str_replace('../', '', $settings['hero_banner']), '/\\');
-                    $hero_img_src = 'image.php?file=' . urlencode($clean_banner);
+                    if (strpos($settings['hero_banner'], 'data:image/') === 0) {
+                        $hero_img_src = $settings['hero_banner'];
+                    } else {
+                        $clean_banner = ltrim(str_replace('../', '', $settings['hero_banner']), '/\\');
+                        $hero_img_src = 'image.php?file=' . urlencode($clean_banner);
+                    }
                 }
                 ?>
                 <img src="<?= $hero_img_src ?>" alt="Matrimony Hero" class="w-full h-full object-contain max-h-[500px]">
@@ -382,12 +386,17 @@ include 'includes/header.php';
         </p>
         <?php 
         $payment_qr_code = $settings['payment_qr_code'] ?? 'assets/images/qr_code.jpg';
-        $clean_qr_code = ltrim(str_replace('../', '', $payment_qr_code), '/\\');
-        $qr_exists = !empty($clean_qr_code) && file_exists(__DIR__ . '/' . $clean_qr_code);
+        $is_base64_qr = strpos($payment_qr_code, 'data:image/') === 0;
+        $clean_qr_code = $is_base64_qr ? '' : ltrim(str_replace('../', '', $payment_qr_code), '/\\');
+        $qr_exists = $is_base64_qr || (!empty($clean_qr_code) && file_exists(__DIR__ . '/' . $clean_qr_code));
         ?>
         <div class="mt-4 flex justify-center">
             <?php if ($qr_exists): ?>
-                <img src="image.php?file=<?= urlencode($clean_qr_code) ?>" alt="Payment QR" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover">
+                <?php if ($is_base64_qr): ?>
+                    <img src="<?= $payment_qr_code ?>" alt="Payment QR" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover">
+                <?php else: ?>
+                    <img src="image.php?file=<?= urlencode($clean_qr_code) ?>" alt="Payment QR" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover">
+                <?php endif; ?>
             <?php else: ?>
                 <img src="https://placehold.co/200x200/fef08a/854d0e?text=QR+Code+Not+Found" alt="Payment QR Placeholder" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover">
             <?php endif; ?>

@@ -24,23 +24,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_news'])) {
     $db_path = null;
 
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = '../uploads/news/';
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0755, true);
-        }
+        $image_data = file_get_contents($_FILES['photo']['tmp_name']);
+        $mime_type = mime_content_type($_FILES['photo']['tmp_name']);
         
-        $file_ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
-        $allowed_exts = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        $allowed_mimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         
-        if (in_array($file_ext, $allowed_exts)) {
-            $filename = uniqid() . '.' . $file_ext;
-            $target_file = $upload_dir . $filename;
-            
-            if (move_uploaded_file($_FILES['photo']['tmp_name'], $target_file)) {
-                $db_path = 'uploads/news/' . $filename;
-            } else {
-                $error = "Failed to move uploaded file.";
-            }
+        if ($image_data !== false && in_array($mime_type, $allowed_mimes)) {
+            $base64 = base64_encode($image_data);
+            $db_path = 'data:' . $mime_type . ';base64,' . $base64;
         } else {
             $error = "Invalid file type. Only JPG, PNG, GIF, and WebP are allowed.";
         }
@@ -155,7 +146,9 @@ try {
                     ?>
                         <tr class="border-b border-gray-100 hover:bg-gray-50">
                             <td class="p-3">
-                                <?php if($clean_path && file_exists('../' . $clean_path)): ?>
+                                <?php if($news['image'] && strpos($news['image'], 'data:image/') === 0): ?>
+                                    <img src="<?= $news['image'] ?>" alt="img" class="w-16 h-12 object-cover rounded">
+                                <?php elseif($clean_path && file_exists('../' . $clean_path)): ?>
                                     <img src="../image.php?file=<?= urlencode($clean_path) ?>" alt="img" class="w-16 h-12 object-cover rounded">
                                 <?php else: ?>
                                     <div class="w-16 h-12 bg-gray-200 rounded flex items-center justify-center text-gray-400 text-xs">No img</div>

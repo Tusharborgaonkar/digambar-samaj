@@ -60,17 +60,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_ad'])) {
     
     // Check if new image is uploaded
     if (isset($_FILES['ad_image']) && $_FILES['ad_image']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = '../uploads/ads/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
-        $fileExt = strtolower(pathinfo($_FILES['ad_image']['name'], PATHINFO_EXTENSION));
-        $fileName = 'ad_' . time() . '_' . uniqid() . '.' . $fileExt;
-        $targetPath = $uploadDir . $fileName;
+        $image_data = file_get_contents($_FILES['ad_image']['tmp_name']);
+        $mime_type = mime_content_type($_FILES['ad_image']['tmp_name']);
         
-        if (move_uploaded_file($_FILES['ad_image']['tmp_name'], $targetPath)) {
-            chmod($targetPath, 0644);
-            $dbPath = 'uploads/ads/' . $fileName;
+        if ($image_data !== false && strpos($mime_type, 'image/') === 0) {
+            $base64 = base64_encode($image_data);
+            $dbPath = 'data:' . $mime_type . ';base64,' . $base64;
             
             // Delete old image
             $stmt = $pdo->prepare("SELECT image FROM advertisements WHERE id = ?");
@@ -99,23 +94,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['ad_image'])) {
     $position = $_POST['position'] ?? 'home_top';
     
     if (isset($_FILES['ad_image']) && $_FILES['ad_image']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = '../uploads/ads/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
+        $image_data = file_get_contents($_FILES['ad_image']['tmp_name']);
+        $mime_type = mime_content_type($_FILES['ad_image']['tmp_name']);
         
-        $fileExt = strtolower(pathinfo($_FILES['ad_image']['name'], PATHINFO_EXTENSION));
-        $fileName = 'ad_' . time() . '_' . uniqid() . '.' . $fileExt;
-        $targetPath = $uploadDir . $fileName;
-        
-        if (move_uploaded_file($_FILES['ad_image']['tmp_name'], $targetPath)) {
-            $dbPath = 'uploads/ads/' . $fileName;
+        if ($image_data !== false && strpos($mime_type, 'image/') === 0) {
+            $base64 = base64_encode($image_data);
+            $dbPath = 'data:' . $mime_type . ';base64,' . $base64;
             $stmt = $pdo->prepare("INSERT INTO advertisements (title, link, image, position) VALUES (?, ?, ?, ?)");
             $stmt->execute([$title, $link, $dbPath, $position]);
             header("Location: advertisement.php?msg=uploaded");
             exit;
         } else {
-            $error = "Failed to upload file. Error Code: " . $_FILES['ad_image']['error'];
+            $error = "Failed to upload file.";
         }
     }
 }
@@ -159,8 +149,12 @@ include 'includes/sidebar.php';
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
         <div class="h-48 bg-gray-200 relative overflow-hidden group">
             <?php 
-            $img_path = ltrim(str_replace('../', '', $ad['image']), '/\\');
-            $img_src = '../image.php?file=' . urlencode($img_path);
+            if (strpos($ad['image'], 'data:image/') === 0) {
+                $img_src = $ad['image'];
+            } else {
+                $img_path = ltrim(str_replace('../', '', $ad['image']), '/\\');
+                $img_src = '../image.php?file=' . urlencode($img_path);
+            }
             ?>
             <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">

@@ -22,30 +22,22 @@ try {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Handle File Uploads
     if (isset($_FILES['payment_qr_code_file']) && $_FILES['payment_qr_code_file']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = __DIR__ . '/../uploads/';
-        if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
-        
-        $ext = pathinfo($_FILES['payment_qr_code_file']['name'], PATHINFO_EXTENSION);
-        $filename = 'qr_code_' . time() . '.' . $ext;
-        $destination = $upload_dir . $filename;
-        
-        if (move_uploaded_file($_FILES['payment_qr_code_file']['tmp_name'], $destination)) {
-            $qr_path = 'uploads/' . $filename; // Relative to front-end root
+        $image_data = file_get_contents($_FILES['payment_qr_code_file']['tmp_name']);
+        $mime_type = mime_content_type($_FILES['payment_qr_code_file']['tmp_name']);
+        if ($image_data !== false && strpos($mime_type, 'image/') === 0) {
+            $base64 = base64_encode($image_data);
+            $qr_path = 'data:' . $mime_type . ';base64,' . $base64;
             $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?");
             $stmt->execute(['payment_qr_code', $qr_path, $qr_path]);
         }
     }
 
     if (isset($_FILES['hero_banner_file']) && $_FILES['hero_banner_file']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = __DIR__ . '/../uploads/';
-        if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
-        
-        $ext = pathinfo($_FILES['hero_banner_file']['name'], PATHINFO_EXTENSION);
-        $filename = 'hero_banner_' . time() . '.' . $ext;
-        $destination = $upload_dir . $filename;
-        
-        if (move_uploaded_file($_FILES['hero_banner_file']['tmp_name'], $destination)) {
-            $hero_path = 'uploads/' . $filename; // Relative to front-end root
+        $image_data = file_get_contents($_FILES['hero_banner_file']['tmp_name']);
+        $mime_type = mime_content_type($_FILES['hero_banner_file']['tmp_name']);
+        if ($image_data !== false && strpos($mime_type, 'image/') === 0) {
+            $base64 = base64_encode($image_data);
+            $hero_path = 'data:' . $mime_type . ';base64,' . $base64;
             $stmt = $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE setting_value = ?");
             $stmt->execute(['hero_banner', $hero_path, $hero_path]);
         }
