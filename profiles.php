@@ -69,7 +69,9 @@ if (!$is_approved) {
 $where = ["status IN ('approved', 'pending')", "is_public = 1"];
 $params = [];
 
-$genderFilter = $_GET['gender'] ?? '';
+$genderFilterRaw = $_GET['gender'] ?? '';
+$genderFilter = ucfirst(strtolower(trim($genderFilterRaw)));
+
 if ($genderFilter === 'Girl' || $genderFilter === 'Boy') {
     $genderVal = ($genderFilter === 'Girl') ? 'Female' : 'Male';
     $where[] = "gender = ?";

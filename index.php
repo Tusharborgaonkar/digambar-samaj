@@ -289,8 +289,9 @@ include 'includes/header.php';
                             <label class="block text-sm font-semibold text-gray-700 mb-1">Looking For</label>
                             <select name="gender"
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
-                                <option value="girl">Girl (Female)</option>
-                                <option value="boy">Boy (Male)</option>
+                                <option value="">Both</option>
+                                <option value="Girl">Girl (Female)</option>
+                                <option value="Boy">Boy (Male)</option>
                             </select>
                         </div>
                         <!-- Age Group -->
