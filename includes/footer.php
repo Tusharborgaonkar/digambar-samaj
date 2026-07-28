@@ -63,7 +63,7 @@ if (isset($pdo)) {
                     <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
                     <ul class="space-y-2">
                         <li><a href="about.php" class="text-gray-300 hover:text-accent transition">About Us</a></li>
-                        <li><a href="community.php" class="text-gray-300 hover:text-accent transition">Community</a></li>
+
                         <li><a href="success-stories.php" class="text-gray-300 hover:text-accent transition">Success Stories</a></li>
                     </ul>
                 </div>
