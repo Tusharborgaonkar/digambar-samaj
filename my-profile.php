@@ -27,8 +27,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_payment'])) {
             $dest = $uploadDir . $newFileName;
             
             if (move_uploaded_file($_FILES['payment_screenshot']['tmp_name'], $dest)) {
-                $stmt = $pdo->prepare("UPDATE users SET payment_screenshot = ?, payment_transaction_id = ?, payment_status = 'pending' WHERE id = ?");
-                $stmt->execute([$dest, $payment_txn_id, $user_id]);
+                // Update users table with try-catch fallback
+                try {
+                    $stmt = $pdo->prepare("UPDATE users SET payment_screenshot = ?, payment_transaction_id = ?, payment_status = 'pending' WHERE id = ?");
+                    $stmt->execute([$dest, $payment_txn_id, $user_id]);
+                } catch (PDOException $e) {
+                    $stmt = $pdo->prepare("UPDATE users SET payment_screenshot = ? WHERE id = ?");
+                    $stmt->execute([$dest, $user_id]);
+                }
 
                 // Insert into payments table
                 $stmtUser = $pdo->prepare("SELECT * FROM users WHERE id = ?");
@@ -36,20 +42,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_payment'])) {
                 $userRecord = $stmtUser->fetch();
                 if ($userRecord) {
                     $address = trim(!empty($userRecord['current_address']) ? $userRecord['current_address'] : ($userRecord['permanent_address'] ?? ''));
-                    $stmtPay = $pdo->prepare("INSERT INTO payments (user_id, full_name, phone_number, email, address, dob, transaction_id, payment_screenshot, payment_method, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Screenshot', 'pending')");
-                    $stmtPay->execute([$user_id, $userRecord['full_name'], $userRecord['mobile'], $userRecord['email'], $address, $userRecord['birth_date'], $payment_txn_id, $dest]);
+                    try {
+                        $stmtPay = $pdo->prepare("INSERT INTO payments (user_id, full_name, phone_number, email, address, dob, transaction_id, payment_screenshot, payment_method, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Screenshot', 'pending')");
+                        $stmtPay->execute([$user_id, $userRecord['full_name'], $userRecord['mobile'], $userRecord['email'], $address, $userRecord['birth_date'], $payment_txn_id, $dest]);
+                    } catch (PDOException $e) {
+                        $stmtPayFallback = $pdo->prepare("INSERT INTO payments (user_id, transaction_id, payment_screenshot, payment_method, status) VALUES (?, ?, ?, 'Screenshot', 'pending')");
+                        $stmtPayFallback->execute([$user_id, $payment_txn_id, $dest]);
+                    }
                 }
 
-                echo "<script>alert('Payment screenshot uploaded successfully!'); window.location.href='my-profile.php#payment-upload';</script>";
-                exit;
+                // Show SweetAlert and stay on page (NO exit, NO window.location.href)
+                echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: 'Payment screenshot uploaded successfully!',
+                            timer: 3000,
+                            showConfirmButton: false
+                        });
+                    });
+                </script>";
             } else {
-                echo "<script>alert('Failed to move uploaded file.');</script>";
+                echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to move uploaded file.' });
+                    });
+                </script>";
             }
         } else {
-            echo "<script>alert('Invalid file type. Only JPG, PNG, and PDF are allowed.');</script>";
+            echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({ icon: 'error', title: 'Invalid File', text: 'Only JPG, PNG, and PDF are allowed.' });
+                });
+            </script>";
         }
     } else {
-        echo "<script>alert('Please select a valid file.');</script>";
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire({ icon: 'warning', title: 'Oops...', text: 'Please select a valid file.' });
+            });
+        </script>";
     }
 }
 
