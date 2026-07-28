@@ -75,7 +75,7 @@ include 'includes/header.php';
     class="fixed inset-0 z-[9999] flex items-center justify-center bg-white transition-opacity duration-500">
     <div class="flex flex-col items-center">
         <!-- Spinner -->
-        <div class="relative w-20 h-20">
+        <div class="relative w-16 h-16 sm:w-20 sm:h-20">
             <div class="absolute inset-0 rounded-full border-4 border-gray-100"></div>
             <div
                 class="absolute inset-0 rounded-full border-4 border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-spin">
@@ -86,8 +86,8 @@ include 'includes/header.php';
             </div>
         </div>
         <!-- Logo / Brand Text -->
-        <div class="mt-5 flex flex-col items-center">
-            <h2 class="text-2xl font-bold text-primary tracking-wide">Jain Digambar</h2>
+        <div class="mt-5 flex flex-col items-center px-4 text-center">
+            <h2 class="text-xl sm:text-2xl font-bold text-primary tracking-wide">Jain Digambar</h2>
             <span class="text-xs text-secondary font-semibold tracking-widest uppercase mt-1">Matrimony</span>
         </div>
     </div>
@@ -123,14 +123,17 @@ include 'includes/header.php';
 </script>
 
 <!-- Hero Section (3-Column Layout) -->
-<section class="relative min-h-[100vw] md:min-h-[85vh] flex flex-col justify-start items-center overflow-hidden bg-gray-900 pt-4 pb-8">
+<section class="relative flex flex-col justify-start items-center overflow-hidden bg-gray-900 pt-4 pb-8 md:min-h-[85vh]">
     <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-primary/20 z-0"></div>
 
     <div class="container mx-auto px-4 relative z-20 w-full flex flex-col xl:flex-row gap-6">
         
+        <!-- Left + Right Ads wrapper: 2-col row on mobile/tablet, becomes plain flex children (sidebars) on xl -->
+        <div class="grid grid-cols-2 gap-4 xl:contents order-2 xl:order-none">
+
         <!-- Left Ad Panel -->
         <?php if (!isset($settings['show_hero_left_ad']) || $settings['show_hero_left_ad'] == '1'): ?>
-        <div class="hidden xl:flex flex-col w-64 space-y-4 flex-shrink-0">
+        <div class="flex flex-col w-full xl:w-64 space-y-4 flex-shrink-0 xl:order-1">
             <?php if (!empty($left_sidebar_ads)): ?>
                 <?php foreach($left_sidebar_ads as $ad): 
                     $ad_img = $ad['image'] ?? $ad['image_path'] ?? '';
@@ -141,21 +144,21 @@ include 'includes/header.php';
                     }
                 ?>
                     <?php if(!empty($ad['link'])): ?>
-                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
+                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[160px] sm:min-h-[220px] xl:min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
                             <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </a>
                     <?php else: ?>
-                        <div class="relative w-full h-full min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
+                        <div class="relative w-full h-full min-h-[160px] sm:min-h-[220px] xl:min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
                             <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </div>
                     <?php endif; ?>
                 <?php endforeach; ?>
             <?php else: ?>
                 <!-- Unsplash Placeholder Ad -->
-                <div class="relative w-full h-full min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden group">
+                <div class="relative w-full h-full min-h-[160px] sm:min-h-[220px] xl:min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden group">
                     <img src="https://images.unsplash.com/photo-1583939000148-f75e1140984f?auto=format&fit=crop&w=400&q=80" alt="Advertise" class="absolute inset-0 w-full h-full object-cover">
                     <div class="absolute inset-0 flex items-center justify-center bg-black/40">
-                        <span class="text-white font-bold text-2xl tracking-widest uppercase">Advertise</span>
+                        <span class="text-white font-bold text-base sm:text-xl xl:text-2xl tracking-widest uppercase">Advertise</span>
                     </div>
                 </div>
             <?php endif; ?>
@@ -163,21 +166,21 @@ include 'includes/header.php';
         <?php endif; ?>
 
         <!-- Center Section (Content & Banner) -->
-        <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-0 items-stretch bg-[#1a2942] rounded-2xl overflow-hidden shadow-2xl" data-aos="fade-up">
-            <div class="flex flex-col justify-between p-8 md:p-12 text-left h-full">
-                <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight">
+        <div class="flex-grow w-full col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-0 items-stretch bg-[#1a2942] rounded-2xl overflow-hidden shadow-2xl order-1 xl:order-2 min-h-[240px] sm:min-h-[300px] md:min-h-[340px]" data-aos="fade-up">
+            <div class="flex flex-col justify-center p-4 sm:p-6 md:p-10 lg:p-12 text-center sm:text-left h-full">
+                <h2 class="text-base sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight">
                     <?php 
                         $hero_h = $settings['hero_heading'] ?? "The most trusted\nmatrimony\nservice for\nDigambar Jain!";
                         $hero_h = str_ireplace(['<br>', '<br/>', '<br />'], "\n", $hero_h);
                         echo nl2br(htmlspecialchars($hero_h));
                     ?>
                 </h2>
-                <p class="text-base md:text-lg text-gray-300 leading-relaxed max-w-xl mt-8">
+                <p class="hidden sm:block text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed max-w-xl mt-4 sm:mt-6 md:mt-8">
                     <?= nl2br(htmlspecialchars($settings['hero_description'] ?? 'This website is created only for the Digambar Jain community to help eligible young men and women of the entire Digambar Jain society find their suitable life partner.')) ?>
                 </p>
             </div>
             
-            <div class="relative w-full h-full min-h-[300px] flex items-center justify-center bg-[#1a2942] p-4">
+            <div class="relative w-full h-full min-h-[140px] sm:min-h-[220px] md:min-h-[300px] flex items-center justify-center bg-[#1a2942] p-2 sm:p-4">
                 <?php
                 $hero_img_src = 'assets/images/gallery/TEMP1.jpg';
                 if (!empty($settings['hero_banner'])) {
@@ -189,13 +192,13 @@ include 'includes/header.php';
                     }
                 }
                 ?>
-                <img src="<?= $hero_img_src ?>" alt="Matrimony Hero" class="w-full h-full object-contain max-h-[500px]">
+                <img src="<?= $hero_img_src ?>" alt="Matrimony Hero" class="w-full h-full object-contain max-h-[180px] sm:max-h-[280px] md:max-h-[350px] lg:max-h-[500px]">
             </div>
         </div>
 
         <!-- Right Ad Panel -->
         <?php if (!isset($settings['show_hero_right_ad']) || $settings['show_hero_right_ad'] == '1'): ?>
-        <div class="hidden xl:flex flex-col w-64 space-y-4 flex-shrink-0">
+        <div class="flex flex-col w-full xl:w-64 space-y-4 flex-shrink-0 xl:order-3">
             <?php if (!empty($right_sidebar_ads)): ?>
                 <?php foreach($right_sidebar_ads as $ad): 
                     $ad_img = $ad['image'] ?? $ad['image_path'] ?? '';
@@ -206,28 +209,30 @@ include 'includes/header.php';
                     }
                 ?>
                     <?php if(!empty($ad['link'])): ?>
-                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
+                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[160px] sm:min-h-[220px] xl:min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
                             <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </a>
                     <?php else: ?>
-                        <div class="relative w-full h-full min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
+                        <div class="relative w-full h-full min-h-[160px] sm:min-h-[220px] xl:min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
                             <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </div>
                     <?php endif; ?>
                 <?php endforeach; ?>
             <?php else: ?>
                 <!-- Unsplash Placeholder Ad -->
-                <div class="relative w-full h-full min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden group">
+                <div class="relative w-full h-full min-h-[160px] sm:min-h-[220px] xl:min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden group">
                     <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=400&q=80" alt="Advertise" class="absolute inset-0 w-full h-full object-cover">
                     <div class="absolute inset-0 flex items-center justify-center bg-black/40">
-                        <span class="text-white font-bold text-2xl tracking-widest uppercase">Advertise</span>
+                        <span class="text-white font-bold text-base sm:text-xl xl:text-2xl tracking-widest uppercase">Advertise</span>
                     </div>
                 </div>
             <?php endif; ?>
         </div>
         <?php endif; ?>
-        
-        
+
+        </div>
+        <!-- /Left + Right Ads wrapper -->
+
     </div>
 
     <!-- Bottom Ad Panel (Moved into Hero Section) -->
@@ -243,16 +248,16 @@ include 'includes/header.php';
                         $img_src = 'image.php?file=' . urlencode(ltrim(str_replace('../', '', $ad_img), '/\\'));
                     }
                 ?>
-                        <div class="relative w-full h-[150px] rounded shadow-lg border border-gray-700 overflow-hidden">
+                        <div class="relative w-full h-[100px] sm:h-[130px] md:h-[150px] rounded shadow-lg border border-gray-700 overflow-hidden">
                             <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </div>
                 <?php endforeach; ?>
             <?php else: ?>
                 <!-- Unsplash Placeholder Ad -->
-                <div class="relative w-full h-[150px] rounded shadow-lg border border-gray-700 overflow-hidden group">
+                <div class="relative w-full h-[100px] sm:h-[130px] md:h-[150px] rounded shadow-lg border border-gray-700 overflow-hidden group">
                     <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80" alt="Advertise" class="absolute inset-0 w-full h-full object-cover">
                     <div class="absolute inset-0 flex items-center justify-center bg-black/40">
-                        <span class="text-white font-bold text-3xl tracking-widest uppercase">Advertise</span>
+                        <span class="text-white font-bold text-xl sm:text-2xl md:text-3xl tracking-widest uppercase">Advertise</span>
                     </div>
                 </div>
             <?php endif; ?>
@@ -264,26 +269,26 @@ include 'includes/header.php';
 
 
 <!-- Quick Search Section -->
-<section class="bg-light relative z-20 mt-36">
-    <div class="container mx-auto px-4 -mt-16 md:-mt-24 mb-12">
+<section class="bg-light relative z-20 mt-8 sm:mt-16 md:mt-24 lg:mt-36">
+    <div class="container mx-auto px-4 -mt-4 sm:-mt-10 md:-mt-16 lg:-mt-24 mb-12">
         <div id="quick-search"
-            class="bg-white bg-opacity-95 p-6 rounded-xl shadow-2xl max-w-6xl mx-auto backdrop-blur-sm border-t-4 border-primary"
+            class="bg-white bg-opacity-95 p-4 sm:p-6 rounded-xl shadow-2xl max-w-6xl mx-auto backdrop-blur-sm border-t-4 border-primary"
             data-aos="fade-up" data-aos-delay="200">
-            <h3 class="text-xl font-bold text-dark mb-4 border-b pb-2"><i
+            <h3 class="text-lg sm:text-xl font-bold text-dark mb-4 border-b pb-2"><i
                     class="fas fa-search text-primary mr-2"></i>Quick Search</h3>
             <?php if (!$is_logged_in): ?>
                 <div class="text-center py-6">
-                    <p class="text-lg text-gray-700 mb-4">Please login or register to search profiles.</p>
-                    <a href="login.php" class="inline-block bg-primary text-white px-8 py-3 rounded-md font-bold shadow-md hover:bg-opacity-90 transition"><i class="fas fa-sign-in-alt mr-2"></i>Login to Search</a>
+                    <p class="text-base sm:text-lg text-gray-700 mb-4">Please login or register to search profiles.</p>
+                    <a href="login.php" class="inline-block bg-primary text-white px-6 sm:px-8 py-3 rounded-md font-bold shadow-md hover:bg-opacity-90 transition"><i class="fas fa-sign-in-alt mr-2"></i>Login to Search</a>
                 </div>
             <?php elseif (!$is_approved): ?>
                 <div class="text-center py-6">
-                    <p class="text-xl text-yellow-600 font-bold mb-2"><i class="fas fa-clock mr-2"></i>Profile Pending Approval</p>
+                    <p class="text-lg sm:text-xl text-yellow-600 font-bold mb-2"><i class="fas fa-clock mr-2"></i>Profile Pending Approval</p>
                     <p class="text-gray-700">Your profile is pending approval. Search will be available after admin approval.</p>
                 </div>
             <?php else: ?>
                 <form action="profiles.php" method="GET">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                         <!-- Looking For -->
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1">Looking For</label>
@@ -389,13 +394,13 @@ include 'includes/header.php';
 <!-- Matrimony Book Notice Section -->
 <section class="bg-yellow-50 border-y border-yellow-200 py-6 mb-12">
     <div class="container mx-auto px-4 text-center">
-        <h3 class="text-xl md:text-2xl font-bold text-yellow-800 mb-2">
+        <h3 class="text-lg sm:text-xl md:text-2xl font-bold text-yellow-800 mb-2">
             <i class="fas fa-book-open mr-2"></i> Free Registration
         </h3>
-        <p class="text-lg text-yellow-700">
+        <p class="text-base sm:text-lg text-yellow-700">
             If you want your photo printed in our matrimony book, a fee of Rs. 1000/- is required.
         </p>
-        <p class="text-md text-yellow-600 mt-2 font-medium">
+        <p class="text-sm sm:text-md text-yellow-600 mt-2 font-medium">
             Kindly scan the QR code to pay Rs. 1000/- and mention your Mobile No. in Payment Remarks.
         </p>
         <?php 
@@ -407,16 +412,16 @@ include 'includes/header.php';
         <div class="mt-4 flex justify-center">
             <?php if ($qr_exists): ?>
                 <?php if ($is_base64_qr): ?>
-                    <img src="<?= $payment_qr_code ?>" alt="Payment QR" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover">
+                    <img src="<?= $payment_qr_code ?>" alt="Payment QR" class="w-36 h-36 sm:w-48 sm:h-48 border border-yellow-300 rounded shadow-sm object-cover">
                 <?php else: ?>
-                    <img src="image.php?file=<?= urlencode($clean_qr_code) ?>" alt="Payment QR" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover">
+                    <img src="image.php?file=<?= urlencode($clean_qr_code) ?>" alt="Payment QR" class="w-36 h-36 sm:w-48 sm:h-48 border border-yellow-300 rounded shadow-sm object-cover">
                 <?php endif; ?>
             <?php else: ?>
-                <img src="https://placehold.co/200x200/fef08a/854d0e?text=QR+Code+Not+Found" alt="Payment QR Placeholder" class="w-48 h-48 border border-yellow-300 rounded shadow-sm object-cover">
+                <img src="https://placehold.co/200x200/fef08a/854d0e?text=QR+Code+Not+Found" alt="Payment QR Placeholder" class="w-36 h-36 sm:w-48 sm:h-48 border border-yellow-300 rounded shadow-sm object-cover">
             <?php endif; ?>
         </div>
         <div class="mt-6">
-            <a href="my-profile.php#payment-upload" class="inline-block bg-primary text-white px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold">Upload Payment Screenshot</a>
+            <a href="my-profile.php#payment-upload" class="inline-block bg-primary text-white px-6 sm:px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold">Upload Payment Screenshot</a>
         </div>
     </div>
 </section>
@@ -426,7 +431,7 @@ include 'includes/header.php';
 <!-- Advertisements (Home Top) -->
 <section class="py-8 bg-white border-b border-gray-100">
     <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center text-dark mb-8">Advertisements</h2>
+        <h2 class="text-2xl sm:text-3xl font-bold text-center text-dark mb-8">Advertisements</h2>
         <div class="flex flex-wrap justify-center gap-6 items-center">
             <?php foreach($home_top_ads as $ad): ?>
                 <?php 
@@ -447,10 +452,10 @@ include 'includes/header.php';
 <?php endif; ?>
 
 <!-- Latest Profiles Section -->
-<section id="latest" class="py-16 bg-light">
+<section id="latest" class="py-12 sm:py-16 bg-light">
     <div class="container mx-auto px-4">
         <div class="text-center mb-10" data-aos="fade-up">
-            <h2 class="text-3xl md:text-4xl font-bold text-dark mb-3 relative inline-block">Latest Profiles
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-dark mb-3 relative inline-block">Latest Profiles
                 <span class="absolute bottom-0 left-1/4 w-1/2 h-1 bg-primary rounded-full -mb-2"></span>
             </h2>
             <p class="text-gray-600 mt-4">Find your life partner from our newly registered members</p>
@@ -465,15 +470,15 @@ include 'includes/header.php';
         <div class="flex flex-wrap justify-center mb-8" data-aos="fade-up" data-aos-delay="100">
             <div class="inline-flex rounded-md shadow-sm mb-8" role="group">
                 <a href="?latest_gender=Girl#latest"
-                    class="<?= $latest_gender === 'Girl' ? 'bg-primary text-white' : 'bg-white text-dark hover:bg-gray-100 border border-r-0' ?> px-8 py-2.5 rounded-l-full font-bold focus:outline-none transition shadow-md">Latest
+                    class="<?= $latest_gender === 'Girl' ? 'bg-primary text-white' : 'bg-white text-dark hover:bg-gray-100 border border-r-0' ?> px-4 sm:px-8 py-2.5 rounded-l-full font-bold focus:outline-none transition shadow-md text-sm sm:text-base">Latest
                     Girls</a>
                 <a href="?latest_gender=Boy#latest"
-                    class="<?= $latest_gender === 'Boy' ? 'bg-primary text-white' : 'bg-white text-dark hover:bg-gray-100 border border-l-0' ?> px-8 py-2.5 rounded-r-full font-bold focus:outline-none transition shadow-md">Latest
+                    class="<?= $latest_gender === 'Boy' ? 'bg-primary text-white' : 'bg-white text-dark hover:bg-gray-100 border border-l-0' ?> px-4 sm:px-8 py-2.5 rounded-r-full font-bold focus:outline-none transition shadow-md text-sm sm:text-base">Latest
                     Boys</a>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
             <?php
             // Check if user or admin is logged in (to allow photo viewing)
             $is_logged_in = false;
@@ -540,15 +545,15 @@ include 'includes/header.php';
                             <div class="w-full h-full group-hover:scale-110 transition duration-500 relative">
                                 <img src="<?= $placeholder ?>" alt="Profile Locked" class="w-full h-full object-cover object-top">
                                 <div class="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-30 text-white p-4 text-center z-10 backdrop-blur-[2px]">
-                                    <i class="fas fa-lock text-3xl mb-2"></i>
+                                    <i class="fas fa-lock text-2xl sm:text-3xl mb-2"></i>
                                 </div>
                             </div>
                         <?php endif; ?>
                         <div
-                            class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-black/70 to-transparent p-4 z-20">
+                            class="absolute bottom-0 left-0 w-full bg-gradient-to-t from-black via-black/70 to-transparent p-3 sm:p-4 z-20">
                             <a href="<?= $link ?>"
-                                class="text-white font-bold text-lg hover:underline"><?= htmlspecialchars($p['full_name']) ?></a>
-                            <p class="text-gray-200 text-sm font-medium"><?= $p['computed_age'] ?> Yrs,
+                                class="text-white font-bold text-sm sm:text-lg hover:underline block truncate"><?= htmlspecialchars($p['full_name']) ?></a>
+                            <p class="text-gray-200 text-xs sm:text-sm font-medium"><?= $p['computed_age'] ?> Yrs,
                                 <?= htmlspecialchars($p['height'] ?? 'N/A') ?>
                             </p>
                         </div>
@@ -558,20 +563,20 @@ include 'includes/header.php';
                                 New</div>
                         <?php endif; ?>
                     </div>
-                    <div class="p-5">
+                    <div class="p-3 sm:p-5">
                         <div class="space-y-2 mb-4">
-                            <p class="text-sm text-gray-600 flex items-center"><i
+                            <p class="text-xs sm:text-sm text-gray-600 flex items-center"><i
                                     class="fas fa-graduation-cap w-6 text-primary mr-2"></i>
-                                <?= htmlspecialchars($p['higher_education'] ?? 'N/A') ?></p>
-                            <p class="text-sm text-gray-600 flex items-center"><i
+                                <span class="truncate"><?= htmlspecialchars($p['higher_education'] ?? 'N/A') ?></span></p>
+                            <p class="text-xs sm:text-sm text-gray-600 flex items-center"><i
                                     class="fas fa-briefcase w-6 text-primary mr-2"></i>
-                                <?= htmlspecialchars($p['occupation'] ?? 'N/A') ?></p>
-                            <p class="text-sm text-gray-600 flex items-center"><i
+                                <span class="truncate"><?= htmlspecialchars($p['occupation'] ?? 'N/A') ?></span></p>
+                            <p class="text-xs sm:text-sm text-gray-600 flex items-center"><i
                                     class="fas fa-map-marker-alt w-6 text-primary mr-2"></i>
-                                <?= htmlspecialchars($p['native_place'] ?? 'N/A') ?></p>
+                                <span class="truncate"><?= htmlspecialchars($p['native_place'] ?? 'N/A') ?></span></p>
                         </div>
                         <a href="<?= $link ?>"
-                            class="block text-center bg-gray-50 border border-primary text-primary hover:bg-primary hover:text-white py-2 rounded-md transition font-semibold">View
+                            class="block text-center bg-gray-50 border border-primary text-primary hover:bg-primary hover:text-white py-2 rounded-md transition font-semibold text-sm sm:text-base">View
                             Profile</a>
                     </div>
                 </div>
@@ -579,17 +584,17 @@ include 'includes/header.php';
         </div>
         <div class="text-center mt-10">
             <a href="profiles.php?gender=<?= urlencode($latest_gender) ?>"
-                class="inline-block bg-primary text-white px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold text-lg"><i
+                class="inline-block bg-primary text-white px-6 sm:px-8 py-3 rounded-md shadow-lg hover:bg-opacity-90 transition font-bold text-base sm:text-lg"><i
                     class="fas fa-users mr-2"></i>View All Profiles</a>
         </div>
     </div>
 </section>
 
 <!-- Find Matches Section -->
-<section class="py-16 bg-white border-t border-gray-100">
+<section class="py-12 sm:py-16 bg-white border-t border-gray-100">
     <div class="container mx-auto px-4">
         <div class="text-center mb-10" data-aos="fade-up">
-            <h2 class="text-3xl md:text-4xl font-bold text-dark mb-3 relative inline-block">Find Matches By Category
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold text-dark mb-3 relative inline-block">Find Matches By Category
                 <span class="absolute bottom-0 left-1/4 w-1/2 h-1 bg-primary rounded-full -mb-2"></span>
             </h2>
             <p class="text-gray-600 mt-4">Find matches based on your specific preferences</p>
@@ -597,58 +602,58 @@ include 'includes/header.php';
 
         <div class="mt-12 text-center" data-aos="fade-up">
             <a href="profiles.php?gender=Girl"
-                class="inline-flex items-center justify-center bg-white border-2 border-primary text-primary px-6 py-3 rounded-md font-bold hover:bg-primary hover:text-white transition shadow-sm group mx-2 mb-2">
+                class="inline-flex items-center justify-center bg-white border-2 border-primary text-primary px-4 sm:px-6 py-2.5 sm:py-3 rounded-md font-bold hover:bg-primary hover:text-white transition shadow-sm group mx-1 sm:mx-2 mb-2 text-sm sm:text-base">
                 <i class="fas fa-female mr-2 text-primary group-hover:text-white"></i> All Girls</a>
             <a href="profiles.php?gender=Boy"
-                class="inline-flex items-center justify-center bg-white border-2 border-primary text-primary px-6 py-3 rounded-md font-bold hover:bg-primary hover:text-white transition shadow-sm group mx-2 mb-2">
+                class="inline-flex items-center justify-center bg-white border-2 border-primary text-primary px-4 sm:px-6 py-2.5 sm:py-3 rounded-md font-bold hover:bg-primary hover:text-white transition shadow-sm group mx-1 sm:mx-2 mb-2 text-sm sm:text-base">
                 <i class="fas fa-male mr-2 text-primary group-hover:text-white"></i> All Boys</a>
         </div>
-        <div class="flex flex-wrap justify-center gap-4 mt-8" data-aos="fade-up" data-aos-delay="100">
+        <div class="flex flex-wrap justify-center gap-3 sm:gap-4 mt-8" data-aos="fade-up" data-aos-delay="100">
             <a href="profiles.php?education=Doctorate"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                class="bg-light border border-gray-200 text-dark px-4 sm:px-6 py-2.5 sm:py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group text-sm sm:text-base"><i
                     class="fas fa-user-md mr-2 text-primary group-hover:text-white"></i> Doctors</a>
             <a href="profiles.php?education=Engineer"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                class="bg-light border border-gray-200 text-dark px-4 sm:px-6 py-2.5 sm:py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group text-sm sm:text-base"><i
                     class="fas fa-hard-hat mr-2 text-primary group-hover:text-white"></i> Engineers</a>
             <a href="profiles.php?education=MBA/MCA"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                class="bg-light border border-gray-200 text-dark px-4 sm:px-6 py-2.5 sm:py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group text-sm sm:text-base"><i
                     class="fas fa-user-graduate mr-2 text-primary group-hover:text-white"></i> MBA/MCA</a>
             <a href="profiles.php?education=CA/CS"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                class="bg-light border border-gray-200 text-dark px-4 sm:px-6 py-2.5 sm:py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group text-sm sm:text-base"><i
                     class="fas fa-calculator mr-2 text-primary group-hover:text-white"></i> CA/CS</a>
             <a href="profiles.php?occupation=Business"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                class="bg-light border border-gray-200 text-dark px-4 sm:px-6 py-2.5 sm:py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group text-sm sm:text-base"><i
                     class="fas fa-briefcase mr-2 text-primary group-hover:text-white"></i> Business</a>
             <a href="profiles.php?occupation=Service"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                class="bg-light border border-gray-200 text-dark px-4 sm:px-6 py-2.5 sm:py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group text-sm sm:text-base"><i
                     class="fas fa-laptop-house mr-2 text-primary group-hover:text-white"></i> Service</a>
             <a href="profiles.php?nri=yes"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                class="bg-light border border-gray-200 text-dark px-4 sm:px-6 py-2.5 sm:py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group text-sm sm:text-base"><i
                     class="fas fa-plane mr-2 text-primary group-hover:text-white"></i> NRI</a>
             <a href="profiles.php?manglik=yes"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                class="bg-light border border-gray-200 text-dark px-4 sm:px-6 py-2.5 sm:py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group text-sm sm:text-base"><i
                     class="fas fa-om mr-2 text-primary group-hover:text-white"></i> Manglik</a>
             <a href="profiles.php?marital=Widow"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                class="bg-light border border-gray-200 text-dark px-4 sm:px-6 py-2.5 sm:py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group text-sm sm:text-base"><i
                     class="fas fa-user-alt-slash mr-2 text-primary group-hover:text-white"></i> Widow</a>
             <a href="profiles.php?marital=Divorce"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                class="bg-light border border-gray-200 text-dark px-4 sm:px-6 py-2.5 sm:py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group text-sm sm:text-base"><i
                     class="fas fa-heart-broken mr-2 text-primary group-hover:text-white"></i> Divorcee</a>
             <a href="profiles.php?marital=Widower"
-                class="bg-light border border-gray-200 text-dark px-6 py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group"><i
+                class="bg-light border border-gray-200 text-dark px-4 sm:px-6 py-2.5 sm:py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group text-sm sm:text-base"><i
                     class="fas fa-user-slash mr-2 text-primary group-hover:text-white"></i> Widower</a>
         </div>
     </div>
 </section>
 
 <!-- Browse Directory (Location & Sect) -->
-<section class="py-16 bg-light border-y border-gray-200">
+<section class="py-12 sm:py-16 bg-light border-y border-gray-200">
     <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
             
             <!-- Browse By City -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="0">
-                <h3 class="text-xl font-bold text-dark mb-4 border-b-2 border-primary pb-2 flex items-center"><i class="fas fa-city text-primary mr-2"></i>Browse By City</h3>
+            <div class="bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="0">
+                <h3 class="text-lg sm:text-xl font-bold text-dark mb-4 border-b-2 border-primary pb-2 flex items-center"><i class="fas fa-city text-primary mr-2"></i>Browse By City</h3>
                 <ul class="space-y-3 mt-4">
                     <li><a href="profiles.php?city=Delhi" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Delhi Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
                     <li><a href="profiles.php?city=Mumbai" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Mumbai Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
@@ -660,8 +665,8 @@ include 'includes/header.php';
             </div>
 
             <!-- Browse By State -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="100">
-                <h3 class="text-xl font-bold text-dark mb-4 border-b-2 border-primary pb-2 flex items-center"><i class="fas fa-map text-primary mr-2"></i>Browse By State</h3>
+            <div class="bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="100">
+                <h3 class="text-lg sm:text-xl font-bold text-dark mb-4 border-b-2 border-primary pb-2 flex items-center"><i class="fas fa-map text-primary mr-2"></i>Browse By State</h3>
                 <ul class="space-y-3 mt-4">
                     <li><a href="profiles.php?city=Gujarat" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Gujarat Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
                     <li><a href="profiles.php?city=Maharashtra" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Maharashtra Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
@@ -674,8 +679,8 @@ include 'includes/header.php';
             </div>
 
             <!-- Browse By Country -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="200">
-                <h3 class="text-xl font-bold text-dark mb-4 border-b-2 border-primary pb-2 flex items-center"><i class="fas fa-globe text-primary mr-2"></i>Browse By Country</h3>
+            <div class="bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="200">
+                <h3 class="text-lg sm:text-xl font-bold text-dark mb-4 border-b-2 border-primary pb-2 flex items-center"><i class="fas fa-globe text-primary mr-2"></i>Browse By Country</h3>
                 <ul class="space-y-3 mt-4">
                     <li><a href="profiles.php?city=USA" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>USA Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
                     <li><a href="profiles.php?city=UK" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>UK Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
@@ -687,8 +692,8 @@ include 'includes/header.php';
             </div>
 
             <!-- Browse By Sect -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="300">
-                <h3 class="text-xl font-bold text-dark mb-4 border-b-2 border-primary pb-2 flex items-center"><i class="fas fa-praying-hands text-primary mr-2"></i>Browse By Sect</h3>
+            <div class="bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="300">
+                <h3 class="text-lg sm:text-xl font-bold text-dark mb-4 border-b-2 border-primary pb-2 flex items-center"><i class="fas fa-praying-hands text-primary mr-2"></i>Browse By Sect</h3>
                 <ul class="space-y-3 mt-4">
                     <li><a href="profiles.php" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Digambar Jain</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
                     <li><a href="profiles.php" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Shwetambar Murtipujak</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
@@ -703,7 +708,7 @@ include 'includes/header.php';
 </section>
 
 <!-- News & Updates / Stats Section -->
-<section class="py-16 bg-white">
+<section class="py-12 sm:py-16 bg-white">
     <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 gap-12 items-center">
 
@@ -724,45 +729,45 @@ include 'includes/header.php';
             -->
 
             <!-- Stats section -->
-            <div class="bg-light p-8 rounded-2xl border border-gray-100" data-aos="fade-left">
-                <h2 class="text-3xl font-bold text-dark mb-4 text-center lg:text-left">Trusted by Thousands of Digambar Jain Samaj since 5 years</h2>
+            <div class="bg-light p-5 sm:p-8 rounded-2xl border border-gray-100" data-aos="fade-left">
+                <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-dark mb-4 text-center lg:text-left">Trusted by Thousands of Digambar Jain Samaj since 5 years</h2>
 
-                <div class="grid grid-cols-2 gap-6">
+                <div class="grid grid-cols-2 gap-3 sm:gap-6">
                     <div
-                        class="bg-white p-6 rounded-xl text-center shadow-sm border border-gray-100 hover:border-primary transition group">
+                        class="bg-white p-4 sm:p-6 rounded-xl text-center shadow-sm border border-gray-100 hover:border-primary transition group">
                         <div
-                            class="w-14 h-14 mx-auto bg-red-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary transition">
-                            <i class="fas fa-heart text-2xl text-primary group-hover:text-white"></i>
+                            class="w-11 h-11 sm:w-14 sm:h-14 mx-auto bg-red-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary transition">
+                            <i class="fas fa-heart text-lg sm:text-2xl text-primary group-hover:text-white"></i>
                         </div>
-                        <div class="counter text-3xl font-bold text-dark mb-1" data-target="5000">5000+</div>
-                        <p class="text-sm text-gray-500 font-semibold">Happy Marriages</p>
+                        <div class="counter text-xl sm:text-3xl font-bold text-dark mb-1" data-target="5000">5000+</div>
+                        <p class="text-xs sm:text-sm text-gray-500 font-semibold">Happy Marriages</p>
                     </div>
                     <div
-                        class="bg-white p-6 rounded-xl text-center shadow-sm border border-gray-100 hover:border-primary transition group">
+                        class="bg-white p-4 sm:p-6 rounded-xl text-center shadow-sm border border-gray-100 hover:border-primary transition group">
                         <div
-                            class="w-14 h-14 mx-auto bg-blue-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary transition">
-                            <i class="fas fa-users text-2xl text-primary group-hover:text-white"></i>
+                            class="w-11 h-11 sm:w-14 sm:h-14 mx-auto bg-blue-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary transition">
+                            <i class="fas fa-users text-lg sm:text-2xl text-primary group-hover:text-white"></i>
                         </div>
-                        <div class="counter text-3xl font-bold text-dark mb-1" data-target="25000">25000+</div>
-                        <p class="text-sm text-gray-500 font-semibold">Verified Profiles</p>
+                        <div class="counter text-xl sm:text-3xl font-bold text-dark mb-1" data-target="25000">25000+</div>
+                        <p class="text-xs sm:text-sm text-gray-500 font-semibold">Verified Profiles</p>
                     </div>
                     <div
-                        class="bg-white p-6 rounded-xl text-center shadow-sm border border-gray-100 hover:border-primary transition group">
+                        class="bg-white p-4 sm:p-6 rounded-xl text-center shadow-sm border border-gray-100 hover:border-primary transition group">
                         <div
-                            class="w-14 h-14 mx-auto bg-green-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary transition">
-                            <i class="fas fa-globe-asia text-2xl text-primary group-hover:text-white"></i>
+                            class="w-11 h-11 sm:w-14 sm:h-14 mx-auto bg-green-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary transition">
+                            <i class="fas fa-globe-asia text-lg sm:text-2xl text-primary group-hover:text-white"></i>
                         </div>
-                        <div class="counter text-3xl font-bold text-dark mb-1" data-target="100">100+</div>
-                        <p class="text-sm text-gray-500 font-semibold">Cities Covered</p>
+                        <div class="counter text-xl sm:text-3xl font-bold text-dark mb-1" data-target="100">100+</div>
+                        <p class="text-xs sm:text-sm text-gray-500 font-semibold">Cities Covered</p>
                     </div>
                     <div
-                        class="bg-white p-6 rounded-xl text-center shadow-sm border border-gray-100 hover:border-primary transition group">
+                        class="bg-white p-4 sm:p-6 rounded-xl text-center shadow-sm border border-gray-100 hover:border-primary transition group">
                         <div
-                            class="w-14 h-14 mx-auto bg-yellow-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary transition">
-                            <i class="fas fa-award text-2xl text-primary group-hover:text-white"></i>
+                            class="w-11 h-11 sm:w-14 sm:h-14 mx-auto bg-yellow-50 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary transition">
+                            <i class="fas fa-award text-lg sm:text-2xl text-primary group-hover:text-white"></i>
                         </div>
-                        <div class="counter text-3xl font-bold text-dark mb-1" data-target="15">15+</div>
-                        <p class="text-sm text-gray-500 font-semibold">Years of Trust</p>
+                        <div class="counter text-xl sm:text-3xl font-bold text-dark mb-1" data-target="15">15+</div>
+                        <p class="text-xs sm:text-sm text-gray-500 font-semibold">Years of Trust</p>
                     </div>
                 </div>
             </div>

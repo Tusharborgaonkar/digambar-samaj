@@ -87,7 +87,7 @@ $site_title = htmlspecialchars($settings['home_title'] ?? 'Digambar Jain Matrimo
 $site_tagline = htmlspecialchars($settings['home_tagline'] ?? '(established in 2026)');
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="overflow-x-hidden">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
