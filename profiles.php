@@ -88,6 +88,14 @@ if (!empty($_GET['city'])) {
     $params[] = "%" . $_GET['city'] . "%";
 }
 
+if (!empty($_GET['state'])) {
+    $where[] = "(current_address LIKE ? OR permanent_address LIKE ? OR native_place LIKE ?)";
+    $state_val = "%" . $_GET['state'] . "%";
+    $params[] = $state_val;
+    $params[] = $state_val;
+    $params[] = $state_val;
+}
+
 if (!empty($_GET['education']) && $_GET['education'] !== 'Education All') {
     $edu = $_GET['education'];
     if ($edu === 'Doctorate' || $edu === 'Doctor') {
@@ -158,7 +166,7 @@ $whereClause = implode(" AND ", $where);
 
 // Build query string for pagination (preserve all filters)
 $filterParams = [];
-foreach (['gender', 'match_id', 'city', 'education', 'manglik', 'marital', 'occupation', 'age_from', 'age_to', 'nri', 'sort_by'] as $key) {
+foreach (['gender', 'match_id', 'city', 'state', 'education', 'manglik', 'marital', 'occupation', 'age_from', 'age_to', 'nri', 'sort_by'] as $key) {
     if (!empty($_GET[$key])) {
         $filterParams[$key] = $_GET[$key];
     }
@@ -276,6 +284,18 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                         <!-- City -->
                         <input type="text" name="city" placeholder="Enter City / Native Place" value="<?= htmlspecialchars($_GET['city'] ?? '') ?>" class="w-full border border-gray-300 rounded-md p-2.5 mb-4 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                        
+                        <!-- State -->
+                        <?php
+                        $states = ['Delhi', 'Maharashtra', 'Gujarat', 'Rajasthan', 'Madhya Pradesh', 'Karnataka', 'Uttar Pradesh', 'Chhattisgarh'];
+                        $selectedState = $_GET['state'] ?? '';
+                        ?>
+                        <select name="state" class="w-full border border-gray-300 rounded-md p-2.5 mb-4 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-white">
+                            <option value="">Any State</option>
+                            <?php foreach ($states as $st): ?>
+                                <option value="<?= $st ?>" <?= $selectedState === $st ? 'selected' : '' ?>><?= $st ?></option>
+                            <?php endforeach; ?>
+                        </select>
                         
                         <!-- Education -->
                         <?php

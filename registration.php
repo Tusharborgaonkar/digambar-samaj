@@ -637,11 +637,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div><label class="block text-gray-700 font-medium mb-2">Hobbies *</label><textarea name="hobbies" required rows="2" class="w-full border rounded-lg px-4 py-2"><?= htmlspecialchars($current_user['hobbies'] ?? '') ?></textarea></div>
                         <div><label class="block text-gray-700 font-medium mb-2">Your Specific Preference for the Partner *</label><textarea name="partner_preference" required rows="2" class="w-full border rounded-lg px-4 py-2"><?= htmlspecialchars($current_user['partner_preference'] ?? '') ?></textarea></div>
                         
-                        <!-- Widow/Divorce -->
-                        <div><label class="block text-gray-700 font-medium mb-2">Widow / Divorce *</label>
+                        <!-- Marital Status -->
+                        <div><label class="block text-gray-700 font-medium mb-2">Marital Status *</label>
                             <?php $ms = $current_user['marital_status'] ?? ''; ?>
                             <select name="marital_status" required class="w-full border rounded-lg px-4 py-2">
-                                <option value="Not Applicable" <?= $ms == 'Not Applicable' ? 'selected' : '' ?>>Not Applicable</option>
+                                <option value="Never Married" <?= ($ms == 'Never Married' || $ms == 'Not Applicable' || $ms == '') ? 'selected' : '' ?>>Never Married</option>
                                 <option value="Widow" <?= $ms == 'Widow' ? 'selected' : '' ?>>Widow</option>
                                 <option value="Divorce" <?= $ms == 'Divorce' ? 'selected' : '' ?>>Divorce</option>
                             </select>
@@ -838,6 +838,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         <label class="block text-sm text-gray-700 font-medium mb-1">Mobile Number *</label>
                                         <input type="tel" name="ref1_mobile" value="<?= htmlspecialchars(preg_replace('/^\\+?91/', '', $current_user['ref1_mobile'] ?? '')) ?>" required pattern="[0-9]{10}" maxlength="10" minlength="10" title="Exactly 10 digit mobile number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
                                     </div>
+                                    <div>
+                                        <label class="block text-sm text-gray-700 font-medium mb-1">Relation *</label>
+                                        <input type="text" name="ref1_relation" value="<?= htmlspecialchars($current_user['ref1_relation'] ?? '') ?>" required class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
+                                    </div>
                                 </div>
                             </div>
 
@@ -855,6 +859,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <div>
                                         <label class="block text-sm text-gray-700 font-medium mb-1">Mobile Number *</label>
                                         <input type="tel" name="ref2_mobile" value="<?= htmlspecialchars(preg_replace('/^\\+?91/', '', $current_user['ref2_mobile'] ?? '')) ?>" required pattern="[0-9]{10}" maxlength="10" minlength="10" title="Exactly 10 digit mobile number" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm text-gray-700 font-medium mb-1">Relation *</label>
+                                        <input type="text" name="ref2_relation" value="<?= htmlspecialchars($current_user['ref2_relation'] ?? '') ?>" required class="w-full border bg-white rounded-lg px-3 py-2 text-sm focus:border-primary">
                                     </div>
                                 </div>
                             </div>
