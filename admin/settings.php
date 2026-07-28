@@ -169,7 +169,7 @@ $hero_banner = $settings['hero_banner'] ?? '';
                 </div>
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Hero Section Heading</label>
-                    <input type="text" name="hero_heading" value="<?= htmlspecialchars($hero_heading) ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
+                    <textarea name="hero_heading" rows="2" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm"><?= htmlspecialchars($hero_heading) ?></textarea>
                 </div>
                 <div>
                     <label class="block font-medium text-gray-700 mb-1">Hero Section Description</label>
