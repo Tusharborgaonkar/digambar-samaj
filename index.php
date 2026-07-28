@@ -436,16 +436,9 @@ include 'includes/header.php';
                     $img_src = 'image.php?file=' . urlencode(ltrim(str_replace('../', '', $ad_img), '/\\'));
                 }
                 ?>
-                <?php $ad_link = $ad['link_url'] ?? $ad['link'] ?? ''; ?>
-                <?php if(!empty($ad_link) && $ad_link !== '#'): ?>
-                    <a href="<?= htmlspecialchars($ad_link) ?>" target="_blank" class="block w-full max-w-[295px] aspect-[2/3] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition bg-white">
-                        <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
-                    </a>
-                <?php else: ?>
-                    <div class="block w-full max-w-[295px] aspect-[2/3] rounded-xl overflow-hidden shadow-md transition bg-white">
-                        <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
-                    </div>
-                <?php endif; ?>
+                <div class="block w-full max-w-[295px] aspect-[2/3] rounded-xl overflow-hidden shadow-md transition bg-white">
+                    <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
+                </div>
             <?php endforeach; ?>
         </div>
     </div>
