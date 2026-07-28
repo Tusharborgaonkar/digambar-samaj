@@ -13,10 +13,35 @@ $user_id = $_SESSION['user_id'];
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_payment'])) {
     if (isset($_FILES['payment_screenshot']) && $_FILES['payment_screenshot']['error'] === UPLOAD_ERR_OK) {
         $payment_txn_id = trim(htmlspecialchars($_POST['payment_transaction_id'] ?? ''));
-        $uploadDir = 'uploads/receipts/';
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
+        
+        // Prevent if user already has a screenshot uploaded
+        $stmtCheckUser = $pdo->prepare("SELECT payment_screenshot FROM users WHERE id = ?");
+        $stmtCheckUser->execute([$user_id]);
+        $userCheck = $stmtCheckUser->fetch();
+        
+        // Prevent duplicate submissions of the same transaction ID
+        $stmtCheckTxn = $pdo->prepare("SELECT id FROM payments WHERE transaction_id = ?");
+        $stmtCheckTxn->execute([$payment_txn_id]);
+        
+        $is_rejected = ($payment_status === 'rejected');
+        
+        if (!empty($userCheck['payment_screenshot']) && !$is_rejected) {
+            echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({ icon: 'warning', title: 'Already Uploaded', text: 'You have already uploaded a payment screenshot.' });
+                });
+            </script>";
+        } elseif ($stmtCheckTxn->fetch()) {
+            echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire({ icon: 'warning', title: 'Already Submitted', text: 'This Transaction ID has already been submitted.' });
+                });
+            </script>";
+        } else {
+            $uploadDir = 'uploads/receipts/';
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
         
         $fileInfo = pathinfo($_FILES['payment_screenshot']['name']);
         $ext = strtolower($fileInfo['extension']);
@@ -77,6 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_payment'])) {
                 });
             </script>";
         }
+        } // End of else block for duplicate check
     } else {
         echo "<script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -94,6 +120,12 @@ if (!$user) {
     echo "<script>window.location.href='login.php';</script>";
     exit;
 }
+
+// Fetch the latest payment status for the user's screenshot
+$stmtPayStatus = $pdo->prepare("SELECT status FROM payments WHERE user_id = ? AND payment_method = 'Screenshot' ORDER BY id DESC LIMIT 1");
+$stmtPayStatus->execute([$user_id]);
+$payment_status_record = $stmtPayStatus->fetch();
+$payment_status = $payment_status_record ? $payment_status_record['status'] : 'pending';
 
 // Calculate Age
 $age = 'N/A';
@@ -245,21 +277,36 @@ $profile_img = (!empty($user['profile_photo']) && file_exists($user['profile_pho
                             <?php endif; ?>
                         <?php endif; ?>
                         
-                        <form action="my-profile.php" method="POST" enctype="multipart/form-data" class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Transaction ID <span class="text-red-500">*</span></label>
-                                <input type="text" name="payment_transaction_id" placeholder="e.g. GPay Transaction ID" class="w-full text-sm border-gray-300 rounded-md shadow-sm p-2 mb-3 focus:ring-primary focus:border-primary" required>
-                                
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Upload New Screenshot <span class="text-red-500">*</span></label>
-                                <input type="file" name="payment_screenshot" accept=".jpg,.jpeg,.png,.pdf" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-primary hover:file:bg-blue-100" required>
-                                <p class="text-xs text-gray-500 mt-1">Allowed formats: JPG, PNG, PDF</p>
+                        <?php if (empty($user['payment_screenshot']) || $payment_status === 'rejected'): ?>
+                            <?php if ($payment_status === 'rejected'): ?>
+                                <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i> Your previous screenshot was rejected. Please upload a new one.
+                                </div>
+                            <?php endif; ?>
+                            <form action="my-profile.php" method="POST" enctype="multipart/form-data" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Transaction ID <span class="text-red-500">*</span></label>
+                                    <input type="text" name="payment_transaction_id" placeholder="e.g. GPay Transaction ID" class="w-full text-sm border-gray-300 rounded-md shadow-sm p-2 mb-3 focus:ring-primary focus:border-primary" required>
+                                    
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Upload New Screenshot <span class="text-red-500">*</span></label>
+                                    <input type="file" name="payment_screenshot" accept=".jpg,.jpeg,.png,.pdf" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-primary hover:file:bg-blue-100" required>
+                                    <p class="text-xs text-gray-500 mt-1">Allowed formats: JPG, PNG, PDF</p>
+                                </div>
+                                <button type="submit" name="upload_payment" class="w-full bg-primary text-white py-2 rounded-lg font-medium hover:bg-opacity-90 transition">
+                                    Save Profile
+                                </button>
+                            </form>
+                        <?php elseif ($payment_status === 'verified'): ?>
+                            <div class="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 text-sm font-bold text-center shadow-sm">
+                                <i class="fas fa-check-circle mr-2 text-green-600 text-lg"></i> Done! Your payment has been approved by the admin.
                             </div>
-                            <button type="submit" name="upload_payment" class="w-full bg-primary text-white py-2 rounded-lg font-medium hover:bg-opacity-90 transition">
-                                Save Profile
-                            </button>
-                        </form>
+                        <?php else: ?>
+                            <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800 text-sm shadow-sm">
+                                <i class="fas fa-info-circle mr-2"></i> Your payment screenshot has been uploaded and is currently under review by the admin.
+                            </div>
+                        <?php endif; ?>
                     </div>
-
+                    
                 </div>
 
                 <!-- Right Column (Detailed Info) -->

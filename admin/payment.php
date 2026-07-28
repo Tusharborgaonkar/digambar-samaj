@@ -96,8 +96,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] === 'approve_screenshot') {
         try {
             $user_id = (int)$_POST['user_id'];
-            $stmt = $pdo->prepare("UPDATE users SET payment_status = 'approved' WHERE id = ?");
-            $stmt->execute([$user_id]);
+            try {
+                $stmt = $pdo->prepare("UPDATE users SET payment_status = 'approved' WHERE id = ?");
+                $stmt->execute([$user_id]);
+            } catch (Exception $e) {
+                // Ignore missing column error in users table
+            }
             
             // Update payments table if exists, else insert
             $check = $pdo->prepare("SELECT id FROM payments WHERE user_id = ? AND payment_method = 'Screenshot'");
@@ -117,8 +121,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     } elseif ($_POST['action'] === 'reject_screenshot') {
         try {
             $user_id = (int)$_POST['user_id'];
-            $stmt = $pdo->prepare("UPDATE users SET payment_status = 'rejected' WHERE id = ?");
-            $stmt->execute([$user_id]);
+            try {
+                $stmt = $pdo->prepare("UPDATE users SET payment_status = 'rejected' WHERE id = ?");
+                $stmt->execute([$user_id]);
+            } catch (Exception $e) {
+                // Ignore missing column error in users table
+            }
             
             // Update payments table if exists, else insert
             $check = $pdo->prepare("SELECT id FROM payments WHERE user_id = ? AND payment_method = 'Screenshot'");
@@ -140,8 +148,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $user_ids = $_POST['user_ids'] ?? [];
             if(!empty($user_ids)) {
                 $placeholders = str_repeat('?,', count($user_ids) - 1) . '?';
-                $stmt = $pdo->prepare("UPDATE users SET payment_status = 'approved' WHERE id IN ($placeholders)");
-                $stmt->execute($user_ids);
+                try {
+                    $stmt = $pdo->prepare("UPDATE users SET payment_status = 'approved' WHERE id IN ($placeholders)");
+                    $stmt->execute($user_ids);
+                } catch (Exception $e) {
+                    // Ignore missing column error
+                }
                 
                 $update = $pdo->prepare("UPDATE payments SET status = 'verified' WHERE user_id IN ($placeholders) AND payment_method = 'Screenshot'");
                 $update->execute($user_ids);
