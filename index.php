@@ -228,15 +228,9 @@ include 'includes/header.php';
                 <?php foreach($home_bottom_ads as $ad): 
                     $img_path = ltrim(str_replace('../', '', $ad['image'] ?? $ad['image_path'] ?? ''), '/\\');
                 ?>
-                    <?php if(!empty($ad['link'])): ?>
-                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-[150px] rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
-                            <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
-                        </a>
-                    <?php else: ?>
                         <div class="relative w-full h-[150px] rounded shadow-lg border border-gray-700 overflow-hidden">
                             <img src="<?= htmlspecialchars($img_path) ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </div>
-                    <?php endif; ?>
                 <?php endforeach; ?>
             <?php else: ?>
                 <!-- Unsplash Placeholder Ad -->
