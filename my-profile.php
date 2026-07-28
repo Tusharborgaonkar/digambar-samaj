@@ -326,7 +326,7 @@ $profile_img = (!empty($user['profile_photo']) && file_exists($user['profile_pho
                             </div>
                             <div>
                                 <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Time of Birth</p>
-                                <p class="font-medium text-dark"><?= htmlspecialchars($user['birth_time'] ?? 'N/A') ?></p>
+                                <p class="font-medium text-dark"><?= !empty($user['birth_time']) ? date('h:i A', strtotime($user['birth_time'])) : 'N/A' ?></p>
                             </div>
                             <div>
                                 <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Place of Birth</p>
