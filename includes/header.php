@@ -405,15 +405,15 @@ $site_tagline = htmlspecialchars($settings['home_tagline'] ?? '(established in 2
         <button id="closeMobileMenu" class="absolute top-6 right-6 text-2xl text-gray-600 hover:text-red-500 transition focus:outline-none"><i class="fas fa-times"></i></button>
         <div class="flex flex-col space-y-6 px-8 mt-4">
             <a href="index.php" class="<?= $current_page == 'index.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">Home</a>
-            <a href="about.php" class="<?= $current_page == 'about.php' || $current_page == 'community.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">About Us</a>
-            <!-- <div class="relative group">
+            <div class="relative group">
                 <a href="about.php" class="<?= $current_page == 'about.php' || $current_page == 'community.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg flex items-center gap-2">
                     About Us <i class="fas fa-chevron-down text-xs"></i>
                 </a>
                 <div class="pl-4 mt-2 space-y-2">
+                    <a href="about.php" class="<?= $current_page == 'about.php' ? 'text-primary font-bold' : 'text-gray-600 hover:text-primary' ?> transition block">About Us</a>
                     <a href="community.php" class="<?= $current_page == 'community.php' ? 'text-primary font-bold' : 'text-gray-600 hover:text-primary' ?> transition block">Community</a>
                 </div>
-            </div> -->
+            </div>
             <a href="success-stories.php" class="<?= $current_page == 'success-stories.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">Success Story</a>
             <a href="profiles.php" class="<?= $current_page == 'profiles.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">Find Your Match</a>
             <a href="gallery.php" class="<?= $current_page == 'gallery.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">Gallery</a>
@@ -475,7 +475,15 @@ $site_tagline = htmlspecialchars($settings['home_tagline'] ?? '(established in 2
         <nav class="container mx-auto px-4 md:px-8 py-3 hidden md:block">
             <div class="flex justify-center items-center space-x-6 lg:space-x-8">
                 <a href="index.php" class="<?= $current_page == 'index.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Home</a>
-                <a href="about.php" class="<?= $current_page == 'about.php' || $current_page == 'community.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">About Us</a>
+                <div class="relative group py-1">
+                    <a href="about.php" class="<?= $current_page == 'about.php' || $current_page == 'community.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1 flex items-center gap-1">
+                        About Us <i class="fas fa-chevron-down text-xs transition-transform duration-300 group-hover:rotate-180"></i>
+                    </a>
+                    <div class="absolute left-0 top-full w-48 bg-white border border-gray-100 shadow-xl rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 overflow-hidden">
+                        <a href="about.php" class="block px-4 py-2.5 text-sm <?= $current_page == 'about.php' ? 'bg-primary/5 text-primary font-bold' : 'text-gray-700 hover:bg-gray-50 hover:text-primary' ?> transition border-b border-gray-50">About Us</a>
+                        <a href="community.php" class="block px-4 py-2.5 text-sm <?= $current_page == 'community.php' ? 'bg-primary/5 text-primary font-bold' : 'text-gray-700 hover:bg-gray-50 hover:text-primary' ?> transition">Community</a>
+                    </div>
+                </div>
                 <a href="success-stories.php" class="<?= $current_page == 'success-stories.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Success Story</a>
                 <a href="profiles.php" class="<?= $current_page == 'profiles.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Find Your Match</a>
                 <a href="gallery.php" class="<?= $current_page == 'gallery.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Gallery</a>
