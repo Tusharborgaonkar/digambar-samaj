@@ -156,6 +156,15 @@ include 'includes/sidebar.php';
 // Fetch photos
 $stmt = $pdo->query("SELECT * FROM gallery ORDER BY created_at DESC");
 $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Fetch settings
+$settings = [];
+try {
+    $stmt = $pdo->query("SELECT setting_key, setting_value FROM site_settings");
+    while ($row = $stmt->fetch()) {
+        $settings[$row['setting_key']] = $row['setting_value'];
+    }
+} catch (Exception $e) {}
 ?>
 
 <div class="mb-6 flex justify-between items-center">
@@ -171,7 +180,12 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
-                text: '<?= $_GET['msg'] === 'deleted' ? 'Media deleted successfully.' : 'Media uploaded successfully!' ?>',
+                text: '<?php 
+                    if ($_GET['msg'] === 'deleted') echo 'Media deleted successfully.';
+                    elseif ($_GET['msg'] === 'banner_updated') echo 'Banner updated successfully!';
+                    elseif ($_GET['msg'] === 'banner_deleted') echo 'Banner deleted successfully.';
+                    else echo 'Media uploaded successfully!';
+                ?>',
                 timer: 3000,
                 showConfirmButton: false
             });
