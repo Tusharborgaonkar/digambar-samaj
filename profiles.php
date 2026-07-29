@@ -189,11 +189,11 @@ $total_profiles = $countStmt->fetchColumn();
 $total_pages = ceil($total_profiles / $limit);
 
 $sort_by = $_GET['sort_by'] ?? 'name_asc';
-$orderClause = "u.full_name ASC, TIMESTAMPDIFF(YEAR, u.birth_date, CURDATE()) ASC"; // Default: Name A-Z, then Age
+$orderClause = "TRIM(u.full_name) ASC, TIMESTAMPDIFF(YEAR, u.birth_date, CURDATE()) ASC"; // Default: Name A-Z, then Age
 if ($sort_by === 'age_asc') {
-    $orderClause = "TIMESTAMPDIFF(YEAR, u.birth_date, CURDATE()) ASC, u.full_name ASC"; // Youngest First, then A-Z
+    $orderClause = "TIMESTAMPDIFF(YEAR, u.birth_date, CURDATE()) ASC, TRIM(u.full_name) ASC"; // Youngest First, then A-Z
 } elseif ($sort_by === 'age_desc') {
-    $orderClause = "TIMESTAMPDIFF(YEAR, u.birth_date, CURDATE()) DESC, u.full_name ASC"; // Oldest First, then A-Z
+    $orderClause = "TIMESTAMPDIFF(YEAR, u.birth_date, CURDATE()) DESC, TRIM(u.full_name) ASC"; // Oldest First, then A-Z
 } elseif ($sort_by === 'latest') {
     $orderClause = "u.id DESC"; // Recently Added
 }
