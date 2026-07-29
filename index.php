@@ -123,7 +123,7 @@ include 'includes/header.php';
 </script>
 
 <!-- Hero Section (3-Column Layout) -->
-<section class="relative flex flex-col justify-start items-center overflow-hidden bg-gray-900 pt-4 pb-8 md:min-h-[85vh]">
+<section class="relative flex flex-col justify-start items-center overflow-hidden bg-gray-900 pt-4 pb-8 sm:pb-12">
     <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-primary/20 z-0"></div>
 
     <div class="container mx-auto px-4 relative z-20 w-full flex flex-col xl:flex-row gap-6">
@@ -144,18 +144,18 @@ include 'includes/header.php';
                     }
                 ?>
                     <?php if(!empty($ad['link'])): ?>
-                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[160px] sm:min-h-[220px] xl:min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
+                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[160px] sm:min-h-[200px] xl:min-h-[240px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
                             <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </a>
                     <?php else: ?>
-                        <div class="relative w-full h-full min-h-[160px] sm:min-h-[220px] xl:min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
+                        <div class="relative w-full h-full min-h-[160px] sm:min-h-[200px] xl:min-h-[240px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
                             <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </div>
                     <?php endif; ?>
                 <?php endforeach; ?>
             <?php else: ?>
                 <!-- Unsplash Placeholder Ad -->
-                <div class="relative w-full h-full min-h-[160px] sm:min-h-[220px] xl:min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden group">
+                <div class="relative w-full h-full min-h-[160px] sm:min-h-[200px] xl:min-h-[240px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden group">
                     <img src="https://images.unsplash.com/photo-1583939000148-f75e1140984f?auto=format&fit=crop&w=400&q=80" alt="Advertise" class="absolute inset-0 w-full h-full object-cover">
                     <div class="absolute inset-0 flex items-center justify-center bg-black/40">
                         <span class="text-white font-bold text-base sm:text-xl xl:text-2xl tracking-widest uppercase">Advertise</span>
@@ -166,7 +166,7 @@ include 'includes/header.php';
         <?php endif; ?>
 
         <!-- Center Section (Content & Banner) -->
-        <div class="flex-grow w-full col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-0 items-stretch bg-[#1a2942] rounded-2xl overflow-hidden shadow-2xl order-1 xl:order-2 min-h-[240px] sm:min-h-[300px] md:min-h-[340px]" data-aos="fade-up">
+        <div class="flex-grow w-full col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-0 items-stretch bg-[#1a2942] rounded-2xl overflow-hidden shadow-2xl order-1 xl:order-2 min-h-[240px] sm:min-h-[280px] md:min-h-[300px]" data-aos="fade-up">
             <div class="flex flex-col justify-center p-4 sm:p-6 md:p-10 lg:p-12 text-center sm:text-left h-full">
                 <h2 class="text-base sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight">
                     <?php 
@@ -192,7 +192,7 @@ include 'includes/header.php';
                     }
                 }
                 ?>
-                <img src="<?= $hero_img_src ?>" alt="Matrimony Hero" class="w-full h-full object-contain max-h-[180px] sm:max-h-[280px] md:max-h-[350px] lg:max-h-[500px]">
+                <img src="<?= $hero_img_src ?>" alt="Matrimony Hero" class="w-full h-full object-contain max-h-[180px] sm:max-h-[240px] md:max-h-[300px] lg:max-h-[350px]">
             </div>
         </div>
 
@@ -209,18 +209,18 @@ include 'includes/header.php';
                     }
                 ?>
                     <?php if(!empty($ad['link'])): ?>
-                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[160px] sm:min-h-[220px] xl:min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
+                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[160px] sm:min-h-[200px] xl:min-h-[240px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
                             <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </a>
                     <?php else: ?>
-                        <div class="relative w-full h-full min-h-[160px] sm:min-h-[220px] xl:min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
+                        <div class="relative w-full h-full min-h-[160px] sm:min-h-[200px] xl:min-h-[240px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
                             <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </div>
                     <?php endif; ?>
                 <?php endforeach; ?>
             <?php else: ?>
                 <!-- Unsplash Placeholder Ad -->
-                <div class="relative w-full h-full min-h-[160px] sm:min-h-[220px] xl:min-h-[300px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden group">
+                <div class="relative w-full h-full min-h-[160px] sm:min-h-[200px] xl:min-h-[240px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden group">
                     <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=400&q=80" alt="Advertise" class="absolute inset-0 w-full h-full object-cover">
                     <div class="absolute inset-0 flex items-center justify-center bg-black/40">
                         <span class="text-white font-bold text-base sm:text-xl xl:text-2xl tracking-widest uppercase">Advertise</span>
@@ -237,7 +237,7 @@ include 'includes/header.php';
 
     <!-- Bottom Ad Panel (Moved into Hero Section) -->
     <?php if (!isset($settings['show_hero_bottom_ad']) || $settings['show_hero_bottom_ad'] == '1'): ?>
-    <div class="container mx-auto px-4 relative z-20 w-full mt-6">
+    <div class="container mx-auto px-4 relative z-20 w-full mt-4">
         <div class="flex flex-wrap justify-center gap-4 w-full">
             <?php if (!empty($home_bottom_ads)): ?>
                 <?php foreach($home_bottom_ads as $ad): 
@@ -248,13 +248,13 @@ include 'includes/header.php';
                         $img_src = 'image.php?file=' . urlencode(ltrim(str_replace('../', '', $ad_img), '/\\'));
                     }
                 ?>
-                        <div class="relative w-full h-[100px] sm:h-[130px] md:h-[150px] rounded shadow-lg border border-gray-700 overflow-hidden">
+                        <div class="relative w-full h-[90px] sm:h-[110px] md:h-[120px] rounded shadow-lg border border-gray-700 overflow-hidden">
                             <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </div>
                 <?php endforeach; ?>
             <?php else: ?>
                 <!-- Unsplash Placeholder Ad -->
-                <div class="relative w-full h-[100px] sm:h-[130px] md:h-[150px] rounded shadow-lg border border-gray-700 overflow-hidden group">
+                <div class="relative w-full h-[90px] sm:h-[110px] md:h-[120px] rounded shadow-lg border border-gray-700 overflow-hidden group">
                     <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80" alt="Advertise" class="absolute inset-0 w-full h-full object-cover">
                     <div class="absolute inset-0 flex items-center justify-center bg-black/40">
                         <span class="text-white font-bold text-xl sm:text-2xl md:text-3xl tracking-widest uppercase">Advertise</span>
