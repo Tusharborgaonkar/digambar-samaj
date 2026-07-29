@@ -137,8 +137,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $is_digambar = $_POST['is_digambar'] ?? '';
     
     $languages_arr = $_POST['languages'] ?? [];
-    if (in_array('Other', $languages_arr) && !empty($_POST['other_language'])) {
-        $languages_arr[] = htmlspecialchars($_POST['other_language']);
+    if (($key = array_search('Other', $languages_arr)) !== false) {
+        unset($languages_arr[$key]);
+        if (!empty($_POST['other_language'])) {
+            $languages_arr[] = htmlspecialchars($_POST['other_language']);
+        }
     }
     $languages = !empty($languages_arr) ? implode(',', $languages_arr) : '';
     
