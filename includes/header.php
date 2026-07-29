@@ -420,8 +420,7 @@ $site_tagline = htmlspecialchars($settings['home_tagline'] ?? '(established in 2
             <a href="news.php" class="<?= $current_page == 'news.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">News & Updates</a>
             
             <?php if ($is_logged_in): ?>
-                <a href="my-profile.php" class="<?= $current_page == 'my-profile.php' || $current_page == 'registration.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg flex items-center gap-2">
-                    <img src="<?= htmlspecialchars($hdr_profile_img) ?>" class="w-8 h-8 rounded-full object-cover border border-gray-200" alt="Profile">
+                <a href="my-profile.php" class="<?= $current_page == 'my-profile.php' || $current_page == 'registration.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">
                     My Profile
                 </a>
                 <a href="login.php?logout=1" class="text-red-500 hover:text-red-700 transition text-lg font-medium">Logout</a>
@@ -461,8 +460,7 @@ $site_tagline = htmlspecialchars($settings['home_tagline'] ?? '(established in 2
                     <a href="news.php" class="<?= $current_page == 'news.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">News & Updates</a>
                     
                     <?php if ($is_logged_in): ?>
-                        <a href="my-profile.php" class="<?= $current_page == 'my-profile.php' || $current_page == 'registration.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1 flex items-center gap-2">
-                            <img src="<?= htmlspecialchars($hdr_profile_img) ?>" class="w-8 h-8 rounded-full object-cover border border-gray-200" alt="Profile">
+                        <a href="my-profile.php" class="<?= $current_page == 'my-profile.php' || $current_page == 'registration.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">
                             My Profile
                         </a>
                         <a href="login.php?logout=1" class="text-red-500 hover:text-red-700 transition font-medium ml-2">Logout</a>
