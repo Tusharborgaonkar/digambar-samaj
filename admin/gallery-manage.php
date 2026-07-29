@@ -103,6 +103,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['upload_media'])) {
     }
 }
 
+// Handle Banner Upload
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_banner'])) {
+    if (isset($_FILES['banner_image']) && $_FILES['banner_image']['error'] === UPLOAD_ERR_OK) {
+        $upload_dir = '../uploads/settings/';
+        if (!is_dir($upload_dir)) {
+            mkdir($upload_dir, 0755, true);
+        }
+        
+        $file_ext = strtolower(pathinfo($_FILES['banner_image']['name'], PATHINFO_EXTENSION));
+        $allowed_exts = ['jpg', 'jpeg', 'png', 'webp'];
+        
+        if (in_array($file_ext, $allowed_exts)) {
+            $filename = uniqid('gallery_banner_') . '.' . $file_ext;
+            $destination = $upload_dir . $filename;
+            
+            if (move_uploaded_file($_FILES['banner_image']['tmp_name'], $destination)) {
+                $db_path = 'uploads/settings/' . $filename;
+                
+                // Update or Insert into site_settings
+                $stmt = $pdo->prepare("SELECT setting_value FROM site_settings WHERE setting_key = 'gallery_background_image'");
+                $stmt->execute();
+                if ($stmt->fetch()) {
+                    $pdo->prepare("UPDATE site_settings SET setting_value = ? WHERE setting_key = 'gallery_background_image'")->execute([$db_path]);
+                } else {
+                    $pdo->prepare("INSERT INTO site_settings (setting_key, setting_value) VALUES ('gallery_background_image', ?)")->execute([$db_path]);
+                }
+                
+                header("Location: gallery-manage.php?msg=banner_updated");
+                exit;
+            } else {
+                $error = "Failed to upload banner image.";
+            }
+        } else {
+            $error = "Invalid banner file type. Allowed: JPG, PNG, WEBP.";
+        }
+    } else {
+        $error = "Please select a valid image file.";
+    }
+}
+
+// Handle Banner Delete
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_banner'])) {
+    $pdo->prepare("UPDATE site_settings SET setting_value = '' WHERE setting_key = 'gallery_background_image'")->execute();
+    header("Location: gallery-manage.php?msg=banner_deleted");
+    exit;
+}
+
 include 'includes/header.php';
 include 'includes/sidebar.php';
 
@@ -147,6 +194,48 @@ $photos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         });
     </script>
 <?php endif; ?>
+
+<!-- Gallery Banner Image Form -->
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
+    <h4 class="font-bold text-gray-800 mb-4"><i class="fas fa-image mr-2 text-primary"></i> Gallery Banner Image</h4>
+    
+    <?php 
+    $current_banner = $settings['gallery_background_image'] ?? ''; 
+    if (!empty($current_banner)) {
+        if (strpos($current_banner, 'data:image/') === 0 || preg_match('/^https?:\/\//i', $current_banner)) {
+            $banner_src = $current_banner;
+        } else {
+            $banner_src = '../image.php?file=' . urlencode(ltrim(str_replace('../', '', $current_banner), '/'));
+        }
+    ?>
+    <div class="mb-4">
+        <p class="text-sm font-medium text-gray-700 mb-2">Current Banner Preview:</p>
+        <div class="relative w-full h-32 md:h-48 rounded-lg overflow-hidden border border-gray-200">
+            <img src="<?= htmlspecialchars($banner_src) ?>" alt="Banner Preview" class="w-full h-full object-cover">
+        </div>
+        <form action="" method="POST" class="mt-2 text-right">
+            <button type="submit" name="delete_banner" class="text-red-500 hover:text-red-700 text-sm font-bold" onclick="return confirm('Remove current banner?')"><i class="fas fa-trash mr-1"></i> Remove Banner</button>
+        </form>
+    </div>
+    <?php } else { ?>
+        <div class="mb-4 text-gray-500 text-sm p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+            No banner image uploaded. The gallery page will use the default dark background.
+        </div>
+    <?php } ?>
+
+    <form action="" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row gap-4 items-end">
+        <input type="hidden" name="update_banner" value="1">
+        <div class="flex-1 w-full">
+            <label class="block text-sm font-medium text-gray-700 mb-1"><?= empty($current_banner) ? 'Upload New Banner' : 'Replace Banner Image' ?></label>
+            <input type="file" name="banner_image" accept=".jpg,.jpeg,.png,.webp" required class="w-full px-4 py-2 border border-gray-300 rounded-lg">
+        </div>
+        <div>
+            <button type="submit" class="bg-primary text-white py-2 px-6 rounded-lg font-bold shadow-sm hover:bg-opacity-90 transition w-full sm:w-auto h-[42px]">
+                <?= empty($current_banner) ? 'Upload' : 'Replace' ?>
+            </button>
+        </div>
+    </form>
+</div>
 
 <!-- Upload Form -->
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">

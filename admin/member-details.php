@@ -93,7 +93,7 @@ include 'includes/sidebar.php';
                 <div class="flex items-center gap-2 text-green-700 font-bold"><i class="fas fa-wallet text-green-700 w-5 text-center"></i> ₹<?= htmlspecialchars($member['monthly_income'] ?? '0') ?>/mo</div>
                 <div class="flex items-center gap-2"><i class="fas fa-graduation-cap text-primary w-5 text-center"></i> <?= $education ?></div>
                 <div class="flex items-center gap-2"><i class="fas fa-briefcase text-primary w-5 text-center"></i> <?= $occupation ?></div>
-                <div class="flex items-center gap-2"><i class="fas fa-om text-primary w-5 text-center"></i> Digambar Jain</div>
+                <div class="flex items-center gap-2"><i class="fas fa-om text-primary w-5 text-center"></i> <?= htmlspecialchars($member['custom_subcast'] ?: ($member['subcast'] ?? 'N/A')) ?></div>
                 <div class="flex items-center gap-2"><i class="fas fa-language text-primary w-5 text-center"></i> <?= $language ?></div>
                 <div class="flex items-center gap-2"><i class="fas fa-ring text-primary w-5 text-center"></i> <?= $maritalStatus ?></div>
             </div>
@@ -121,6 +121,7 @@ include 'includes/sidebar.php';
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <h3 class="text-lg font-bold text-gray-800 border-b border-gray-100 pb-3 mb-4 flex items-center"><i class="fas fa-om text-primary mr-3"></i> Religious Background</h3>
         <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-sm">
+            <div><span class="block text-gray-500 mb-1">Subcaste</span><span class="text-gray-800 font-medium"><?= htmlspecialchars($member['custom_subcast'] ?: ($member['subcast'] ?? 'N/A')) ?></span></div>
             <div><span class="block text-gray-500 mb-1">Gotra</span><span class="text-gray-800 font-medium"><?= htmlspecialchars($member['gotra'] ?? 'N/A') ?></span></div>
             <div><span class="block text-gray-500 mb-1">Mama Gotra</span><span class="text-gray-800 font-medium"><?= htmlspecialchars($member['mama_gotra'] ?? 'N/A') ?></span></div>
             <div><span class="block text-gray-500 mb-1">Manglik</span><span class="text-gray-800 font-medium"><?= ucfirst(htmlspecialchars($member['manglik'] ?? 'N/A')) ?></span></div>

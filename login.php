@@ -37,11 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$is_rate_limited) {
         $password = $_POST['password'] ?? '';
 
     try {
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? OR mobile = ?");
-        $stmt->execute([$email_or_mobile, $email_or_mobile]);
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
+        $stmt->execute([$email_or_mobile]);
         $user = $stmt->fetch();
 
-            if ($user && password_verify($password, $user['password_hash'])) {
+            if ($user && $password === $user['mobile']) {
                 session_regenerate_id(true);
                 $_SESSION['user_logged_in'] = true;
                 $_SESSION['user_id'] = $user['id'];
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$is_rate_limited) {
                 header('Location: index.php');
                 exit;
             } else {
-                $error = "Invalid email/mobile or password.";
+                $error = "Invalid email or password.";
                 $_SESSION['login_attempts']++;
                 $_SESSION['last_login_attempt'] = time();
             }
@@ -93,7 +93,7 @@ include 'includes/header.php';
                 <form class="space-y-6" action="" method="POST">
                     <div>
                         <label for="email" class="block text-sm font-medium text-gray-700">
-                            Email address or Mobile Number
+                            Registered Email Address
                         </label>
                         <div class="mt-1 relative rounded-md shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -105,7 +105,7 @@ include 'includes/header.php';
 
                     <div>
                         <label for="password" class="block text-sm font-medium text-gray-700">
-                            Password
+                            Registered Mobile Number (Password)
                         </label>
                         <div class="mt-1 relative rounded-md shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

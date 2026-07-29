@@ -47,8 +47,23 @@ foreach ($gallery_videos as $gv) {
     ];
 }
 ?>
+<?php
+$gallery_background_image = $settings['gallery_background_image'] ?? '';
+$gallery_bg_style = '';
+if (!empty($gallery_background_image)) {
+    if (strpos($gallery_background_image, 'data:image/') === 0) {
+        $gallery_bg_style = 'background-image: url(\'' . $gallery_background_image . '\'); background-size: cover; background-position: center;';
+    } else {
+        $clean_bg = ltrim(str_replace('../', '', $gallery_background_image), '/\\');
+        $gallery_bg_style = 'background-image: url(\'image.php?file=' . urlencode($clean_bg) . '\'); background-size: cover; background-position: center;';
+    }
+}
+?>
 
-<section class="relative py-16 md:py-24 bg-gray-900">
+<section class="relative py-16 md:py-24 bg-gray-900" style="<?= $gallery_bg_style ?>">
+    <?php if(!empty($gallery_bg_style)): ?>
+    <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+    <?php endif; ?>
     <div class="container mx-auto px-4 relative z-10 text-center">
         <h1 class="text-4xl md:text-5xl font-bold text-white drop-shadow-md" data-aos="fade-up">Photo Gallery</h1>
     </div>

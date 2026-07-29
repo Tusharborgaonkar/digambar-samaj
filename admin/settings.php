@@ -200,6 +200,7 @@ $hero_banner = $settings['hero_banner'] ?? '';
                         <input type="file" name="hero_banner_file" accept="image/*" class="text-sm">
                     </div>
                 </div>
+
             </div>
 
             <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 mt-6">

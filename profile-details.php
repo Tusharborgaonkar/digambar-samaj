@@ -116,7 +116,7 @@ include 'includes/header.php';
                     <img src="<?= $photo ?>" alt="Profile Image" class="w-full h-full object-cover">
                 </div>
                 
-                <div class="w-full md:w-2/3 p-6 md:p-10 flex flex-col justify-center">
+                <div class="w-full md:w-2/3 p-6 md:p-8 flex flex-col justify-start">
                     <div class="flex justify-between items-start mb-2">
                         <h1 class="text-3xl font-bold text-dark mb-2"><?= $fullName ?> <span class="text-lg text-primary font-medium ml-2">[MID: <?= $memberId ?>]</span></h1>
                         <div class="flex gap-2">
@@ -137,31 +137,22 @@ include 'includes/header.php';
                         <div class="flex items-center gap-3"><i class="far fa-calendar-alt text-primary w-5 text-center"></i> <?= $age ?>, <?= $heightDisplay ?></div>
                         <div class="flex items-center gap-3"><i class="fas fa-graduation-cap text-primary w-5 text-center"></i> <?= $education ?></div>
                         <div class="flex items-center gap-3"><i class="fas fa-briefcase text-primary w-5 text-center"></i> <?= $occupation ?></div>
-                        <div class="flex items-center gap-3"><i class="fas fa-om text-primary w-5 text-center"></i> Digambar Jain</div>
+                        <div class="flex items-center gap-3"><i class="fas fa-om text-primary w-5 text-center"></i> <?= htmlspecialchars($member['custom_subcast'] ?: ($member['subcast'] ?? 'N/A')) ?></div>
                         <div class="flex items-center gap-3"><i class="fas fa-language text-primary w-5 text-center"></i> <?= $language ?></div>
                         <div class="flex items-center gap-3"><i class="fas fa-ring text-primary w-5 text-center"></i> <?= $maritalStatus ?></div>
                     </div>
-
+                    <div class="mt-10">
+                        <h3 class="text-xl font-bold text-dark border-b-2 border-gray-100 pb-2 mb-4 flex items-center"><i class="far fa-user-circle text-primary mr-3 text-xl"></i> About <?= explode(' ', $fullName)[0] ?></h3>
+                        <p class="text-gray-700 leading-relaxed mb-3 text-sm md:text-base">
+                            <strong class="text-gray-900">Hobbies & Interests:</strong> <?= nl2br(htmlspecialchars($member['hobbies'] ?? 'Not specified')) ?>
+                        </p>
+                        <p class="text-gray-700 leading-relaxed text-sm md:text-base">
+                            <strong class="text-gray-900">Physical Challenges/Disabilities:</strong> <?= htmlspecialchars($member['handicapped'] ?? 'None') ?>
+                        </p>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Main Content Area -->
-            <div class="lg:col-span-2 space-y-8">
-                
-                <!-- About Section -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
-                    <h3 class="text-xl font-bold text-dark border-b-2 border-gray-100 pb-3 mb-5 flex items-center"><i class="far fa-user-circle text-primary mr-3 text-2xl"></i> About <?= explode(' ', $fullName)[0] ?></h3>
-                    <p class="text-gray-700 leading-relaxed mb-4">
-                        <strong>Hobbies & Interests:</strong> <?= nl2br(htmlspecialchars($member['hobbies'] ?? 'Not specified')) ?>
-                    </p>
-                    <p class="text-gray-700 leading-relaxed">
-                        <strong>Physical Challenges/Disabilities:</strong> <?= htmlspecialchars($member['handicapped'] ?? 'None') ?>
-                    </p>
-                </div>
-
+        <div class="space-y-6">
                 <!-- Personal Info -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8">
                     <h3 class="text-xl font-bold text-dark border-b-2 border-gray-100 pb-3 mb-5 flex items-center"><i class="far fa-id-card text-primary mr-3 text-2xl"></i> Personal Information</h3>
@@ -206,8 +197,8 @@ include 'includes/header.php';
                     <h3 class="text-xl font-bold text-dark border-b-2 border-gray-100 pb-3 mb-5 flex items-center"><i class="fas fa-om text-primary mr-3 text-2xl"></i> Religious & Astro Background</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-8">
                         <div>
-                            <span class="block text-sm text-gray-500 mb-1">Religion</span>
-                            <span class="text-dark font-semibold">Jain Digambar</span>
+                            <span class="block text-sm text-gray-500 mb-1">Subcaste</span>
+                            <span class="text-dark font-semibold"><?= htmlspecialchars($member['custom_subcast'] ?: ($member['subcast'] ?? 'N/A')) ?></span>
                         </div>
                         <div>
                             <span class="block text-sm text-gray-500 mb-1">Gotra</span>
@@ -351,19 +342,15 @@ include 'includes/header.php';
                     </div>
                 </div>
 
-            </div>
-
-            <!-- Sidebar -->
-            <div class="lg:col-span-1 space-y-8">
                 <!-- Partner Preferences -->
-                <div class="bg-light rounded-xl shadow-sm border border-primary/20 p-6 sticky top-24">
-                    <h3 class="text-lg font-bold text-primary border-b border-primary/20 pb-3 mb-4"><i class="fas fa-heart mr-2"></i> Partner Preferences</h3>
+                <div class="bg-light rounded-xl shadow-sm border border-primary/20 p-6 md:p-8">
+                    <h3 class="text-xl font-bold text-primary border-b border-primary/20 pb-3 mb-4"><i class="fas fa-heart mr-3 text-2xl"></i> Partner Preferences</h3>
                     
-                    <p class="text-sm text-gray-700 leading-relaxed">
+                    <p class="text-gray-700 leading-relaxed">
                         <?= nl2br(htmlspecialchars($member['partner_preference'] ?? 'Not specified by the member.')) ?>
                     </p>
                 </div>
-            </div>
+
         </div>
 
     </div>

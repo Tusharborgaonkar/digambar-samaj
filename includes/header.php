@@ -432,54 +432,8 @@ $site_tagline = htmlspecialchars($settings['home_tagline'] ?? '(established in 2
     
     <!-- Header -->
     <header class="bg-white shadow-sm sticky top-0 z-50">
-        <nav class="container mx-auto px-4 md:px-8 py-4">
-            <div class="flex justify-between items-center">
-                <!-- Logo -->
-                <div data-aos="fade-right">
-                    <a href="index.php" class="flex flex-col">
-                        <h1 class="text-2xl md:text-3xl font-bold text-[#8B2323]"><?= $site_title ?></h1>
-                        <span class="text-sm md:text-base text-[#8B2323] font-medium mt-1"><?= $site_tagline ?></span>
-                    </a>
-                </div>
-                
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="index.php" class="<?= $current_page == 'index.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Home</a>
-                    <a href="about.php" class="<?= $current_page == 'about.php' || $current_page == 'community.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">About Us</a>
-                    <!-- <div class="relative group">
-                        <a href="about.php" class="<?= $current_page == 'about.php' || $current_page == 'community.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition inline-flex items-center gap-1 pb-1">
-                            About Us <i class="fas fa-chevron-down text-xs"></i>
-                        </a>
-                        <div class="absolute top-full left-0 mt-2 w-48 bg-white shadow-lg rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                            <a href="community.php" class="<?= $current_page == 'community.php' ? 'bg-primary text-white' : 'text-gray-700 hover:bg-primary hover:text-white' ?> block px-4 py-2 rounded-t-lg transition">Community</a>
-                        </div>
-                    </div> -->
-                    <a href="success-stories.php" class="<?= $current_page == 'success-stories.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Success Story</a>
-                    <a href="profiles.php" class="<?= $current_page == 'profiles.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Find Your Match</a>
-                    <a href="gallery.php" class="<?= $current_page == 'gallery.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Gallery</a>
-                    <a href="news.php" class="<?= $current_page == 'news.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">News & Updates</a>
-                    
-                    <?php if ($is_logged_in): ?>
-                        <a href="my-profile.php" class="<?= $current_page == 'my-profile.php' || $current_page == 'registration.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">
-                            My Profile
-                        </a>
-                        <a href="login.php?logout=1" class="text-red-500 hover:text-red-700 transition font-medium ml-2">Logout</a>
-                    <?php else: ?>
-                        <a href="login.php" class="<?= $current_page == 'login.php' || $current_page == 'registration.php' || $current_page == 'pre-register.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Login / Registration</a>
-                    <?php endif; ?>
-                </div>
-                
-                <!-- Hamburger Icon (Mobile) -->
-                <div class="md:hidden hamburger" id="hamburger">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div>
-        </nav>
-        
-        <!-- Scrolling News -->
-        <?php if (!empty($scrolling_news)): ?>
+        <!-- Scrolling News (Home Page Only) -->
+        <?php if ($current_page == 'index.php' && !empty($scrolling_news)): ?>
         <div class="bg-primary text-white text-sm py-2 overflow-hidden">
             <div class="container mx-auto px-4 flex items-center">
                 <span class="font-bold whitespace-nowrap bg-secondary px-3 py-1 rounded mr-3 shadow text-xs uppercase tracking-wider">News Updates</span>
@@ -499,6 +453,44 @@ $site_tagline = htmlspecialchars($settings['home_tagline'] ?? '(established in 2
             </div>
         </div>
         <?php endif; ?>
+
+        <!-- Top Title & Tagline Section -->
+        <div class="container mx-auto px-4 py-4 md:py-5 border-b border-gray-100 flex justify-between items-center md:block text-center">
+            <div data-aos="fade-down" class="flex-grow">
+                <a href="index.php" class="inline-flex flex-col items-center justify-center">
+                    <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-[#8B2323] tracking-wide mb-1">दिगम्बर जैन परिचय मेट्रीमोनीयल</h1>
+                    <span class="text-xs md:text-sm lg:text-base text-[#8B2323] font-medium hidden sm:block">दिगम्बर जैन समाज के विवाह योग्य युवक-युवतियों के जीवनसाथी चयन में सहायक एकमात्र वेबसाईट</span>
+                </a>
+            </div>
+            
+            <!-- Hamburger Icon (Mobile) -->
+            <div class="md:hidden hamburger flex-shrink-0 ml-4" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Navigation Section -->
+        <nav class="container mx-auto px-4 md:px-8 py-3 hidden md:block">
+            <div class="flex justify-center items-center space-x-6 lg:space-x-8">
+                <a href="index.php" class="<?= $current_page == 'index.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Home</a>
+                <a href="about.php" class="<?= $current_page == 'about.php' || $current_page == 'community.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">About Us</a>
+                <a href="success-stories.php" class="<?= $current_page == 'success-stories.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Success Story</a>
+                <a href="profiles.php" class="<?= $current_page == 'profiles.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Find Your Match</a>
+                <a href="gallery.php" class="<?= $current_page == 'gallery.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Gallery</a>
+                <a href="news.php" class="<?= $current_page == 'news.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">News & Updates</a>
+                
+                <?php if ($is_logged_in): ?>
+                    <a href="my-profile.php" class="<?= $current_page == 'my-profile.php' || $current_page == 'registration.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">
+                        My Profile
+                    </a>
+                    <a href="login.php?logout=1" class="text-red-500 hover:text-red-700 transition font-medium ml-2">Logout</a>
+                <?php else: ?>
+                    <a href="login.php" class="<?= $current_page == 'login.php' || $current_page == 'registration.php' || $current_page == 'pre-register.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Login / Registration</a>
+                <?php endif; ?>
+            </div>
+        </nav>
     </header>
     
     <main class="overflow-x-hidden">

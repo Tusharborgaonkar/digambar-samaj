@@ -98,7 +98,7 @@ if (!empty($_GET['state'])) {
 
 if (!empty($_GET['education']) && $_GET['education'] !== 'Education All') {
     $edu = $_GET['education'];
-    if ($edu === 'Doctorate' || $edu === 'Doctor') {
+    if ($edu === 'Doctors' || $edu === 'Doctor' || $edu === 'Doctorate') {
         $where[] = "(higher_education LIKE '%Doctor%' OR higher_education LIKE '%MBBS%' OR higher_education LIKE '%BDS%' OR higher_education LIKE '%MD%' OR higher_education LIKE '%MS%' OR higher_education LIKE '%BAMS%' OR higher_education LIKE '%BHMS%' OR higher_education LIKE '%MDS%' OR higher_education LIKE '%Ph.D%')";
     } elseif ($edu === 'Engineer') {
         $where[] = "(higher_education LIKE '%Engineer%' OR higher_education LIKE '%B.E%' OR higher_education LIKE '%B.Tech%' OR higher_education LIKE '%M.Tech%' OR higher_education LIKE '%B Tech%' OR higher_education LIKE '%M Tech%' OR higher_education LIKE '%B. E%')";
@@ -299,7 +299,7 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         
                         <!-- Education -->
                         <?php
-                        $educationOptions = ['Education All', 'Bachelors', 'Masters', 'Doctorate', 'Diploma', 'Engineer', 'MBA', 'MCA', 'LLB', 'LLM', 'CA', 'CS', 'ICWAI'];
+                        $educationOptions = ['Education All', 'Bachelors', 'Masters', 'Doctors', 'Diploma', 'Engineer', 'MBA', 'MCA', 'LLB', 'LLM', 'CA', 'CS', 'ICWAI'];
                         $selectedEdu = $_GET['education'] ?? 'Education All';
                         ?>
                         <select name="education" class="w-full border border-gray-300 rounded-md p-2.5 mb-4 text-sm text-gray-700 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-white">
@@ -375,7 +375,7 @@ $profiles = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <li><a href="profiles.php" class="block text-gray-600 hover:text-primary hover:underline transition">All Profiles</a></li>
                         <li><a href="profiles.php?gender=Girl" class="block text-gray-600 hover:text-primary hover:underline transition">All Girls</a></li>
                         <li><a href="profiles.php?gender=Boy" class="block text-gray-600 hover:text-primary hover:underline transition">All Boys</a></li>
-                        <li><a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=Doctorate" class="block text-gray-600 hover:text-primary hover:underline transition">All Doctors</a></li>
+                        <li><a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=Doctors" class="block text-gray-600 hover:text-primary hover:underline transition">All Doctors</a></li>
                         <li><a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=LLB" class="block text-gray-600 hover:text-primary hover:underline transition">All LLB, LLM</a></li>
                         <li><a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=Engineer" class="block text-gray-600 hover:text-primary hover:underline transition">All Engineers</a></li>
                         <li><a href="profiles.php?gender=<?= urlencode($genderFilter) ?>&education=MBA" class="block text-gray-600 hover:text-primary hover:underline transition">All MBA, MCA</a></li>

@@ -67,8 +67,32 @@ if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) 
     $is_approved = true;
 }
 
+// Fetch marquee advertisements
+$marquee_ads_text = [];
+try {
+    $stmt = $pdo->query("SELECT advertisement_text FROM marquee_ads WHERE status = 1 ORDER BY created_at DESC");
+    if ($stmt) {
+        $ads = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($ads as $ad) {
+            $marquee_ads_text[] = htmlspecialchars($ad['advertisement_text']);
+        }
+    }
+} catch (Exception $e) {}
+
 include 'includes/header.php';
 ?>
+
+<?php if (!empty($marquee_ads_text)): ?>
+<!-- Advertisement Marquee -->
+<div class="bg-[#800000] text-white py-2 overflow-hidden relative" style="display: flex; align-items: center; white-space: nowrap;">
+    <div class="marquee-content inline-block">
+        <span class="text-lg font-medium px-4">
+            <?= implode(' <span class="mx-2 text-yellow-300">| ★ |</span> ', $marquee_ads_text) ?>
+        </span>
+    </div>
+</div>
+<?php endif; ?>
+
 
 <!-- Preloader -->
 <div id="preloader"
@@ -94,6 +118,22 @@ include 'includes/header.php';
 </div>
 
 <style>
+    .marquee-content {
+        display: inline-block;
+        padding-left: 100%;
+        animation: marquee 20s linear infinite;
+    }
+    .marquee-content:hover {
+        animation-play-state: paused;
+    }
+    @keyframes marquee {
+        0% {
+            transform: translate(0, 0);
+        }
+        100% {
+            transform: translate(-100%, 0);
+        }
+    }
     @keyframes spin-reverse {
         0% {
             transform: rotate(360deg);
@@ -123,17 +163,17 @@ include 'includes/header.php';
 </script>
 
 <!-- Hero Section (3-Column Layout) -->
-<section class="relative flex flex-col justify-start items-center overflow-hidden bg-gray-900 pt-4 pb-8 sm:pb-12">
+<section class="relative flex flex-col justify-start items-center overflow-hidden bg-gray-900 pt-3 pb-6 sm:pb-8 lg:pb-10">
     <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-primary/20 z-0"></div>
 
     <div class="container mx-auto px-4 relative z-20 w-full flex flex-col xl:flex-row gap-6">
         
-        <!-- Left + Right Ads wrapper: 2-col row on mobile/tablet, becomes plain flex children (sidebars) on xl -->
-        <div class="grid grid-cols-2 gap-4 xl:contents order-2 xl:order-none">
+        <!-- Left + Right Ads wrapper: 1-col on mobile, 2-col on tablet, becomes plain flex children (sidebars) on xl -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 xl:contents order-2 xl:order-none">
 
         <!-- Left Ad Panel -->
         <?php if (!isset($settings['show_hero_left_ad']) || $settings['show_hero_left_ad'] == '1'): ?>
-        <div class="flex flex-col w-full xl:w-64 space-y-4 flex-shrink-0 xl:order-1">
+        <div class="flex flex-col w-full xl:w-56 space-y-3 flex-shrink-0 xl:order-1">
             <?php if (!empty($left_sidebar_ads)): ?>
                 <?php foreach($left_sidebar_ads as $ad): 
                     $ad_img = $ad['image'] ?? $ad['image_path'] ?? '';
@@ -144,21 +184,21 @@ include 'includes/header.php';
                     }
                 ?>
                     <?php if(!empty($ad['link'])): ?>
-                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[160px] sm:min-h-[200px] xl:min-h-[240px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
+                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[160px] sm:min-h-[180px] xl:min-h-[200px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
                             <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </a>
                     <?php else: ?>
-                        <div class="relative w-full h-full min-h-[160px] sm:min-h-[200px] xl:min-h-[240px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
+                        <div class="relative w-full h-full min-h-[160px] sm:min-h-[180px] xl:min-h-[200px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
                             <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </div>
                     <?php endif; ?>
                 <?php endforeach; ?>
             <?php else: ?>
                 <!-- Unsplash Placeholder Ad -->
-                <div class="relative w-full h-full min-h-[160px] sm:min-h-[200px] xl:min-h-[240px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden group">
+                <div class="relative w-full h-full min-h-[160px] sm:min-h-[180px] xl:min-h-[200px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden group">
                     <img src="https://images.unsplash.com/photo-1583939000148-f75e1140984f?auto=format&fit=crop&w=400&q=80" alt="Advertise" class="absolute inset-0 w-full h-full object-cover">
                     <div class="absolute inset-0 flex items-center justify-center bg-black/40">
-                        <span class="text-white font-bold text-base sm:text-xl xl:text-2xl tracking-widest uppercase">Advertise</span>
+                        <span class="text-white font-bold text-base sm:text-lg xl:text-xl tracking-widest uppercase">Advertise</span>
                     </div>
                 </div>
             <?php endif; ?>
@@ -166,21 +206,21 @@ include 'includes/header.php';
         <?php endif; ?>
 
         <!-- Center Section (Content & Banner) -->
-        <div class="flex-grow w-full col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-0 items-stretch bg-[#1a2942] rounded-2xl overflow-hidden shadow-2xl order-1 xl:order-2 min-h-[240px] sm:min-h-[280px] md:min-h-[300px]" data-aos="fade-up">
-            <div class="flex flex-col justify-center p-4 sm:p-6 md:p-10 lg:p-12 text-center sm:text-left h-full">
-                <h2 class="text-base sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight">
+        <div class="flex-grow w-full col-span-1 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-0 items-stretch bg-[#1a2942] rounded-2xl overflow-hidden shadow-2xl order-first xl:order-2 min-h-[220px] sm:min-h-[260px] md:min-h-[280px]" data-aos="fade-up">
+            <div class="flex flex-col justify-center p-4 sm:p-5 md:p-8 lg:p-10 text-center sm:text-left h-full">
+                <h2 class="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold text-white leading-tight">
                     <?php 
                         $hero_h = $settings['hero_heading'] ?? "The most trusted\nmatrimony\nservice for\nDigambar Jain!";
                         $hero_h = str_ireplace(['<br>', '<br/>', '<br />'], "\n", $hero_h);
                         echo nl2br(htmlspecialchars($hero_h));
                     ?>
                 </h2>
-                <p class="hidden sm:block text-sm sm:text-base md:text-lg text-gray-300 leading-relaxed max-w-xl mt-4 sm:mt-6 md:mt-8">
+                <p class="hidden sm:block text-sm sm:text-base md:text-[15px] lg:text-base text-gray-300 leading-relaxed max-w-xl mt-3 sm:mt-4 md:mt-6">
                     <?= nl2br(htmlspecialchars($settings['hero_description'] ?? 'This website is created only for the Digambar Jain community to help eligible young men and women of the entire Digambar Jain society find their suitable life partner.')) ?>
                 </p>
             </div>
             
-            <div class="relative w-full h-full min-h-[140px] sm:min-h-[220px] md:min-h-[300px] flex items-center justify-center bg-[#1a2942] p-2 sm:p-4">
+            <div class="relative w-full h-full min-h-[140px] sm:min-h-[200px] md:min-h-[260px] flex items-center justify-center bg-[#1a2942] p-2 sm:p-4">
                 <?php
                 $hero_img_src = 'assets/images/gallery/TEMP1.jpg';
                 if (!empty($settings['hero_banner'])) {
@@ -192,13 +232,13 @@ include 'includes/header.php';
                     }
                 }
                 ?>
-                <img src="<?= $hero_img_src ?>" alt="Matrimony Hero" class="w-full h-full object-contain max-h-[180px] sm:max-h-[240px] md:max-h-[300px] lg:max-h-[350px]">
+                <img src="<?= $hero_img_src ?>" alt="Matrimony Hero" class="w-full h-full object-contain max-h-[160px] sm:max-h-[220px] md:max-h-[280px] lg:max-h-[300px]">
             </div>
         </div>
 
         <!-- Right Ad Panel -->
         <?php if (!isset($settings['show_hero_right_ad']) || $settings['show_hero_right_ad'] == '1'): ?>
-        <div class="flex flex-col w-full xl:w-64 space-y-4 flex-shrink-0 xl:order-3">
+        <div class="flex flex-col w-full xl:w-56 space-y-3 flex-shrink-0 xl:order-3">
             <?php if (!empty($right_sidebar_ads)): ?>
                 <?php foreach($right_sidebar_ads as $ad): 
                     $ad_img = $ad['image'] ?? $ad['image_path'] ?? '';
@@ -209,21 +249,21 @@ include 'includes/header.php';
                     }
                 ?>
                     <?php if(!empty($ad['link'])): ?>
-                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[160px] sm:min-h-[200px] xl:min-h-[240px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
+                        <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[160px] sm:min-h-[180px] xl:min-h-[200px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
                             <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </a>
                     <?php else: ?>
-                        <div class="relative w-full h-full min-h-[160px] sm:min-h-[200px] xl:min-h-[240px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
+                        <div class="relative w-full h-full min-h-[160px] sm:min-h-[180px] xl:min-h-[200px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
                             <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </div>
                     <?php endif; ?>
                 <?php endforeach; ?>
             <?php else: ?>
                 <!-- Unsplash Placeholder Ad -->
-                <div class="relative w-full h-full min-h-[160px] sm:min-h-[200px] xl:min-h-[240px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden group">
+                <div class="relative w-full h-full min-h-[160px] sm:min-h-[180px] xl:min-h-[200px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden group">
                     <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=400&q=80" alt="Advertise" class="absolute inset-0 w-full h-full object-cover">
                     <div class="absolute inset-0 flex items-center justify-center bg-black/40">
-                        <span class="text-white font-bold text-base sm:text-xl xl:text-2xl tracking-widest uppercase">Advertise</span>
+                        <span class="text-white font-bold text-base sm:text-lg xl:text-xl tracking-widest uppercase">Advertise</span>
                     </div>
                 </div>
             <?php endif; ?>
@@ -237,7 +277,7 @@ include 'includes/header.php';
 
     <!-- Bottom Ad Panel (Moved into Hero Section) -->
     <?php if (!isset($settings['show_hero_bottom_ad']) || $settings['show_hero_bottom_ad'] == '1'): ?>
-    <div class="container mx-auto px-4 relative z-20 w-full mt-4">
+    <div class="container mx-auto px-4 relative z-20 w-full mt-3">
         <div class="flex flex-wrap justify-center gap-4 w-full">
             <?php if (!empty($home_bottom_ads)): ?>
                 <?php foreach($home_bottom_ads as $ad): 
@@ -248,16 +288,16 @@ include 'includes/header.php';
                         $img_src = 'image.php?file=' . urlencode(ltrim(str_replace('../', '', $ad_img), '/\\'));
                     }
                 ?>
-                        <div class="relative w-full h-[90px] sm:h-[110px] md:h-[120px] rounded shadow-lg border border-gray-700 overflow-hidden">
+                        <div class="relative w-full h-[80px] sm:h-[90px] md:h-[100px] rounded shadow-lg border border-gray-700 overflow-hidden">
                             <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
                         </div>
                 <?php endforeach; ?>
             <?php else: ?>
                 <!-- Unsplash Placeholder Ad -->
-                <div class="relative w-full h-[90px] sm:h-[110px] md:h-[120px] rounded shadow-lg border border-gray-700 overflow-hidden group">
+                <div class="relative w-full h-[80px] sm:h-[90px] md:h-[100px] rounded shadow-lg border border-gray-700 overflow-hidden group">
                     <img src="https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1200&q=80" alt="Advertise" class="absolute inset-0 w-full h-full object-cover">
                     <div class="absolute inset-0 flex items-center justify-center bg-black/40">
-                        <span class="text-white font-bold text-xl sm:text-2xl md:text-3xl tracking-widest uppercase">Advertise</span>
+                        <span class="text-white font-bold text-lg sm:text-xl md:text-2xl tracking-widest uppercase">Advertise</span>
                     </div>
                 </div>
             <?php endif; ?>
@@ -269,8 +309,8 @@ include 'includes/header.php';
 
 
 <!-- Quick Search Section -->
-<section class="bg-light relative z-20 mt-8 sm:mt-16 md:mt-24 lg:mt-36">
-    <div class="container mx-auto px-4 -mt-4 sm:-mt-10 md:-mt-16 lg:-mt-24 mb-12">
+<section class="bg-light relative z-20 mt-6 sm:mt-10 md:mt-16 lg:mt-24">
+    <div class="container mx-auto px-4 -mt-4 sm:-mt-8 md:-mt-12 lg:-mt-16 mb-10">
         <div id="quick-search"
             class="bg-white bg-opacity-95 p-4 sm:p-6 rounded-xl shadow-2xl max-w-6xl mx-auto backdrop-blur-sm border-t-4 border-primary"
             data-aos="fade-up" data-aos-delay="200">
@@ -361,7 +401,7 @@ include 'includes/header.php';
                                 <option value="">Any Education</option>
                                 <option value="Bachelors">Bachelors</option>
                                 <option value="Masters">Masters</option>
-                                <option value="Doctorate">Doctorate</option>
+                                <option value="Doctors">Doctors</option>
                                 <option value="Diploma">Diploma</option>
                             </select>
                         </div>
@@ -609,7 +649,7 @@ include 'includes/header.php';
                 <i class="fas fa-male mr-2 text-primary group-hover:text-white"></i> All Boys</a>
         </div>
         <div class="flex flex-wrap justify-center gap-3 sm:gap-4 mt-8" data-aos="fade-up" data-aos-delay="100">
-            <a href="profiles.php?education=Doctorate"
+            <a href="profiles.php?education=Doctors"
                 class="bg-light border border-gray-200 text-dark px-4 sm:px-6 py-2.5 sm:py-3 rounded-md hover:bg-primary hover:text-white hover:border-primary transition shadow-sm font-semibold flex items-center group text-sm sm:text-base"><i
                     class="fas fa-user-md mr-2 text-primary group-hover:text-white"></i> Doctors</a>
             <a href="profiles.php?education=Engineer"
