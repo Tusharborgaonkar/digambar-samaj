@@ -89,7 +89,9 @@ $maritalStatus = !empty($member['marital_status']) ? htmlspecialchars($member['m
 $location = htmlspecialchars($member['native_place'] ?? 'N/A');
 $education = htmlspecialchars($member['higher_education'] ?? 'N/A');
 $occupation = htmlspecialchars($member['occupation'] ?? 'N/A');
-$language = htmlspecialchars($member['languages'] ?? 'N/A');
+$raw_langs = explode(',', $member['languages'] ?? '');
+$clean_langs = array_filter($raw_langs, function($l) { return trim($l) !== 'Other'; });
+$language = htmlspecialchars(!empty($clean_langs) ? implode(', ', $clean_langs) : 'N/A');
 
 include 'includes/header.php';
 ?>
@@ -450,7 +452,7 @@ include 'includes/header.php';
       <td colspan="2" style="border-top:1px solid #ccc;padding:7px 12px;font-size:12px;">
         <div style="padding:1px 0;line-height:1.75;"><strong>Current Address</strong> &nbsp;: &nbsp;<?= htmlspecialchars($member['current_address'] ?? 'N/A') ?></div>
         <div style="padding:1px 0;line-height:1.75;"><strong>Specific Partner Choice</strong> &nbsp;: &nbsp;<?= htmlspecialchars($member['partner_preference'] ?? 'Not specified') ?></div>
-        <div style="padding:1px 0;line-height:1.75;"><strong>Language Known</strong> &nbsp;: &nbsp;<?= htmlspecialchars($member['languages'] ?? 'N/A') ?></div>
+        <div style="padding:1px 0;line-height:1.75;"><strong>Language Known</strong> &nbsp;: &nbsp;<?= $language ?></div>
         <div style="padding:1px 0;line-height:1.75;"><strong>Other Info.</strong> &nbsp;: &nbsp;<?= htmlspecialchars($member['handicapped'] ?? 'Not Applicable') ?> / <?= htmlspecialchars($member['marital_status'] ?? 'N/A') ?></div>
       </td>
     </tr>

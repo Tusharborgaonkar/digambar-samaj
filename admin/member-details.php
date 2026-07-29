@@ -40,8 +40,9 @@ $maritalStatus = htmlspecialchars($member['marital_status'] ?? 'N/A');
 $location = htmlspecialchars($member['native_place'] ?? 'N/A');
 $education = htmlspecialchars($member['higher_education'] ?? 'N/A');
 $occupation = htmlspecialchars($member['occupation'] ?? 'N/A');
-$language = htmlspecialchars($member['languages'] ?? 'N/A');
-
+$raw_langs = explode(',', $member['languages'] ?? '');
+$clean_langs = array_filter($raw_langs, function($l) { return trim($l) !== 'Other'; });
+$language = htmlspecialchars(!empty($clean_langs) ? implode(', ', $clean_langs) : 'N/A');
 include 'includes/header.php';
 include 'includes/sidebar.php';
 ?>

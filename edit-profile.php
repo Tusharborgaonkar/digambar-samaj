@@ -660,7 +660,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <div><label class="block text-gray-700 font-medium mb-2">Language Known *</label>
                             <?php 
                             $curr_langs = !empty($current_user['languages']) ? explode(',', $current_user['languages']) : [];
-                            $other_langs = array_diff($curr_langs, ['Gujarati', 'Hindi', 'English']);
+                            $other_langs = array_diff($curr_langs, ['Gujarati', 'Hindi', 'English', 'Other']);
                             $has_other_lang = !empty($other_langs);
                             ?>
                             <div class="grid grid-cols-2 gap-2"><label><input type="checkbox" name="languages[]" value="Gujarati" <?= in_array('Gujarati', $curr_langs) ? 'checked' : '' ?>> Gujarati</label><label><input type="checkbox" name="languages[]" value="Hindi" <?= in_array('Hindi', $curr_langs) ? 'checked' : '' ?>> Hindi</label><label><input type="checkbox" name="languages[]" value="English" <?= in_array('English', $curr_langs) ? 'checked' : '' ?>> English</label><label><input type="checkbox" name="languages[]" id="language_other_checkbox" value="Other" <?= $has_other_lang ? 'checked' : '' ?>> Other</label></div>
