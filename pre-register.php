@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$is_rate_limited) {
                 // Create account
                 $password_hash = password_hash($reg['password'], PASSWORD_DEFAULT);
                 try {
-                    $ins = $pdo->prepare("INSERT INTO users (full_name, mobile, email, password_hash, status) VALUES (?, ?, ?, ?, 'account_approved')");
+                    $ins = $pdo->prepare("INSERT INTO users (full_name, mobile, email, password_hash, has_set_password, status) VALUES (?, ?, ?, ?, 1, 'account_approved')");
                     $ins->execute([$reg['full_name'], $reg['country_code'] . $reg['mobile'], $reg['email'], $password_hash]);
 
                     unset($_SESSION['otp_step'], $_SESSION['otp_email'], $_SESSION['reg_data']);

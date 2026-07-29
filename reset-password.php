@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $valid_token) {
             $pdo->beginTransaction();
 
             // Update user password
-            $stmt = $pdo->prepare("UPDATE users SET password_hash = ? WHERE email = ?");
+            $stmt = $pdo->prepare("UPDATE users SET password_hash = ?, has_set_password = 1 WHERE email = ?");
             $stmt->execute([$password_hash, $email]);
 
             // Delete token

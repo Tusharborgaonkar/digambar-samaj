@@ -41,7 +41,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$is_rate_limited) {
         $stmt->execute([$email_or_mobile]);
         $user = $stmt->fetch();
 
-            if ($user && $password === $user['mobile']) {
+        $is_valid_password = false;
+        if ($user) {
+            if ($user['has_set_password'] == 1 && !empty($user['password_hash'])) {
+                // Users registered via the new flow or who have changed their password
+                $is_valid_password = password_verify($password, $user['password_hash']);
+            } else {
+                // Existing users before the update: Default password is the registered mobile number
+                $is_valid_password = ($password === $user['mobile']);
+            }
+        }
+
+        if ($is_valid_password) {
                 session_regenerate_id(true);
                 $_SESSION['user_logged_in'] = true;
                 $_SESSION['user_id'] = $user['id'];
