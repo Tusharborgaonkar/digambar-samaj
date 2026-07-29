@@ -99,7 +99,7 @@ if (!empty($_GET['state'])) {
 if (!empty($_GET['education']) && $_GET['education'] !== 'Education All') {
     $edu = $_GET['education'];
     if ($edu === 'Doctors' || $edu === 'Doctor' || $edu === 'Doctorate') {
-        $where[] = "(higher_education LIKE '%Doctor%' OR higher_education LIKE '%MBBS%' OR higher_education LIKE '%BDS%' OR higher_education LIKE '%MD%' OR higher_education LIKE '%MS%' OR higher_education LIKE '%BAMS%' OR higher_education LIKE '%BHMS%' OR higher_education LIKE '%MDS%' OR higher_education LIKE '%Ph.D%')";
+        $where[] = "(higher_education LIKE '%Doctor%' OR higher_education LIKE '%MBBS%' OR higher_education LIKE '%BDS%' OR higher_education LIKE '%MD %' OR higher_education LIKE '%M.D%' OR higher_education LIKE '%MD(%' OR higher_education = 'MD' OR higher_education LIKE '%Surgery%' OR higher_education LIKE '%Surgeon%' OR higher_education LIKE '%BAMS%' OR higher_education LIKE '%BHMS%' OR higher_education LIKE '%MDS%' OR higher_education LIKE '%Dentist%' OR higher_education LIKE '%Medical%')";
     } elseif ($edu === 'Engineer') {
         $where[] = "(higher_education LIKE '%Engineer%' OR higher_education LIKE '%B.E%' OR higher_education LIKE '%B.Tech%' OR higher_education LIKE '%M.Tech%' OR higher_education LIKE '%B Tech%' OR higher_education LIKE '%M Tech%' OR higher_education LIKE '%B. E%')";
     } elseif ($edu === 'MBA') {
