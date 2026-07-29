@@ -86,6 +86,39 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $members = $stmt->fetchAll();
 
+// Add a UNIQUE constraint if one does not already exist (ignoring errors if it does or if duplicate empty strings prevent it)
+try {
+    $pdo->exec("ALTER TABLE users ADD UNIQUE INDEX idx_profile_id (profile_id)");
+} catch (PDOException $e) {
+    // Index exists or cannot be created due to existing duplicates, ignore
+}
+
+// Automatically generate MID for new registrations with empty profile_id
+foreach ($members as $key => $member) {
+    if (empty($member['profile_id'])) {
+        $isUnique = false;
+        $newMid = '';
+        
+        while (!$isUnique) {
+            $randomDigits = mt_rand(100000, 999999);
+            $newMid = 'JDM' . $randomDigits;
+            
+            $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM users WHERE profile_id = ?");
+            $checkStmt->execute([$newMid]);
+            if ($checkStmt->fetchColumn() == 0) {
+                $isUnique = true;
+            }
+        }
+        
+        // Update database
+        $updateStmt = $pdo->prepare("UPDATE users SET profile_id = ? WHERE id = ?");
+        $updateStmt->execute([$newMid, $member['id']]);
+        
+        // Update local array for display
+        $members[$key]['profile_id'] = $newMid;
+    }
+}
+
 // Calculate range for "Showing X to Y of Z results"
 $start_result = $offset + 1;
 $end_result = min($offset + $limit, $total_records);
