@@ -380,9 +380,14 @@ include 'includes/header.php';
   $su    = $member['sisters_unmarried']  ?? 0;
   $dob_f = !empty($member['birth_date']) ? date('d-m-y', strtotime($member['birth_date'])) : 'N/A';
   $bt_f  = !empty($member['birth_time']) ? date('h:i:s A', strtotime($member['birth_time'])) : 'N/A';
-  $psrc  = (!empty($member['profile_photo']) && file_exists($member['profile_photo']))
-      ? 'http://'.$_SERVER['HTTP_HOST'].'/digambar-samaj/image.php?file='.urlencode($member['profile_photo'])
-      : 'https://ui-avatars.com/api/?name='.urlencode($member['full_name'] ?? 'User').'&size=200&background=1a1a6e&color=fff';
+  $psrc = '';
+  if (!empty($member['profile_photo']) && file_exists($member['profile_photo'])) {
+      $mime = mime_content_type($member['profile_photo']);
+      $b64 = base64_encode(file_get_contents($member['profile_photo']));
+      $psrc = 'data:' . $mime . ';base64,' . $b64;
+  } else {
+      $psrc = 'https://ui-avatars.com/api/?name='.urlencode($member['full_name'] ?? 'User').'&size=200&background=1a1a6e&color=fff';
+  }
   ?>
   <table style="width:100%;border-collapse:collapse;border:2px solid #1a1a6e;">
 
