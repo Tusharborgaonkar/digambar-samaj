@@ -50,6 +50,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_ad'])) {
     exit;
 }
 
+// Helper function to handle media upload
+function handleMediaUpload($file) {
+    if ($file['error'] !== UPLOAD_ERR_OK) return false;
+    
+    $mime_type = mime_content_type($file['tmp_name']);
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+    
+    $is_image = strpos($mime_type, 'image/') === 0 && in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif']);
+    $is_video = strpos($mime_type, 'video/') === 0 && in_array($ext, ['mp4', 'webm']);
+    
+    if (!$is_image && !$is_video) return false;
+    
+    $upload_dir = '../uploads/ads/';
+    if (!is_dir($upload_dir)) mkdir($upload_dir, 0755, true);
+    
+    $filename = uniqid('ad_') . '.' . $ext;
+    $dest = $upload_dir . $filename;
+    
+    if (move_uploaded_file($file['tmp_name'], $dest)) {
+        return [
+            'path' => 'uploads/ads/' . $filename,
+            'media_type' => $is_video ? 'video' : 'image'
+        ];
+    }
+    return false;
+}
+
 // Handle Edit Ad
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_ad'])) {
     $id = $_POST['edit_id'];
@@ -60,12 +87,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_ad'])) {
     
     // Check if new image is uploaded
     if (isset($_FILES['ad_image']) && $_FILES['ad_image']['error'] === UPLOAD_ERR_OK) {
-        $image_data = file_get_contents($_FILES['ad_image']['tmp_name']);
-        $mime_type = mime_content_type($_FILES['ad_image']['tmp_name']);
-        
-        if ($image_data !== false && strpos($mime_type, 'image/') === 0) {
-            $base64 = base64_encode($image_data);
-            $dbPath = 'data:' . $mime_type . ';base64,' . $base64;
+        $upload_result = handleMediaUpload($_FILES['ad_image']);
+        if ($upload_result) {
+            $dbPath = $upload_result['path'];
+            $media_type = $upload_result['media_type'];
             
             // Delete old image
             $stmt = $pdo->prepare("SELECT image FROM advertisements WHERE id = ?");
@@ -75,8 +100,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_ad'])) {
                 unlink('../' . $oldImg);
             }
             
-            $stmt = $pdo->prepare("UPDATE advertisements SET title = ?, link = ?, position = ?, status = ?, image = ? WHERE id = ?");
-            $stmt->execute([$title, $link, $position, $status, $dbPath, $id]);
+            $stmt = $pdo->prepare("UPDATE advertisements SET title = ?, link = ?, position = ?, status = ?, image = ?, media_type = ? WHERE id = ?");
+            $stmt->execute([$title, $link, $position, $status, $dbPath, $media_type, $id]);
         }
     } else {
         $stmt = $pdo->prepare("UPDATE advertisements SET title = ?, link = ?, position = ?, status = ? WHERE id = ?");
@@ -88,24 +113,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_ad'])) {
 }
 
 // Handle Upload
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['ad_image'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['title']) && !isset($_POST['edit_ad'])) {
     $title = $_POST['title'] ?? '';
     $link = $_POST['link'] ?? '';
     $position = $_POST['position'] ?? 'home_top';
     
     if (isset($_FILES['ad_image']) && $_FILES['ad_image']['error'] === UPLOAD_ERR_OK) {
-        $image_data = file_get_contents($_FILES['ad_image']['tmp_name']);
-        $mime_type = mime_content_type($_FILES['ad_image']['tmp_name']);
-        
-        if ($image_data !== false && strpos($mime_type, 'image/') === 0) {
-            $base64 = base64_encode($image_data);
-            $dbPath = 'data:' . $mime_type . ';base64,' . $base64;
-            $stmt = $pdo->prepare("INSERT INTO advertisements (title, link, image, position) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$title, $link, $dbPath, $position]);
+        $upload_result = handleMediaUpload($_FILES['ad_image']);
+        if ($upload_result) {
+            $dbPath = $upload_result['path'];
+            $media_type = $upload_result['media_type'];
+            
+            $stmt = $pdo->prepare("INSERT INTO advertisements (title, link, image, position, media_type) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$title, $link, $dbPath, $position, $media_type]);
             header("Location: advertisement.php?msg=uploaded");
             exit;
         } else {
-            $error = "Failed to upload file.";
+            $error = "Failed to upload file. Invalid format (use JPG, PNG, WEBP, MP4, WebM).";
         }
     }
 }
@@ -149,14 +173,21 @@ include 'includes/sidebar.php';
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col">
         <div class="h-48 bg-gray-200 relative overflow-hidden group">
             <?php 
+            $is_video = isset($ad['media_type']) && $ad['media_type'] === 'video';
             if (strpos($ad['image'], 'data:image/') === 0) {
                 $img_src = $ad['image'];
+                $raw_src = $ad['image'];
             } else {
                 $img_path = ltrim(str_replace('../', '', $ad['image']), '/\\');
-                $img_src = '../image.php?file=' . urlencode($img_path);
+                $img_src = $is_video ? '../' . $img_path : '../image.php?file=' . urlencode($img_path);
+                $raw_src = '../' . $img_path;
             }
             ?>
-            <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
+            <?php if ($is_video): ?>
+                <video src="<?= $img_src ?>" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
+            <?php else: ?>
+                <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title']) ?>" class="w-full h-full object-cover">
+            <?php endif; ?>
             <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <a href="<?= $img_src ?>" target="_blank" class="bg-white text-gray-800 p-2 rounded-full mx-1 hover:bg-gray-100 transition shadow" title="Preview"><i class="fas fa-eye w-5 h-5 flex items-center justify-center"></i></a>
                 <button type="button" onclick="openEditModal(<?= $ad['id'] ?>, '<?= htmlspecialchars(addslashes($ad['title'])) ?>', '<?= htmlspecialchars(addslashes($ad['link'])) ?>', '<?= $ad['position'] ?>', <?= $ad['status'] ?>)" class="bg-white text-blue-600 p-2 rounded-full mx-1 hover:bg-blue-50 transition shadow" title="Edit"><i class="fas fa-edit w-5 h-5 flex items-center justify-center"></i></button>
@@ -238,8 +269,9 @@ include 'includes/sidebar.php';
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Upload Banner Image</label>
-                    <input type="file" name="ad_image" required accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Upload Media (Image / Video)</label>
+                    <input type="file" name="ad_image" required accept="image/*,video/mp4,video/webm" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
+                    <p class="text-xs text-gray-500 mt-1">For video, MP4 is recommended (Max 10MB). Loops silently on homepage.</p>
                 </div>
 
                 <div class="grid grid-cols-1 gap-4">
@@ -288,8 +320,9 @@ include 'includes/sidebar.php';
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Upload New Banner Image (Leave empty to keep current)</label>
-                    <input type="file" name="ad_image" accept="image/*" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Upload New Media (Leave empty to keep current)</label>
+                    <input type="file" name="ad_image" accept="image/*,video/mp4,video/webm" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none text-sm">
+                    <p class="text-xs text-gray-500 mt-1">For video, MP4 is recommended. Loops silently.</p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">

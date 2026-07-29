@@ -177,19 +177,30 @@ include 'includes/header.php';
             <?php if (!empty($left_sidebar_ads)): ?>
                 <?php foreach($left_sidebar_ads as $ad): 
                     $ad_img = $ad['image'] ?? $ad['image_path'] ?? '';
+                    $is_video = isset($ad['media_type']) && $ad['media_type'] === 'video';
+                    
                     if (strpos($ad_img, 'data:image/') === 0) {
                         $img_src = $ad_img;
                     } else {
-                        $img_src = 'image.php?file=' . urlencode(ltrim(str_replace('../', '', $ad_img), '/\\'));
+                        $img_path = ltrim(str_replace('../', '', $ad_img), '/\\');
+                        $img_src = $is_video ? $img_path : 'image.php?file=' . urlencode($img_path);
                     }
                 ?>
                     <?php if(!empty($ad['link'])): ?>
                         <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[160px] sm:min-h-[180px] xl:min-h-[200px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
-                            <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
+                            <?php if($is_video): ?>
+                                <video src="<?= $img_src ?>" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover"></video>
+                            <?php else: ?>
+                                <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
+                            <?php endif; ?>
                         </a>
                     <?php else: ?>
                         <div class="relative w-full h-full min-h-[160px] sm:min-h-[180px] xl:min-h-[200px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
-                            <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
+                            <?php if($is_video): ?>
+                                <video src="<?= $img_src ?>" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover"></video>
+                            <?php else: ?>
+                                <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
+                            <?php endif; ?>
                         </div>
                     <?php endif; ?>
                 <?php endforeach; ?>
@@ -242,19 +253,30 @@ include 'includes/header.php';
             <?php if (!empty($right_sidebar_ads)): ?>
                 <?php foreach($right_sidebar_ads as $ad): 
                     $ad_img = $ad['image'] ?? $ad['image_path'] ?? '';
+                    $is_video = isset($ad['media_type']) && $ad['media_type'] === 'video';
+                    
                     if (strpos($ad_img, 'data:image/') === 0) {
                         $img_src = $ad_img;
                     } else {
-                        $img_src = 'image.php?file=' . urlencode(ltrim(str_replace('../', '', $ad_img), '/\\'));
+                        $img_path = ltrim(str_replace('../', '', $ad_img), '/\\');
+                        $img_src = $is_video ? $img_path : 'image.php?file=' . urlencode($img_path);
                     }
                 ?>
                     <?php if(!empty($ad['link'])): ?>
                         <a href="<?= htmlspecialchars($ad['link']) ?>" target="_blank" class="block relative w-full h-full min-h-[160px] sm:min-h-[180px] xl:min-h-[200px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden hover:opacity-90 transition">
-                            <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
+                            <?php if($is_video): ?>
+                                <video src="<?= $img_src ?>" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover"></video>
+                            <?php else: ?>
+                                <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
+                            <?php endif; ?>
                         </a>
                     <?php else: ?>
                         <div class="relative w-full h-full min-h-[160px] sm:min-h-[180px] xl:min-h-[200px] flex-grow rounded shadow-lg border border-gray-700 overflow-hidden">
-                            <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
+                            <?php if($is_video): ?>
+                                <video src="<?= $img_src ?>" autoplay loop muted playsinline class="absolute inset-0 w-full h-full object-cover"></video>
+                            <?php else: ?>
+                                <img src="<?= $img_src ?>" alt="<?= htmlspecialchars($ad['title'] ?? '') ?>" class="absolute inset-0 w-full h-full object-cover">
+                            <?php endif; ?>
                         </div>
                     <?php endif; ?>
                 <?php endforeach; ?>
