@@ -79,6 +79,21 @@ if (isset($pdo) || file_exists('includes/db.php')) {
             $pdo->exec("INSERT INTO site_settings (setting_key, setting_value) VALUES ('visitor_count', '1')");
         }
 
+        // Fetch user profile image for header
+        $hdr_profile_img = 'https://ui-avatars.com/api/?name=User&background=random';
+        $hdr_user_name = 'User';
+        if ($is_logged_in && isset($_SESSION['user_id'])) {
+            try {
+                $hdr_stmt = $pdo->prepare("SELECT full_name, profile_photo FROM users WHERE id = ?");
+                $hdr_stmt->execute([$_SESSION['user_id']]);
+                $hdr_user = $hdr_stmt->fetch(PDO::FETCH_ASSOC);
+                if ($hdr_user) {
+                    $hdr_user_name = $hdr_user['full_name'];
+                    $hdr_profile_img = (!empty($hdr_user['profile_photo']) && file_exists($hdr_user['profile_photo'])) ? 'image.php?file='.urlencode($hdr_user['profile_photo']) : 'https://ui-avatars.com/api/?name='.urlencode($hdr_user['full_name']).'&background=random';
+                }
+            } catch(PDOException $e) {}
+        }
+
         // Fetch updated counter if needed (optional, but good if displaying in frontend)
     } catch (Exception $e) {}
 }
@@ -405,7 +420,10 @@ $site_tagline = htmlspecialchars($settings['home_tagline'] ?? '(established in 2
             <a href="news.php" class="<?= $current_page == 'news.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">News & Updates</a>
             
             <?php if ($is_logged_in): ?>
-                <a href="my-profile.php" class="<?= $current_page == 'my-profile.php' || $current_page == 'registration.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">My Profile</a>
+                <a href="my-profile.php" class="<?= $current_page == 'my-profile.php' || $current_page == 'registration.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg flex items-center gap-2">
+                    <img src="<?= htmlspecialchars($hdr_profile_img) ?>" class="w-8 h-8 rounded-full object-cover border border-gray-200" alt="Profile">
+                    My Profile
+                </a>
                 <a href="login.php?logout=1" class="text-red-500 hover:text-red-700 transition text-lg font-medium">Logout</a>
             <?php else: ?>
                 <a href="login.php" class="<?= $current_page == 'login.php' || $current_page == 'registration.php' || $current_page == 'pre-register.php' ? 'text-primary font-bold' : 'text-dark hover:text-primary font-medium' ?> transition text-lg">Login / Registration</a>
@@ -443,8 +461,11 @@ $site_tagline = htmlspecialchars($settings['home_tagline'] ?? '(established in 2
                     <a href="news.php" class="<?= $current_page == 'news.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">News & Updates</a>
                     
                     <?php if ($is_logged_in): ?>
-                        <a href="my-profile.php" class="<?= $current_page == 'my-profile.php' || $current_page == 'registration.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">My Profile</a>
-                        <a href="login.php?logout=1" class="text-red-500 hover:text-red-700 transition font-medium">Logout</a>
+                        <a href="my-profile.php" class="<?= $current_page == 'my-profile.php' || $current_page == 'registration.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1 flex items-center gap-2">
+                            <img src="<?= htmlspecialchars($hdr_profile_img) ?>" class="w-8 h-8 rounded-full object-cover border border-gray-200" alt="Profile">
+                            My Profile
+                        </a>
+                        <a href="login.php?logout=1" class="text-red-500 hover:text-red-700 transition font-medium ml-2">Logout</a>
                     <?php else: ?>
                         <a href="login.php" class="<?= $current_page == 'login.php' || $current_page == 'registration.php' || $current_page == 'pre-register.php' ? 'text-primary font-bold border-b-2 border-primary' : 'text-dark hover:text-primary font-medium' ?> transition pb-1">Login / Registration</a>
                     <?php endif; ?>

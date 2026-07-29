@@ -315,12 +315,13 @@ include 'includes/header.php';
                         <!-- Marital Status -->
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-1">Marital Status</label>
-                            <select name="marital_status"
+                            <select name="marital"
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
                                 <option value="">Any</option>
-                                <option value="never_married">Never Married</option>
-                                <option value="widow">Widow / Widower</option>
-                                <option value="divorcee">Divorcee</option>
+                                <option value="Never Married">Never Married</option>
+                                <option value="Widow">Widow</option>
+                                <option value="Widower">Widower</option>
+                                <option value="Divorce">Divorcee</option>
                             </select>
                         </div>
                         <!-- Manglik -->
@@ -329,9 +330,8 @@ include 'includes/header.php';
                             <select name="manglik"
                                 class="w-full border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary p-2.5 border bg-gray-50">
                                 <option value="">Any</option>
-                                <option value="manglik">Manglik</option>
-                                <option value="non_manglik">Non-Manglik</option>
-                                <option value="anshik_manglik">Anshik Manglik</option>
+                                <option value="yes">Manglik</option>
+                                <option value="no">Non-Manglik</option>
                             </select>
                         </div>
                         <!-- State -->
