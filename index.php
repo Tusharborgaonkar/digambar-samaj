@@ -646,66 +646,7 @@ include 'includes/header.php';
     </div>
 </section>
 
-<!-- Browse Directory (Location & Sect) -->
-<section class="py-12 sm:py-16 bg-light border-y border-gray-200">
-    <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8">
-            
-            <!-- Browse By City -->
-            <div class="bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="0">
-                <h3 class="text-lg sm:text-xl font-bold text-dark mb-4 border-b-2 border-primary pb-2 flex items-center"><i class="fas fa-city text-primary mr-2"></i>Browse By City</h3>
-                <ul class="space-y-3 mt-4">
-                    <li><a href="profiles.php?city=Delhi" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Delhi Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php?city=Mumbai" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Mumbai Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php?city=Kolkata" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Kolkata Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php?city=Chennai" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Chennai Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php?city=Ahmedabad" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Ahmedabad Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li class="pt-2"><a href="profiles.php" class="text-primary font-bold hover:underline">View More Cities...</a></li>
-                </ul>
-            </div>
 
-            <!-- Browse By State -->
-            <div class="bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="100">
-                <h3 class="text-lg sm:text-xl font-bold text-dark mb-4 border-b-2 border-primary pb-2 flex items-center"><i class="fas fa-map text-primary mr-2"></i>Browse By State</h3>
-                <ul class="space-y-3 mt-4">
-                    <li><a href="profiles.php?city=Gujarat" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Gujarat Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php?city=Maharashtra" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Maharashtra Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php?city=Rajasthan" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Rajasthan Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php?city=MP" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>MP Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php?city=Haryana" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Haryana Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php?city=Bihar" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Bihar Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li class="pt-2"><a href="profiles.php" class="text-primary font-bold hover:underline">View More States...</a></li>
-                </ul>
-            </div>
-
-            <!-- Browse By Country -->
-            <div class="bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="200">
-                <h3 class="text-lg sm:text-xl font-bold text-dark mb-4 border-b-2 border-primary pb-2 flex items-center"><i class="fas fa-globe text-primary mr-2"></i>Browse By Country</h3>
-                <ul class="space-y-3 mt-4">
-                    <li><a href="profiles.php?city=USA" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>USA Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php?city=UK" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>UK Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php?city=Canada" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Canada Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php?city=Australia" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Australia Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php?city=UAE" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>UAE Matrimony</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li class="pt-2"><a href="profiles.php" class="text-primary font-bold hover:underline">View More Countries...</a></li>
-                </ul>
-            </div>
-
-            <!-- Browse By Sect -->
-            <div class="bg-white p-5 sm:p-6 rounded-xl shadow-sm border border-gray-100" data-aos="fade-up" data-aos-delay="300">
-                <h3 class="text-lg sm:text-xl font-bold text-dark mb-4 border-b-2 border-primary pb-2 flex items-center"><i class="fas fa-praying-hands text-primary mr-2"></i>Browse By Sect</h3>
-                <ul class="space-y-3 mt-4">
-                    <li><a href="profiles.php" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Digambar Jain</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Shwetambar Murtipujak</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Sthanakvasi</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Terapanth</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                    <li><a href="profiles.php" class="text-gray-600 hover:text-primary transition font-medium flex items-center justify-between group"><span>Other Jain Sects</span> <i class="fas fa-angle-right text-gray-300 group-hover:text-primary"></i></a></li>
-                </ul>
-            </div>
-
-        </div>
-    </div>
-</section>
 
 <!-- News & Updates / Stats Section -->
 <section class="py-12 sm:py-16 bg-white">
@@ -729,7 +670,7 @@ include 'includes/header.php';
             -->
 
             <!-- Stats section -->
-            <div class="bg-light p-5 sm:p-8 rounded-2xl border border-gray-100" data-aos="fade-left">
+            <!-- <div class="bg-light p-5 sm:p-8 rounded-2xl border border-gray-100" data-aos="fade-left">
                 <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-dark mb-4 text-center lg:text-left">Trusted by Thousands of Digambar Jain Samaj since 5 years</h2>
 
                 <div class="grid grid-cols-2 gap-3 sm:gap-6">
@@ -770,7 +711,7 @@ include 'includes/header.php';
                         <p class="text-xs sm:text-sm text-gray-500 font-semibold">Years of Trust</p>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
         </div>
     </div>
