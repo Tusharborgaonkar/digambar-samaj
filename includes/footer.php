@@ -57,7 +57,18 @@ if (isset($pdo)) {
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
                     <h3 class="text-2xl font-bold text-accent mb-4">Digambar Jain Parichay Sammelan Samiti, Ahmedabad</h3>
-                    <p class="text-gray-300">Exclusive matrimony platform for the Digambar Jain Samaj. Find your perfect life partner within the community.</p>
+                    <p class="text-gray-300 mb-6">Exclusive matrimony platform for the Digambar Jain Samaj. Find your perfect life partner within the community.</p>
+                    <div class="flex space-x-4">
+                        <a href="https://www.facebook.com/profile.php?id=61591451942555" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-blue-600 transition text-white">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://www.instagram.com/digambarjainparichay/?hl=en" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 transition text-white">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.youtube.com/@DigambarJainParichaySammelan20" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-red-600 transition text-white">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
                 </div>
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
