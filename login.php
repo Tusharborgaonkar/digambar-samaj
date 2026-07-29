@@ -43,12 +43,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$is_rate_limited) {
 
         $is_valid_password = false;
         if ($user) {
-            if ($user['has_set_password'] == 1 && !empty($user['password_hash'])) {
-                // Users registered via the new flow or who have changed their password
-                $is_valid_password = password_verify($password, $user['password_hash']);
-            } else {
+            // First, try to verify against the stored password hash (if they have one and know the password)
+            if (!empty($user['password_hash']) && password_verify($password, $user['password_hash'])) {
+                $is_valid_password = true;
+            } 
+            // If that fails (or they don't have a hash), check if they are eligible for the mobile number fallback
+            elseif ($user['has_set_password'] == 0) {
                 // Existing users before the update: Default password is the registered mobile number
-                $is_valid_password = ($password === $user['mobile']);
+                // We compare the last 10 digits to avoid issues with +91 or spaces
+                $clean_db = substr(preg_replace('/[^0-9]/', '', $user['mobile']), -10);
+                $clean_pass = substr(preg_replace('/[^0-9]/', '', $password), -10);
+                
+                if (strlen($clean_db) === 10 && $clean_db === $clean_pass) {
+                    $is_valid_password = true;
+                } elseif ($password === $user['mobile']) {
+                    $is_valid_password = true; // Fallback to exact match
+                }
             }
         }
 
