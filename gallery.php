@@ -48,9 +48,8 @@ foreach ($gallery_videos as $gv) {
 }
 ?>
 
-<section class="relative h-72 md:h-[500px] bg-cover bg-[center_20%]" style="background-image: url('assets/images/herobanner.png');">
-    <div class="absolute inset-0 bg-black bg-opacity-40"></div>
-    <div class="relative h-full flex items-center justify-center text-center">
+<section class="relative py-16 md:py-24 bg-gray-900">
+    <div class="container mx-auto px-4 relative z-10 text-center">
         <h1 class="text-4xl md:text-5xl font-bold text-white drop-shadow-md" data-aos="fade-up">Photo Gallery</h1>
     </div>
 </section>
